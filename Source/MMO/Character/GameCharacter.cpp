@@ -5,7 +5,8 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
-
+#include "Animation/AnimMontage.h"
+#include "Monsters/Monster.h"
 
 // Sets default values
 AGameCharacter::AGameCharacter()
@@ -28,13 +29,40 @@ AGameCharacter::AGameCharacter()
 	ViewCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("ViewCamera"));
 	ViewCamera->SetupAttachment(CameraBoom);
 
+	// 무기 메시를 생성하고 로드합니다.
+	WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WeaponMesh"));
+	WeaponMesh->SetupAttachment(GetMesh(), TEXT("hand_rSocket")); // "WeaponSocketName"을 생성한 소켓 이름으로 바꿉니다.
+	// 무기 메쉬 설정
+
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> WeaponAsset(TEXT("/Game/Weapons/Blade_BlackKnight/SK_Blade_BlackKnight"));
+	if (WeaponAsset.Succeeded())
+	{
+		WeaponMesh->SetSkeletalMesh(WeaponAsset.Object);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("Failed to load weapon skeletal mesh."));
+	}
+
+	//test
+	static ConstructorHelpers::FClassFinder<ACharacter> MonsterBPClass(TEXT("/Game/Blueprint/Monsters/BP_Monster"));
+	if (MonsterBPClass.Succeeded())
+	{
+		MonsterClass = MonsterBPClass.Class;
+		UE_LOG(LogTemp, Warning, TEXT("Monster class loaded."));
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("Failed to load monster class."));
+	}
 }
 
 // Called when the game starts or when spawned
 void AGameCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+
 }
 
 // Called every frame
@@ -52,6 +80,15 @@ void AGameCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	PlayerInputComponent->BindAxis("MoveRight", this, &AGameCharacter::MoveRight);
 	PlayerInputComponent->BindAxis("Turn", this, &AGameCharacter::Turn);
 	PlayerInputComponent->BindAxis("LookUp", this, &AGameCharacter::LookUp);
+
+	PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &AGameCharacter::Attack);
+	PlayerInputComponent->BindAction("SpawnMonster", IE_Pressed, this, &AGameCharacter::SpawnMonster);
+	PlayerInputComponent->BindAction("MoveMonster", IE_Pressed, this, &AGameCharacter::MoveMonster);
+}
+
+void AGameCharacter::AttackEnd()
+{
+	ActionState = EActionState::EAS_Unoccupied;
 }
 
 void AGameCharacter::MoveForward(float Value)
@@ -96,5 +133,63 @@ void AGameCharacter::LookUp(float Value)
 {
 	// changing pitch
 	AddControllerPitchInput(Value);
+}
+
+void AGameCharacter::Attack()
+{
+	if (ActionState == EActionState::EAS_Unoccupied)
+	{
+		PlayAttackMontage();
+		ActionState = EActionState::EAS_Attacking;
+	}
+	//PlayAttackMontage();
+}
+
+void AGameCharacter::SpawnMonster()
+{
+	if (MonsterClass != nullptr)
+	{
+		// 몬스터를 스폰할 위치와 회전 값 설정
+		FVector SpawnLocation = GetActorLocation() + FVector(10.0f, 0.0f, 0.0f);
+		FRotator SpawnRotation = FRotator::ZeroRotator;
+
+		// 월드에서 몬스터를 스폰
+		SpawnedMonster = Cast<AMonster>(GetWorld()->SpawnActor<ACharacter>(MonsterClass, SpawnLocation, SpawnRotation));
+	}
+}
+void AGameCharacter::MoveMonster()
+{
+	if (SpawnedMonster != nullptr)
+	{
+		SpawnedMonster->SetDestination();
+	}
+}
+void AGameCharacter::PlayAttackMontage()
+{
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance && AttackMontage)
+	{
+		AnimInstance->Montage_Play(AttackMontage);
+		int32 Selection = FMath::RandRange(0, 1);
+		FName SelectionName = FName();
+		switch (Selection)
+		{
+		case 0:
+		{
+			SelectionName = FName("Combo1");
+		}
+		break;
+
+		case 1:
+		{
+			SelectionName = FName("Combo1-1");
+		}
+		break;
+
+		default:
+			break;
+		}
+		AnimInstance->Montage_JumpToSection(SelectionName, AttackMontage);
+	}
 }
 
