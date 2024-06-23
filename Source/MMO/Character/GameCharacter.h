@@ -40,7 +40,7 @@ protected:
 	void Turn(float Value);
 	void LookUp(float Value);
 	void Attack();
-
+	void LeftMouseClick();
 	/**
 	*Play montage function
 	*/
@@ -71,4 +71,17 @@ public:
 	void SpawnMonster();
 	void MoveMonster();
 	class AMonster* SpawnedMonster;
+	
+
+public:
+	FVector Destination;
+	class APlayerController* PlayerController;
+	
+	EMovingState MovingState = EMovingState::EMS_Idle;
+	void MoveToDestination(float DeltaTime);
+	void StopMove();
+
+private:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Collision, meta = (AllowPrivateAccess = "true"))
+	class UCapsuleComponent* CollisionComponent;
 };

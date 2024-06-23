@@ -13,3 +13,11 @@ enum class EActionState : uint8
 	EAS_Unoccupied UMETA(DisplayName = "Unoccupied"),
 	EAS_Attacking UMETA(DisplayName = "Attacking"),
 };
+
+#pragma once
+UENUM(BlueprintType)
+enum class EMovingState : uint8
+{
+	EMS_Move UMETA(DisplayName = "Move"),
+	EMS_Idle UMETA(DisplayName = "Idle"),
+};

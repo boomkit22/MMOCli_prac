@@ -7,6 +7,8 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Animation/AnimMontage.h"
 #include "Monsters/Monster.h"
+#include "Kismet/GameplayStatics.h"
+#include "Components/CapsuleComponent.h"
 
 // Sets default values
 AGameCharacter::AGameCharacter()
@@ -14,6 +16,7 @@ AGameCharacter::AGameCharacter()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	
+	// Dont rotate character to camera direction
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationRoll = false;
@@ -21,13 +24,34 @@ AGameCharacter::AGameCharacter()
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->RotationRate = FRotator(0.f, 540.f, 0.f);
 
-
+	// Top down camera
+	// Create the camera boom (pulls in towards the player if there is a collision)
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
-	CameraBoom->SetupAttachment(GetRootComponent());
-	CameraBoom->TargetArmLength = 500.f;
-
+	CameraBoom->SetupAttachment(RootComponent);
+	CameraBoom->SetUsingAbsoluteRotation(true); // Don't want arm to rotate when character does
+	CameraBoom->TargetArmLength = 800.f;
+	CameraBoom->SetRelativeRotation(FRotator(-60.f, 0.f, 0.f));
+	CameraBoom->bDoCollisionTest = false; // Don't want to pull camera in when it collides with level
+	// Create the camera and attach to boom
 	ViewCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("ViewCamera"));
-	ViewCamera->SetupAttachment(CameraBoom);
+	ViewCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom
+	ViewCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
+
+	// Set the camera's angle for top-down view
+	FRotator CameraRotation = FRotator(-60.0f, 0.0f, 0.0f); // Adjust the angle as needed
+	CameraBoom->SetWorldRotation(CameraRotation);
+
+	// 콜리전 컴포넌트 설정
+	//CollisionComponent = GetCapsuleComponent();
+	//CollisionComponent->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel2); // Player 채널 설정
+	//CollisionComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel1, ECR_Ignore); // Monster 채널 무시
+
+	//CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
+	//CameraBoom->SetupAttachment(GetRootComponent());
+	//CameraBoom->TargetArmLength = 500.f;
+
+	//ViewCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("ViewCamera"));
+	//ViewCamera->SetupAttachment(CameraBoom);
 
 	// 무기 메시를 생성하고 로드합니다.
 	WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WeaponMesh"));
@@ -55,6 +79,14 @@ AGameCharacter::AGameCharacter()
 	{
 		UE_LOG(LogTemp, Error, TEXT("Failed to load monster class."));
 	}
+
+	PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	if (PlayerController)
+	{
+		// 마우스 커서 보이게 설정
+		UE_LOG(LogTemp, Warning, TEXT("PlayerController->bShowMouseCursor"));
+		PlayerController->bShowMouseCursor = true;
+	}
 }
 
 // Called when the game starts or when spawned
@@ -69,18 +101,19 @@ void AGameCharacter::BeginPlay()
 void AGameCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	MoveToDestination(DeltaTime);
 }
 
 // Called to bind functionality to input
 void AGameCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-	PlayerInputComponent->BindAxis("MoveForward", this, &AGameCharacter::MoveForward);
-	PlayerInputComponent->BindAxis("MoveRight", this, &AGameCharacter::MoveRight);
-	PlayerInputComponent->BindAxis("Turn", this, &AGameCharacter::Turn);
-	PlayerInputComponent->BindAxis("LookUp", this, &AGameCharacter::LookUp);
+	//PlayerInputComponent->BindAxis("MoveForward", this, &AGameCharacter::MoveForward);
+	//PlayerInputComponent->BindAxis("MoveRight", this, &AGameCharacter::MoveRight);
+	//PlayerInputComponent->BindAxis("Turn", this, &AGameCharacter::Turn);
+	//PlayerInputComponent->BindAxis("LookUp", this, &AGameCharacter::LookUp);
 
+	PlayerInputComponent->BindAction("LeftMouseClick", IE_Pressed, this, &AGameCharacter::LeftMouseClick);
 	PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &AGameCharacter::Attack);
 	PlayerInputComponent->BindAction("SpawnMonster", IE_Pressed, this, &AGameCharacter::SpawnMonster);
 	PlayerInputComponent->BindAction("MoveMonster", IE_Pressed, this, &AGameCharacter::MoveMonster);
@@ -139,10 +172,24 @@ void AGameCharacter::Attack()
 {
 	if (ActionState == EActionState::EAS_Unoccupied)
 	{
+		StopMove();
 		PlayAttackMontage();
 		ActionState = EActionState::EAS_Attacking;
 	}
 	//PlayAttackMontage();
+}
+
+void AGameCharacter::LeftMouseClick()
+{
+	bool bHitSuccessful = false;
+	FHitResult Hit;
+	bHitSuccessful = PlayerController->GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, true, Hit);
+	
+	if (bHitSuccessful)
+	{
+		Destination = Hit.Location;
+		UE_LOG(LogTemp, Warning, TEXT("Destination: %s"), *Destination.ToString());
+	}
 }
 
 void AGameCharacter::SpawnMonster()
@@ -193,3 +240,49 @@ void AGameCharacter::PlayAttackMontage()
 	}
 }
 
+
+void AGameCharacter::MoveToDestination(float DeltaTime)
+{
+	if (!Destination.IsZero())
+	{
+		MovingState = EMovingState::EMS_Move;
+		FVector CurrentLocation = GetActorLocation();
+		// Destination 및 CurrentLocation에서 Z값을 현재 액터의 Z 위치로 설정
+		FVector ModifiedDestination = FVector(Destination.X, Destination.Y, CurrentLocation.Z);
+		FVector Direction = (ModifiedDestination - CurrentLocation).GetSafeNormal();
+		float Distance = FVector::Dist(ModifiedDestination, CurrentLocation);
+
+		// 이동 속도 설정
+		float Speed = 300.0f; // 예: 300 유닛/초
+		float Step = Speed * DeltaTime; // 이번 프레임에서 이동할 거리
+
+		if (Distance > Step)
+		{
+			// 새 위치 계산
+			FVector NewLocation = CurrentLocation + Direction * Step;
+			SetActorLocation(NewLocation);
+
+			// 이동하는 방향으로 부드러운 회전 설정
+			FRotator CurrentRotation = GetActorRotation();
+			FRotator TargetRotation = Direction.Rotation();
+			FRotator NewRotation = FMath::Lerp(CurrentRotation, TargetRotation, DeltaTime * 5.0f); // 회전 속도 조정 가능
+			SetActorRotation(NewRotation);
+		}
+		else
+		{
+			// 목적지에 매우 가까워졌을 때, 목적지에 도달
+			SetActorLocation(ModifiedDestination);
+			Destination = FVector::ZeroVector; // 도착 후 목적지 초기화
+			UE_LOG(LogTemp, Warning, TEXT("EMS_Idle"));
+		}
+	}
+	else {
+		MovingState = EMovingState::EMS_Idle;
+	}
+}
+
+void AGameCharacter::StopMove()
+{
+	Destination = FVector::ZeroVector;
+	MovingState = EMovingState::EMS_Idle;
+}

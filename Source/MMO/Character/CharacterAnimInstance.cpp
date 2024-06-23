@@ -20,8 +20,8 @@ void UCharacterAnimInstance::NativeInitializeAnimation()
 void UCharacterAnimInstance::NativeUpdateAnimation(float DeltaTime)
 {
 	Super::NativeUpdateAnimation(DeltaTime);
-	if (CharacterMovementComponent)
+	if (GameCharacter)
 	{
-		GroundSpeed = UKismetMathLibrary::VSizeXY(CharacterMovementComponent->Velocity);
+		MovingState = GameCharacter->MovingState;
 	}
 }

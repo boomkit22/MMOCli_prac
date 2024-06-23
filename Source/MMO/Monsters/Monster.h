@@ -39,4 +39,7 @@ public:
 	void MoveToDestination(float DeltaTime);
 
 	EMonsterState MonsterState = EMonsterState::EAS_Idle;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Collision, meta = (AllowPrivateAccess = "true"))
+	class UCapsuleComponent* CollisionComponent;
 };

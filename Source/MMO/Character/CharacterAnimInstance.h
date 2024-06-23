@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Animation/AnimInstance.h"
+#include "Character/CharacterTypes.h"
 #include "CharacterAnimInstance.generated.h"
 
 /**
@@ -23,7 +24,7 @@ public:
 
 	UPROPERTY(BlueprintReadOnly)
 	class UCharacterMovementComponent* CharacterMovementComponent;
-
+	
 	UPROPERTY(BlueprintReadOnly, Category = Movement)
-	float GroundSpeed;
+	EMovingState MovingState = EMovingState::EMS_Idle;
 };

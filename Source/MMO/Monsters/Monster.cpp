@@ -3,11 +3,17 @@
 
 #include "Monsters/Monster.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Components/CapsuleComponent.h"
+
 // Sets default values
 AMonster::AMonster()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+
+    //CollisionComponent = GetCapsuleComponent();
+    //CollisionComponent->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel1); // Monstesr채널 생성
+    //CollisionComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel2, ECR_Ignore); // Player 채널 무시
 
 }
 
