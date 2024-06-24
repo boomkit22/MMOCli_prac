@@ -4,6 +4,8 @@
 #include "Monsters/Monster.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "MMOComponent/MonsAttributeComponent.h"
+#include "HUD/HUDMonsterComponent.h"
 
 // Sets default values
 AMonster::AMonster()
@@ -14,7 +16,23 @@ AMonster::AMonster()
     //CollisionComponent = GetCapsuleComponent();
     //CollisionComponent->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel1); // Monstesr채널 생성
     //CollisionComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel2, ECR_Ignore); // Player 채널 무시
+    WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WeaponMesh"));
+    WeaponMesh->SetupAttachment(GetMesh(), TEXT("b_MF_Weapon_R")); // "WeaponSocketName"을 생성한 소켓 이름으로 바꿉니다.
+    // 무기 메쉬 설정
+    static ConstructorHelpers::FObjectFinder<USkeletalMesh> WeaponAsset(TEXT("/Game/Weapons/Blunt_SpikedClub/SK_Blunt_SpikedClub"));
+    if (WeaponAsset.Succeeded())
+    {
+        WeaponMesh->SetSkeletalMesh(WeaponAsset.Object);
+    }
+    else
+    {
+        UE_LOG(LogTemp, Error, TEXT("Failed to load monster weapon skeletal mesh."));
+    }
 
+    MonsAttributeComponent = CreateDefaultSubobject<UMonsAttributeComponent>(TEXT("MonsAttributeComponent"));
+
+    HUDMonsterComponent = CreateDefaultSubobject<UHUDMonsterComponent>(TEXT("HUDMonsterComponent"));
+    HUDMonsterComponent->SetupAttachment(RootComponent);
 }
 
 // Called when the game starts or when spawned
@@ -23,6 +41,16 @@ void AMonster::BeginPlay()
 	Super::BeginPlay(); 
     GetCharacterMovement()->MaxWalkSpeed = 300.0f; // 예: 300 유닛/초
 	
+
+    if(HUDMonsterComponent)
+	{
+        UE_LOG(LogTemp, Error, TEXT("Set Monster HUD Component."));
+        HUDMonsterComponent->SetMonsterName(FString("guardian1"));
+        HUDMonsterComponent->SetHealthPercent(0.2f);
+    }
+    else {
+        UE_LOG(LogTemp, Error, TEXT("Monster HUD Component is nullptr."));
+    }
 }
 
 // Called every frame
@@ -100,6 +128,32 @@ void AMonster::MoveToDestination(float DeltaTime)
     }
     else {
         MonsterState = EMonsterState::EAS_Idle;
+    }
+}
+
+void AMonster::Attack()
+{
+    UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+    if (AnimInstance && AttackMontage)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("Attack"));
+        AnimInstance->Montage_Play(AttackMontage);
+    }
+    else {
+        UE_LOG(LogTemp, Warning, TEXT("Attack error"));
+    }
+}
+
+void AMonster::Death()
+{
+    UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+    if (AnimInstance && DeathMontage)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("Death"));
+        AnimInstance->Montage_Play(DeathMontage);
+    }
+    else {
+        UE_LOG(LogTemp, Warning, TEXT("Death error"));
     }
 }
 

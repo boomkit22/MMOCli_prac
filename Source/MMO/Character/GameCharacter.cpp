@@ -9,6 +9,7 @@
 #include "Monsters/Monster.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/CapsuleComponent.h"
+#include "Animation/AnimSequence.h"
 
 // Sets default values
 AGameCharacter::AGameCharacter()
@@ -117,6 +118,10 @@ void AGameCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &AGameCharacter::Attack);
 	PlayerInputComponent->BindAction("SpawnMonster", IE_Pressed, this, &AGameCharacter::SpawnMonster);
 	PlayerInputComponent->BindAction("MoveMonster", IE_Pressed, this, &AGameCharacter::MoveMonster);
+	PlayerInputComponent->BindAction("MonsterAttack", IE_Pressed, this, &AGameCharacter::MonsterAttack);
+	PlayerInputComponent->BindAction("Death", IE_Pressed, this, &AGameCharacter::Death);
+	PlayerInputComponent->BindAction("MonsterDeath", IE_Pressed, this, &AGameCharacter::MonsterDeath);
+
 }
 
 void AGameCharacter::AttackEnd()
@@ -211,6 +216,23 @@ void AGameCharacter::MoveMonster()
 		SpawnedMonster->SetDestination();
 	}
 }
+
+void AGameCharacter::MonsterAttack()
+{
+	if(SpawnedMonster != nullptr)
+	{
+		SpawnedMonster->Attack();
+	}
+}
+
+void AGameCharacter::MonsterDeath()
+{
+	if (SpawnedMonster != nullptr)
+	{
+		SpawnedMonster->Death();
+	}
+}
+
 void AGameCharacter::PlayAttackMontage()
 {
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
@@ -285,4 +307,13 @@ void AGameCharacter::StopMove()
 {
 	Destination = FVector::ZeroVector;
 	MovingState = EMovingState::EMS_Idle;
+}
+
+void AGameCharacter::Death()
+{
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance && DeathMontage)
+	{
+		AnimInstance->Montage_Play(DeathMontage);
+	}
 }

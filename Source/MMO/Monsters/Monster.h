@@ -7,7 +7,7 @@
 #include "Monsters/MonsterState.h"
 #include "Monster.generated.h"
 
-
+class UHUDMonsterComponent;
 
 UCLASS()
 class MMO_API AMonster : public ACharacter
@@ -42,4 +42,27 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Collision, meta = (AllowPrivateAccess = "true"))
 	class UCapsuleComponent* CollisionComponent;
+
+public:
+	void Attack();
+	void Death();
+
+private:
+	UPROPERTY(VisibleAnywhere)
+	class UMonsAttributeComponent* MonsAttributeComponent;
+
+	UPROPERTY(VisibleAnywhere)
+	UHUDMonsterComponent* HUDMonsterComponent;
+	UPROPERTY(VisibleAnywhere, Category = "Weapon")
+	USkeletalMeshComponent* WeaponMesh;
+
+	/**
+	* Animation montages
+	*/
+	UPROPERTY(EditDefaultsOnly, Category = "Montages")
+	UAnimMontage* AttackMontage;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Montages")
+	UAnimMontage* DeathMontage;
 };
+

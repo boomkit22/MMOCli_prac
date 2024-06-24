@@ -63,6 +63,9 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Montages")
 	UAnimMontage* AttackMontage;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Montages")
+	UAnimMontage* DeathMontage;
+
 public:
 	//Test
 	UPROPERTY(EditDefaultsOnly, Category = "Spawning")
@@ -70,6 +73,7 @@ public:
 
 	void SpawnMonster();
 	void MoveMonster();
+	void MonsterAttack();
 	class AMonster* SpawnedMonster;
 	
 
@@ -80,7 +84,8 @@ public:
 	EMovingState MovingState = EMovingState::EMS_Idle;
 	void MoveToDestination(float DeltaTime);
 	void StopMove();
-
+	void Death();
+	void MonsterDeath();
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Collision, meta = (AllowPrivateAccess = "true"))
 	class UCapsuleComponent* CollisionComponent;
