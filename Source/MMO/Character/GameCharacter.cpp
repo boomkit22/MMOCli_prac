@@ -376,7 +376,7 @@ void AGameCharacter::DamageTest()
 	GetHit(20);
 }
 
-void AGameCharacter::GetHit(int damage)
+void AGameCharacter::GetHit(int32 damage)
 {
 	UE_LOG(LogTemp, Warning, TEXT("Character Hit"));
 

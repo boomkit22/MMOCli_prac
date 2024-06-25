@@ -15,6 +15,7 @@ public class MMO : ModuleRules
         PrivateIncludePaths.AddRange(new string[]
         {
             "MMO/",
+            "MMO/Network/",
         });
 
         // Uncomment if you are using Slate UI

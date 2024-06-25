@@ -3,10 +3,3 @@
 
 #include "Network/NetworkRingBuffer.h"
 
-NetworkRingBuffer::NetworkRingBuffer()
-{
-}
-
-NetworkRingBuffer::~NetworkRingBuffer()
-{
-}

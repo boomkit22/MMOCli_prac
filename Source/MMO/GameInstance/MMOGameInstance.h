@@ -1,0 +1,54 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "Engine/GameInstance.h"
+//#include "Network/GameSession.h"
+
+#include "MMOGameInstance.generated.h"
+
+
+/**
+ * 
+ */
+
+class GameServerSession;
+class LoginServerSession;
+class ChattingServerSession;
+class CPacket;
+
+UCLASS()
+class MMO_API UMMOGameInstance : public UGameInstance
+{
+	GENERATED_BODY()
+
+public:
+	virtual void Init() override;
+	virtual void Shutdown() override;
+
+public:
+	void ConnectGameServer();
+	void ConnectLoginServer();
+	void ConnectChattingServer();
+
+
+public:
+	void SendPacket_GameServer(CPacket* packet);
+	void SendPacket_LoginServer(CPacket* packet);
+	void SendPacket_ChattingServer(CPacket* packet);
+
+public:
+	void HandleLogin(CPacket* packet);
+
+
+private:
+	TSharedPtr<GameServerSession> _GameServerSession;
+	TSharedPtr<LoginServerSession> _LoginServerSession;
+	TSharedPtr<ChattingServerSession> _ChattingServerSession;
+
+	/*GameServerSession* _GameServerSession = nullptr;
+	LoginServerSession* _LoginServerSession = nullptr;
+	ChattingServerSession* _ChattingServerSession = nullptr;*/
+
+};

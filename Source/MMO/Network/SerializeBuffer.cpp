@@ -3,10 +3,3 @@
 
 #include "Network/SerializeBuffer.h"
 
-SerializeBuffer::SerializeBuffer()
-{
-}
-
-SerializeBuffer::~SerializeBuffer()
-{
-}
