@@ -24,5 +24,28 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-		
+	void Init(int32 Health, FString CharName, int32 Level);
+	FORCEINLINE FString GetCharName() { return CharName; };
+
+private:
+	//Current Health
+	UPROPERTY(EditAnywhere, Category = "CharAttribute")
+	int32 Health;
+
+	UPROPERTY(EditAnywhere, Category = "CharAttribute")
+	int32 MaxHealth;
+
+	UPROPERTY(EditAnywhere, Category = "CharAttribute")
+	FString CharName;
+
+	UPROPERTY(EditAnywhere, Category = "CharAttribute")
+	int32 Level;
+
+
+
+public:
+	bool IsAlive();
+	float GetHelathPercent();
+	void GetDamage(int damage);
+
 };

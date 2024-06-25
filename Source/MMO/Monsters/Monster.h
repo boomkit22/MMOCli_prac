@@ -38,7 +38,7 @@ public:
 
 	void MoveToDestination(float DeltaTime);
 
-	EMonsterState MonsterState = EMonsterState::EAS_Idle;
+	EMonsterState MonsterState = EMonsterState::EMS_Idle;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Collision, meta = (AllowPrivateAccess = "true"))
 	class UCapsuleComponent* CollisionComponent;
@@ -46,6 +46,7 @@ public:
 public:
 	void Attack();
 	void Death();
+	void GetHit(int damage);
 
 private:
 	UPROPERTY(VisibleAnywhere)

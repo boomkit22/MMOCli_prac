@@ -11,6 +11,8 @@
 class USpringArmComponent;
 class UCameraComponent;
 class UAnimMontage;
+class UMMOOverlay;
+
 UCLASS()
 class MMO_API AGameCharacter : public ACharacter
 {
@@ -86,7 +88,17 @@ public:
 	void StopMove();
 	void Death();
 	void MonsterDeath();
+	void MonsterDamage();
+	void GetHit(int damage);
+	void DamageTest();
+	
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Collision, meta = (AllowPrivateAccess = "true"))
 	class UCapsuleComponent* CollisionComponent;
+
+	UPROPERTY(VisibleAnywhere)
+	class UCharAttributeComponent* CharAttributeComponent;
+
+	UPROPERTY()
+	UMMOOverlay* MMOOverlay;
 };

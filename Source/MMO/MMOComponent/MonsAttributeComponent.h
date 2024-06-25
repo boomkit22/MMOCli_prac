@@ -24,18 +24,23 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	void Init(int32 Health, FString MonsterName);
 
+	FORCEINLINE FString GetMonsterName() { return MonsterName; };
 private:
 	//Current Health
 	UPROPERTY(EditAnywhere, Category = "MonsAttribute")
-	float Health;
+	int32 Health;
 
 	UPROPERTY(EditAnywhere, Category = "MonsAttribute")
-	float MaxHealth;
+	int32 MaxHealth;
 
 	UPROPERTY(EditAnywhere, Category = "MonsAttribute")
 	FString MonsterName;
 
-
+public:
+	bool IsAlive();
+	float GetHelathPercent();
+	void GetDamage(int damage);
 		
 };

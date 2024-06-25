@@ -32,3 +32,37 @@ void UMonsAttributeComponent::TickComponent(float DeltaTime, ELevelTick TickType
 	// ...
 }
 
+void UMonsAttributeComponent::Init(int32 health, FString monsterName)
+{
+	this->Health = health;
+	this->MaxHealth = health;
+	this->MonsterName = monsterName;
+}
+
+bool UMonsAttributeComponent::IsAlive()
+{
+	if (Health > 0)
+	{
+		return true;
+	}
+	return false;
+}
+
+float UMonsAttributeComponent::GetHelathPercent()
+{
+	if (MaxHealth > 0)
+	{
+		return Health / (float)MaxHealth;
+	}
+	return 0.0f;
+}
+
+void UMonsAttributeComponent::GetDamage(int damage)
+{
+	Health -= damage;
+	if (Health < 0)
+	{
+		Health = 0;
+	}
+}
+

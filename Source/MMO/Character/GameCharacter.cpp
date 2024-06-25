@@ -10,6 +10,9 @@
 #include "Kismet/GameplayStatics.h"
 #include "Components/CapsuleComponent.h"
 #include "Animation/AnimSequence.h"
+#include "MMOComponent/CharAttributeComponent.h"
+#include "HUD/MMOHUD.h"
+#include "HUD/MMOOverlay.h"
 
 // Sets default values
 AGameCharacter::AGameCharacter()
@@ -81,6 +84,20 @@ AGameCharacter::AGameCharacter()
 		UE_LOG(LogTemp, Error, TEXT("Failed to load monster class."));
 	}
 
+
+
+
+	// 캐릭터 속성 컴포넌트 생성
+	CharAttributeComponent = CreateDefaultSubobject<UCharAttributeComponent>(TEXT("CharAttribute"));
+	CharAttributeComponent->Init(100, FString("KingWangJJang"), 1);
+
+}
+
+// Called when the game starts or when spawned
+void AGameCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+
 	PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
 	if (PlayerController)
 	{
@@ -88,12 +105,24 @@ AGameCharacter::AGameCharacter()
 		UE_LOG(LogTemp, Warning, TEXT("PlayerController->bShowMouseCursor"));
 		PlayerController->bShowMouseCursor = true;
 	}
-}
 
-// Called when the game starts or when spawned
-void AGameCharacter::BeginPlay()
-{
-	Super::BeginPlay();
+	if (PlayerController)
+	{
+		AMMOHUD* MMOHUD = Cast<AMMOHUD>(PlayerController->GetHUD());
+		if (MMOHUD)
+		{
+			MMOOverlay = MMOHUD->GetMMOOverlay();
+			if (MMOOverlay)
+			{
+				MMOOverlay->SetHealthBarPercent(CharAttributeComponent->GetHelathPercent());
+				MMOOverlay->SetStaminaBarPercent(0.5);
+				MMOOverlay->SetExperienceBarPercent(0.25);
+				MMOOverlay->SetLevelTextBlock(50);
+
+			}
+
+		}
+	}
 
 
 }
@@ -121,6 +150,8 @@ void AGameCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	PlayerInputComponent->BindAction("MonsterAttack", IE_Pressed, this, &AGameCharacter::MonsterAttack);
 	PlayerInputComponent->BindAction("Death", IE_Pressed, this, &AGameCharacter::Death);
 	PlayerInputComponent->BindAction("MonsterDeath", IE_Pressed, this, &AGameCharacter::MonsterDeath);
+	PlayerInputComponent->BindAction("MonsterDamage", IE_Pressed, this, &AGameCharacter::MonsterDamage);
+	PlayerInputComponent->BindAction("DamageTest", IE_Pressed, this, &AGameCharacter::DamageTest);
 
 }
 
@@ -175,6 +206,11 @@ void AGameCharacter::LookUp(float Value)
 
 void AGameCharacter::Attack()
 {
+	if(MovingState == EMovingState::EMS_Dead)
+	{
+		return;
+	}
+
 	if (ActionState == EActionState::EAS_Unoccupied)
 	{
 		StopMove();
@@ -233,6 +269,14 @@ void AGameCharacter::MonsterDeath()
 	}
 }
 
+void AGameCharacter::MonsterDamage()
+{
+	if (SpawnedMonster != nullptr)
+	{
+		SpawnedMonster->GetHit(20);
+	}
+}
+
 void AGameCharacter::PlayAttackMontage()
 {
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
@@ -265,6 +309,11 @@ void AGameCharacter::PlayAttackMontage()
 
 void AGameCharacter::MoveToDestination(float DeltaTime)
 {
+	if(MovingState == EMovingState::EMS_Dead)
+	{
+		return;
+	}
+
 	if (!Destination.IsZero())
 	{
 		MovingState = EMovingState::EMS_Move;
@@ -286,6 +335,7 @@ void AGameCharacter::MoveToDestination(float DeltaTime)
 
 			// 이동하는 방향으로 부드러운 회전 설정
 			FRotator CurrentRotation = GetActorRotation();
+
 			FRotator TargetRotation = Direction.Rotation();
 			FRotator NewRotation = FMath::Lerp(CurrentRotation, TargetRotation, DeltaTime * 5.0f); // 회전 속도 조정 가능
 			SetActorRotation(NewRotation);
@@ -315,5 +365,31 @@ void AGameCharacter::Death()
 	if (AnimInstance && DeathMontage)
 	{
 		AnimInstance->Montage_Play(DeathMontage);
+	}
+	MovingState = EMovingState::EMS_Dead;
+
+	UE_LOG(LogTemp, Warning, TEXT("Character is Dead"));
+}
+
+void AGameCharacter::DamageTest()
+{
+	GetHit(20);
+}
+
+void AGameCharacter::GetHit(int damage)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Character Hit"));
+
+	CharAttributeComponent->GetDamage(damage);
+	if (MMOOverlay && CharAttributeComponent)
+	{
+		MMOOverlay->SetHealthBarPercent(CharAttributeComponent->GetHelathPercent());
+	}
+
+	/*HUDCharacterComponent->SetHealthPercent(MonsAttributeComponent->GetHelathPercent());
+	*/
+	if (!CharAttributeComponent->IsAlive())
+	{
+		Death();
 	}
 }

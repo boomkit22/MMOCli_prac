@@ -18,6 +18,7 @@ enum class EActionState : uint8
 UENUM(BlueprintType)
 enum class EMovingState : uint8
 {
+	EMS_Dead UMETA(DisplayName = "Dead"),
 	EMS_Move UMETA(DisplayName = "Move"),
 	EMS_Idle UMETA(DisplayName = "Idle"),
 };

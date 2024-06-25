@@ -32,3 +32,39 @@ void UCharAttributeComponent::TickComponent(float DeltaTime, ELevelTick TickType
 	// ...
 }
 
+void UCharAttributeComponent::Init(int32 health, FString charName, int32 level)
+{
+	this->Health = health;
+	this->MaxHealth = health;
+	this->CharName = charName;
+	this->Level = level;
+}
+
+bool UCharAttributeComponent::IsAlive()
+{
+	if (Health > 0)
+	{
+		return true;
+	}
+
+	return false;
+}
+
+float UCharAttributeComponent::GetHelathPercent()
+{
+	if (MaxHealth > 0)
+	{
+		return Health / (float)MaxHealth;
+	}
+	return 0.0f;
+}
+
+void UCharAttributeComponent::GetDamage(int damage)
+{
+	Health -= damage;
+	if (Health < 0)
+	{
+		Health = 0;
+	}
+}
+

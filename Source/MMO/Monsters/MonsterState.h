@@ -3,6 +3,7 @@
 UENUM(BlueprintType)
 enum class EMonsterState : uint8
 {
-	EAS_Move UMETA(DisplayName = "Move"),
-	EAS_Idle UMETA(DisplayName = "Idle"),
+	EMS_Dead UMETA(DisplayName = "Dead"),
+	EMS_Move UMETA(DisplayName = "Move"),
+	EMS_Idle UMETA(DisplayName = "Idle"),
 };

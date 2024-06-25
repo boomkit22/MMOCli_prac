@@ -30,6 +30,7 @@ AMonster::AMonster()
     }
 
     MonsAttributeComponent = CreateDefaultSubobject<UMonsAttributeComponent>(TEXT("MonsAttributeComponent"));
+    MonsAttributeComponent->Init(100, FString("Guardian"));
 
     HUDMonsterComponent = CreateDefaultSubobject<UHUDMonsterComponent>(TEXT("HUDMonsterComponent"));
     HUDMonsterComponent->SetupAttachment(RootComponent);
@@ -45,8 +46,8 @@ void AMonster::BeginPlay()
     if(HUDMonsterComponent)
 	{
         UE_LOG(LogTemp, Error, TEXT("Set Monster HUD Component."));
-        HUDMonsterComponent->SetMonsterName(FString("guardian1"));
-        HUDMonsterComponent->SetHealthPercent(0.2f);
+        HUDMonsterComponent->SetMonsterName(MonsAttributeComponent->GetMonsterName());
+        HUDMonsterComponent->SetHealthPercent(MonsAttributeComponent->GetHelathPercent());
     }
     else {
         UE_LOG(LogTemp, Error, TEXT("Monster HUD Component is nullptr."));
@@ -96,9 +97,14 @@ void AMonster::SetDestination()
 
 void AMonster::MoveToDestination(float DeltaTime)
 {
+    if(MonsterState == EMonsterState::EMS_Dead)
+	{
+		return;
+	}
+
     if (!Destination.IsZero())
     {
-        MonsterState = EMonsterState::EAS_Move;
+        MonsterState = EMonsterState::EMS_Move;
         FVector CurrentLocation = GetActorLocation();
         FVector Direction = (Destination - CurrentLocation).GetSafeNormal();
         float Distance = FVector::Dist(Destination, CurrentLocation);
@@ -127,7 +133,7 @@ void AMonster::MoveToDestination(float DeltaTime)
         }
     }
     else {
-        MonsterState = EMonsterState::EAS_Idle;
+        MonsterState = EMonsterState::EMS_Idle;
     }
 }
 
@@ -155,5 +161,22 @@ void AMonster::Death()
     else {
         UE_LOG(LogTemp, Warning, TEXT("Death error"));
     }
+    MonsterState = EMonsterState::EMS_Dead;
+    if(MonsterState == EMonsterState::EMS_Dead)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("DEad"));
+	}
+    SetLifeSpan(5.0f);
+}
+
+void AMonster::GetHit(int damage)
+{
+    UE_LOG(LogTemp, Warning, TEXT("Monster Hit"));
+    MonsAttributeComponent->GetDamage(damage);
+    HUDMonsterComponent->SetHealthPercent(MonsAttributeComponent->GetHelathPercent());
+    if (!MonsAttributeComponent->IsAlive())
+	{
+        Death();
+	}
 }
 

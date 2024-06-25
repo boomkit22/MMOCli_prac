@@ -26,5 +26,5 @@ public:
 
 	
 	UPROPERTY(BlueprintReadOnly, Category = Movement)
-	EMonsterState MonsterState = EMonsterState::EAS_Idle;
+	EMonsterState MonsterState = EMonsterState::EMS_Idle;
 };
