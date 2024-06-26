@@ -64,4 +64,6 @@ private:
 	FTSTicker::FDelegateHandle TickDelegateHandle;
 	bool Tick(float DeltaTime);
 
+public:
+	static UMMOGameInstance* GetInstance();
 };

@@ -11,21 +11,29 @@ SendThread::SendThread(TSharedPtr<ClientSession> clientSession) : Session(client
 	Socket = clientSession->Socket;
 	SendBuffer = &(clientSession->SendBuffer);
 	Thread = FRunnableThread::Create(this, TEXT("SendThread"));
+
 }
+
 
 SendThread::~SendThread()
 {
-
+	if (Thread)
+	{
+		Thread->WaitForCompletion();
+		delete Thread;
+		Thread = nullptr;
+	}
 }
 
 bool SendThread::Init()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, FString::Printf(TEXT("SendThread::Init()")));
-	return false;
+	return true;
 }
 
 uint32 SendThread::Run()
 {
+	UE_LOG(LogTemp, Warning, TEXT("Send Thread Run"));
 	while (!bShutdown)
 	{
 		int directDequeueSize = SendBuffer->GetDirectDequeueSize();
@@ -39,7 +47,6 @@ uint32 SendThread::Run()
 		bool succeed = false;
 		if (Socket)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Send"));
 			succeed = Socket->Send((uint8*)fronPtr, directDequeueSize, byteSent);
 		}
 		else
@@ -47,7 +54,6 @@ uint32 SendThread::Run()
 			UE_LOG(LogTemp, Error, TEXT("Socket = nullptr"));
 			if (TSharedPtr<ClientSession> session = Session.Pin())
 			{
-				StopThread();
 				session->NetworkDisconnect();
 				break;
 			}
@@ -60,7 +66,6 @@ uint32 SendThread::Run()
 
 			if (TSharedPtr<ClientSession> session = Session.Pin())
 			{
-				StopThread();
 				session->NetworkDisconnect();
 				break;
 			}
@@ -76,6 +81,7 @@ uint32 SendThread::Run()
 		SendBuffer->MoveFront(byteSent);
 	}
 
+	UE_LOG(LogTemp, Error, TEXT("SendThread::Run() bShutdown"));
 	return 0;
 }
 
@@ -87,5 +93,4 @@ void SendThread::StopThread()
 {
 	// close socket 까지 해줘야겠는데
 	bShutdown = true;
-	Thread->WaitForCompletion();
 }

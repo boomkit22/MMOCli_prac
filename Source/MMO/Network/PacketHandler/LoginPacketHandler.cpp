@@ -12,6 +12,7 @@ void LoginPacketHandler::HandlePacket(CPacket* packet)
 	int16 packetType;
 	*packet >> packetType;
 
+
 	switch (packetType)
 	{
 	case PACKET_SC_LOGIN_RES_LOGIN:
@@ -27,6 +28,7 @@ void LoginPacketHandler::HandlePacket(CPacket* packet)
 	break;
 
 	default:
+		UE_LOG(LogTemp, Warning, TEXT("PacketType default"));
 		break;
 
 	}
@@ -38,16 +40,23 @@ void LoginPacketHandler::HandleLogin(CPacket* packet)
 {
 	//TODO : Login응답받은거니까
 
-	if (auto* GameInstance = Cast<UMMOGameInstance>(GWorld->GetGameInstance()))
+
+
+	if (UMMOGameInstance* GameInstance = UMMOGameInstance::GetInstance())
 	{
 		GameInstance->HandleLogin(packet);
+	} else {
+		UE_LOG(LogTemp, Warning, TEXT("Handle Login GAme instacne null"));
 	}
 }
 
 void LoginPacketHandler::HandleEcho(CPacket* packet)
 {
-	if (auto* GameInstance = Cast<UMMOGameInstance>(GWorld->GetGameInstance()))
+	if (UMMOGameInstance* GameInstance = UMMOGameInstance::GetInstance())
 	{
 		GameInstance->HandleEcho(packet);
+	}
+	else {
+		UE_LOG(LogTemp, Warning, TEXT("HHandleEcho Game instacne null"));
 	}
 }

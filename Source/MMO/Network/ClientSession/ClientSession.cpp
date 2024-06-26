@@ -10,8 +10,6 @@ ClientSession::ClientSession()
 {
 }
 
-
-
 ClientSession::~ClientSession()
 {
 }
@@ -19,7 +17,7 @@ ClientSession::~ClientSession()
 bool ClientSession::Connect(FString IPText, int16 Port)
 {
 	//이렇게하면 Reconnect까지 일단 가능할것같은데
-	ClearSession();
+	Disconnect();
 
 	//저장해 둘 필요는 있으려나
 	_IpText = IPText;
@@ -34,7 +32,7 @@ bool ClientSession::Connect(FString IPText, int16 Port)
 	TSharedRef<FInternetAddr> InternetAddr = ISocketSubsystem::Get(PLATFORM_SOCKETSUBSYSTEM)->CreateInternetAddr();
 	InternetAddr->SetIp(Ip.Value);
 	InternetAddr->SetPort(Port);
-	Connected = Socket->Connect(*InternetAddr);
+	bool connectSuccess = Socket->Connect(*InternetAddr);
 
 	//Connect 싪패했으면?
 	/*
@@ -42,12 +40,13 @@ bool ClientSession::Connect(FString IPText, int16 Port)
 	* 게임 서버 Connect 실패? 서버 접속 에러 메시지
 	* 채팅 서버 Connect 실패? 채팅보내는거 무시하면되나
 	*/
-	if (!Connected)
+	if (!connectSuccess)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Connect Failed")));
 		return false;
 	}
 
+	Connected = true;
 	StartNetwork();
 	return true;
 }
@@ -56,15 +55,15 @@ bool ClientSession::Connect(FString IPText, int16 Port)
 
 void ClientSession::StartNetwork()
 {
-	RecvWorker = MakeShared<RecvThread>(AsShared());
-	SendWorker = MakeShared<SendThread>(AsShared());
+	RecvWorker = new RecvThread(AsShared());
+	SendWorker = new SendThread(AsShared());
+
 }
 
 
 void ClientSession::SendPacket(CPacket* packet)
 {
 	packet->Encode(0x77);
-	UE_LOG(LogTemp, Warning, TEXT("Enqueue"));
 	int enqueueVal = SendBuffer.Enqueue(packet->GetBufferPtr(), packet->GetDataSize());
 	CPacket::Free(packet);
 }
@@ -73,13 +72,18 @@ void ClientSession::SendPacket(CPacket* packet)
 
 void ClientSession::Disconnect()
 {
-	ClearSession();
+	if (Connected.Exchange(false))
+	{
+		ClearSession();
+	}
 }
 
 
 
 void ClientSession::ClearSession()
 {
+	UE_LOG(LogTemp, Warning, TEXT("ClearSession"));
+
 	if (Socket)
 	{
 		Socket->Close();
@@ -87,15 +91,27 @@ void ClientSession::ClearSession()
 		Socket = nullptr;
 	}
 
-	if (RecvWorker.IsValid())
+	if (RecvWorker)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("RecvWorker Stop"));
+		if (RecvWorker == nullptr)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("RecvWorker is nullptr"));
+		}
+
+		UE_LOG(LogTemp, Warning, TEXT("before stop"));
 		RecvWorker->StopThread();
+		delete RecvWorker;
 		RecvWorker = nullptr;
+
+		UE_LOG(LogTemp, Warning, TEXT("after stop"));
 	}
 
-	if (SendWorker.IsValid())
+	if (SendWorker)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("SendWorker Stop"));
 		SendWorker->StopThread();
+		delete SendWorker;
 		SendWorker = nullptr;
 	}
 
@@ -114,9 +130,8 @@ void ClientSession::ClearSession()
 
 void ClientSession::NetworkDisconnect()
 {
-	if (Connected)
+	if (Connected.Exchange(false))
 	{
-		Connected = false;
 		ClearSession();
 		OnDisconnect();
 	}

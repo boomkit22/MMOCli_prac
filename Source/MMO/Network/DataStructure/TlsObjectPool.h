@@ -400,7 +400,7 @@ public:
 		FPlatformAtomics::InterlockedIncrement(&_totalUseCount);
 
 		//int currentThreadId = GetCurrentThreadId();
-		_objectPoolMonitor[_tlsLogIndex] = { _threadId, _size, _mallocNumPerPool };
+		//_objectPoolMonitor[_tlsLogIndex] = { _threadId, _size, _mallocNumPerPool };
 		/*st_BLOCK_NODE* freeNode = _freeNode;*/
 		if (_freeNode != nullptr)
 		{
@@ -459,7 +459,7 @@ public:
 		{
 			Init();
 		}
-		_objectPoolMonitor[_tlsLogIndex] = { _threadId, _size, _mallocNumPerPool };
+		//_objectPoolMonitor[_tlsLogIndex] = { _threadId, _size, _mallocNumPerPool };
 		FPlatformAtomics::InterlockedDecrement(&_totalUseCount);
 		//_size++;
 		if (size <= _maxPoolSize)

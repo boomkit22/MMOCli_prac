@@ -23,7 +23,6 @@ public:
 	virtual void Exit() override;
 
 	void StopThread();
-
 private:
 	bool bShutdown = false;
 

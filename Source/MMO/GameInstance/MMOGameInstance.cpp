@@ -9,7 +9,7 @@
 #include "PacketMaker/LoginPacketMaker.h"
 #include "PacketMaker/GamePacketMaker.h"
 #include "PacketMaker/ChattingPacketMaker.h"
-
+#include "Editor.h"
 
 void UMMOGameInstance::Init()
 {
@@ -38,10 +38,14 @@ void UMMOGameInstance::Shutdown()
 	Super::Shutdown();
 	FTSTicker::GetCoreTicker().RemoveTicker(TickDelegateHandle);
 
+	UE_LOG(LogTemp, Warning, TEXT("GameInstacne Shutdown"));
 	_GameServerSession->Disconnect();
 	_LoginServerSession->Disconnect();
 	_ChattingServerSession->Disconnect();
 
+	_GameServerSession.Reset();
+	_LoginServerSession.Reset();
+	_ChattingServerSession.Reset();
 
 }
 
@@ -89,7 +93,6 @@ void UMMOGameInstance::SendPacket_LoginServer(CPacket* packet)
 {
 	if (_LoginServerSession)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("SendPacket_LoginServer"));
 		_LoginServerSession->SendPacket(packet);
 	}
 }
@@ -166,6 +169,8 @@ bool UMMOGameInstance::Tick(float DeltaTime)
 
 	if (_LoginServerSession->IsConnecetd())
 	{
+		//UE_LOG(LogTemp, Warning, TEXT("Tick"));
+		//_LoginServerSession->HandleRecvPacket();
 		_LoginServerSession->HandleRecvPacket();
 	}
 
@@ -174,5 +179,30 @@ bool UMMOGameInstance::Tick(float DeltaTime)
 		_ChattingServerSession->HandleRecvPacket();
 	}
 	return true;
+}
+
+UMMOGameInstance* UMMOGameInstance::GetInstance()
+{
+#if WITH_EDITOR
+	UWorld* World = GEditor->PlayWorld;
+	if(World)
+	{
+		UGameInstance* g = World->GetGameInstance();
+
+		if (auto* GameInstance = Cast<UMMOGameInstance>(World->GetGameInstance()))
+		{
+			return GameInstance;
+		}
+	}
+	return nullptr;
+#endif
+
+	if(auto* GameInstance = Cast<UMMOGameInstance>(GWorld->GetGameInstance()))
+	{
+		return GameInstance;
+	}
+
+
+	return nullptr;
 }
 

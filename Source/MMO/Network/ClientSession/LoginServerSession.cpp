@@ -17,8 +17,8 @@ void LoginServerSession::HandleRecvPacket()
 	for (;;)
 	{
 		CPacket* packet = nullptr;
-		bool bNotEmpty = RecvPacketQueue.Dequeue(packet);
-		if (!bNotEmpty)
+		bool Succeed = RecvPacketQueue.Dequeue(packet);
+		if (!Succeed)
 		{
 			break;
 		}

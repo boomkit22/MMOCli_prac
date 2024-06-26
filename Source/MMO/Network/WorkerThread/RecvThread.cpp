@@ -13,12 +13,11 @@ RecvThread::RecvThread(TSharedPtr<ClientSession> clientSession) : Session(client
 {
 	Socket = clientSession->Socket;
 	Thread = FRunnableThread::Create(this, TEXT("RecvThread"));
-
 }
 
 RecvThread::~RecvThread()
 {
-
+	UE_LOG(LogTemp, Warning, TEXT("RecvThread::~RecvThread()"));
 }
 
 bool RecvThread::Init()
@@ -29,6 +28,7 @@ bool RecvThread::Init()
 
 uint32 RecvThread::Run()
 {
+	UE_LOG(LogTemp, Warning, TEXT("Recv Thread Run"));
 	while (!bShutdown)
 	{
 		int directEnqueueSize = recvBuffer.GetDirectEnqueueSize();
@@ -52,7 +52,6 @@ uint32 RecvThread::Run()
 			UE_LOG(LogTemp, Error, TEXT("Socket = nullptr"));
 			if (TSharedPtr<ClientSession> session = Session.Pin())
 			{
-				StopThread();
 				session->NetworkDisconnect();
 				break;
 			}
@@ -64,12 +63,11 @@ uint32 RecvThread::Run()
 			UE_LOG(LogTemp, Error, TEXT("Network Disconnect"));
 			if (TSharedPtr<ClientSession> session = Session.Pin())
 			{
-				StopThread();
 				session->NetworkDisconnect();
 				break;
 			}
 		} else {
-
+			int moveVal = recvBuffer.MoveRear(recvVal);
 			while (true)
 			{
 				if (recvBuffer.GetUseSize() < sizeof(NetHeader))
@@ -108,17 +106,25 @@ uint32 RecvThread::Run()
 			}
 		}
 	}
-	return 0;
+	UE_LOG(LogTemp, Error, TEXT("RecvThread::Run() bShutdown"));
+	return true;
 }
 
 void RecvThread::Exit()
 {
+	UE_LOG(LogTemp, Warning, TEXT("RecvThread::Exit()"));
+
 }
 
 void RecvThread::StopThread()
 {
 	recvBuffer.ClearBuffer();
 	bShutdown  = true;
-	Thread->WaitForCompletion();
-
+	if (Thread)
+	{
+		Thread->WaitForCompletion();
+		delete Thread;
+		Thread = nullptr;
+	}
 }
+
