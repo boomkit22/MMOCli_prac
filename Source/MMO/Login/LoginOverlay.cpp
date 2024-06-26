@@ -32,12 +32,7 @@ FReply ULoginOverlay::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEve
     return FReply::Unhandled();
 }
 
-bool ULoginOverlay::CallServerLoginFunction(const FString& UserName, const FString& Password)
-{
-    // 실제 서버 로그인 처리 로직을 여기에 구현
-// 예제에서는 단순히 성공을 반환
-    return true;
-}
+
 
 void ULoginOverlay::OnLoginButtonClicked()
 {
@@ -66,4 +61,11 @@ void ULoginOverlay::OnLoginSuccess()
 {
     UE_LOG(LogTemp, Warning, TEXT("OnLoginSuccess"))
     UGameplayStatics::OpenLevel(this, TEXT("/Game/Maps/DefaultMap"), TRAVEL_Absolute);
+}
+
+bool ULoginOverlay::CallServerLoginFunction(const FString& UserName, const FString& Password)
+{
+    // 실제 서버 로그인 처리 로직을 여기에 구현
+// 예제에서는 단순히 성공을 반환
+    return true;
 }

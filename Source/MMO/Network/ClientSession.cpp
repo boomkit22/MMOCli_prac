@@ -10,65 +10,53 @@ ClientSession::ClientSession()
 {
 }
 
-ClientSession::ClientSession(FSocket* socket)
-{
-	Socket = socket;
-}
+
 
 ClientSession::~ClientSession()
 {
-	if (RecvWorker)
-	{
-		RecvWorker->Shutdown();
-		RecvWorker = nullptr;
-	}
-
-	if (SendWorker)
-	{
-		SendWorker->Shutdown();
-		RecvWorker = nullptr;
-	}
+	ClearSession();
 }
 
-void ClientSession::Connect()
+bool ClientSession::Connect(FString IPText, int16 Port)
 {
-	if (Socket)
-	{
-		Socket->Close();
-		ISocketSubsystem::Get(PLATFORM_SOCKETSUBSYSTEM)->DestroySocket(Socket);
-		Socket = nullptr;
-	}
+	//이렇게하면 Reconnect까지 일단 가능할것같은데
+	ClearSession();
 
+	//저장해 둘 필요는 있으려나
+	_IpText = IPText;
+	_Port = Port;
+
+	// 소켓 생성
 	Socket = ISocketSubsystem::Get(PLATFORM_SOCKETSUBSYSTEM)->CreateSocket(TEXT("Stream"), TEXT("Socket"));
+	// Connect
 	FIPv4Address Ip;
-	FIPv4Address::Parse(IpText, Ip);
-
 	TSharedRef<FInternetAddr> InternetAddr = ISocketSubsystem::Get(PLATFORM_SOCKETSUBSYSTEM)->CreateInternetAddr();
 	InternetAddr->SetIp(Ip.Value);
 	InternetAddr->SetPort(Port);
-
 	Connected = Socket->Connect(*InternetAddr);
 
-	if (Connected)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Connect Success")));
-
-		StartNetwork();
-	}
-	else
+	//Connect 싪패했으면?
+	/*
+	* 로그인서버 Connect 실패? 서버 요청 에러 메시지
+	* 게임 서버 Connect 실패? 서버 접속 에러 메시지
+	* 채팅 서버 Connect 실패? 채팅보내는거 무시하면되나
+	*/
+	if (!Connected)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Connect Failed")));
+		return false;
 	}
 
+	StartNetwork();
+	return true;
 }
+
+
 
 void ClientSession::StartNetwork()
 {
-	RecvWorker = MakeShared<RecvThread>(this, Socket);
-	SendWorker = MakeShared<SendThread>(Socket, &SendBuffer);
-
-	/*RecvWorker = new RecvThread(this, Socket);
-	SendWorker = new SendThread(Socket, &SendBuffer);*/
+	RecvWorker = MakeShared<RecvThread>(AsShared());
+	SendWorker = MakeShared<SendThread>(AsShared());
 }
 
 
@@ -81,23 +69,51 @@ void ClientSession::SendPacket(CPacket* packet)
 
 void ClientSession::Disconnect()
 {
-	if (RecvWorker)
-	{
-		RecvWorker->Shutdown();
-		RecvWorker = nullptr;
-	}
+	ClearSession();
+}
 
-	if (SendWorker)
-	{
-		SendWorker->Shutdown();
-		SendWorker = nullptr;
-	}
 
+
+void ClientSession::ClearSession()
+{
 	if (Socket)
 	{
 		Socket->Close();
 		ISocketSubsystem::Get(PLATFORM_SOCKETSUBSYSTEM)->DestroySocket(Socket);
 		Socket = nullptr;
 	}
+
+	if (RecvWorker)
+	{
+		RecvWorker->StopThread();
+		RecvWorker = nullptr;
+	}
+
+	if (SendWorker)
+	{
+		SendWorker->StopThread();
+		SendWorker = nullptr;
+	}
+
+	while (!RecvPacketQueue.IsEmpty())
+	{
+		CPacket* Packet = nullptr;
+		if (RecvPacketQueue.Dequeue(Packet))
+		{
+			CPacket::Free(Packet);
+		}
+	}
+
+	SendBuffer.ClearBuffer();
 }
 
+
+void ClientSession::NetworkDisconnect()
+{
+	if (Connected)
+	{
+		Connected = false;
+		ClearSession();
+		OnDisconnect();
+	}
+}

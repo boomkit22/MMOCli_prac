@@ -9,30 +9,26 @@
  */
 class NetworkRingBuffer;
 class FSocket;
+class ClientSession;
 
 class MMO_API SendThread : public FRunnable
 {
 public:
 	//TODO: 이건 그냥 ClientSession 생성자로 받는게 좋겠는데
-	SendThread(FSocket* socket, NetworkRingBuffer* sendBuffer)
-	{
-		Socket = socket;
-		SendBuffer = sendBuffer;
-		Thread = FRunnableThread::Create(this, TEXT("SendThread"));
-
-	}
+	SendThread(TSharedPtr<ClientSession> clientSession);
 	~SendThread();
 
 	virtual bool Init() override;
 	virtual uint32 Run() override;
 	virtual void Exit() override;
 
-	void Shutdown();
+	void StopThread();
 
 private:
 	bool bShutdown = false;
 
 private:
+	TWeakPtr<ClientSession> Session;
 	FSocket* Socket = nullptr;
 	FRunnableThread* Thread = nullptr;
 	NetworkRingBuffer* SendBuffer = nullptr;

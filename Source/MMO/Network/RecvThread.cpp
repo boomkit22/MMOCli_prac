@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ // Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Network/RecvThread.h"
@@ -7,11 +7,13 @@
 #include "Network/ClientSession.h"
 #include "GenericPlatform/GenericPlatformProcess.h"
 
-RecvThread::RecvThread(ClientSession* s, FSocket* socket)
+
+
+RecvThread::RecvThread(TSharedPtr<ClientSession> clientSession) : Session(clientSession)
 {
-	Socket = socket;
-	Session = s;
+	Socket = clientSession->Socket;
 	Thread = FRunnableThread::Create(this, TEXT("RecvThread"));
+
 }
 
 RecvThread::~RecvThread()
@@ -38,12 +40,34 @@ uint32 RecvThread::Run()
 
 		char* rearPtr = recvBuffer.GetRearPtr();
 		int recvVal = 0;
-		bool succeed = Socket->Recv((uint8*)rearPtr, directEnqueueSize, recvVal);
+
+		bool succeed = false;
+		
+		if (Socket)
+		{
+			succeed = Socket->Recv((uint8*)rearPtr, directEnqueueSize, recvVal);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("Socket = nullptr"));
+			if (TSharedPtr<ClientSession> session = Session.Pin())
+			{
+				StopThread();
+				session->NetworkDisconnect();
+				break;
+			}
+		}
 
 		if (!succeed)
 		{
 			// 게임종료하고 로그인씬 가는게 맞는데
-			UE_LOG(LogTemp, Error, TEXT("RecvThread::Run() !succeed"));
+			UE_LOG(LogTemp, Error, TEXT("Network Disconnect"));
+			if (TSharedPtr<ClientSession> session = Session.Pin())
+			{
+				StopThread();
+				session->NetworkDisconnect();
+				break;
+			}
 		} else {
 
 			while (true)
@@ -77,7 +101,10 @@ uint32 RecvThread::Run()
 					UE_LOG(LogTemp, Error, TEXT("RecvThread::Run() !bDecoedSucceed"));
 				}
 
-				Session->RecvPacketQueue.Enqueue(packet);
+				if (TSharedPtr<ClientSession> session = Session.Pin())
+				{
+					session->RecvPacketQueue.Enqueue(packet);
+				}
 			}
 		}
 	}
@@ -88,7 +115,9 @@ void RecvThread::Exit()
 {
 }
 
-void RecvThread::Shutdown()
+void RecvThread::StopThread()
 {
+	recvBuffer.ClearBuffer();
 	bShutdown  = true;
+
 }

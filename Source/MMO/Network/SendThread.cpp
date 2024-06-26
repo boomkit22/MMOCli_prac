@@ -4,9 +4,18 @@
 #include "Network/SendThread.h"
 #include "Sockets.h"
 #include "NetworkRingBuffer.h"
+#include "Network/ClientSession.h"
+
+SendThread::SendThread(TSharedPtr<ClientSession> clientSession) : Session(clientSession)
+{
+	Socket = clientSession->Socket;
+	SendBuffer = &(clientSession->SendBuffer);
+	Thread = FRunnableThread::Create(this, TEXT("SendThread"));
+}
 
 SendThread::~SendThread()
 {
+
 }
 
 bool SendThread::Init()
@@ -27,12 +36,37 @@ uint32 SendThread::Run()
 
 		char* fronPtr = SendBuffer->GetFrontPtr();
 		int byteSent = 0;
-		bool succeed = Socket->Send((uint8*)fronPtr, directDequeueSize, byteSent);
+		bool succeed = false;
+		if (Socket)
+		{
+			succeed = Socket->Send((uint8*)fronPtr, directDequeueSize, byteSent);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("Socket = nullptr"));
+			if (TSharedPtr<ClientSession> session = Session.Pin())
+			{
+				StopThread();
+				session->NetworkDisconnect();
+				break;
+			}
+		}
+
 		if (!succeed)
 		{
 			//Send 실패하면 연결끊어야하지않나
-			UE_LOG(LogTemp, Error, TEXT("SendThread::Run() !succeed"));
+			UE_LOG(LogTemp, Error, TEXT("Network Disconnect"));
+
+			if (TSharedPtr<ClientSession> session = Session.Pin())
+			{
+				StopThread();
+				session->NetworkDisconnect();
+				break;
+			}
+
 		}
+
+
 		if (directDequeueSize != byteSent)
 		{
 			//이것도 연결 끊어야하고
@@ -48,7 +82,7 @@ void SendThread::Exit()
 {
 }
 
-void SendThread::Shutdown()
+void SendThread::StopThread()
 {
 	// close socket 까지 해줘야겠는데
 	bShutdown = true;

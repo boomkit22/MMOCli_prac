@@ -11,35 +11,45 @@
 /**
  * 
  */
-class MMO_API ClientSession
+class MMO_API ClientSession : public TSharedFromThis<ClientSession>
 {
+	friend class RecvThread;
+	friend class SendThread;
+
 public:
 	ClientSession();
-	ClientSession(FSocket* socket);
-	~ClientSession();
+	virtual ~ClientSession();
 
-	virtual void Connect();
-	virtual void StartNetwork();
-	virtual void SendPacket(CPacket* packet);
-	virtual void Disconnect();
+	bool Connect(FString IPText, int16 port);
+
+	void SendPacket(CPacket* packet);
+	void Disconnect();
 	virtual void HandleRecvPacket() = 0;
+	virtual void OnDisconnect() = 0;
 
-public:
+protected:
+	TQueue<CPacket*> RecvPacketQueue;
+
+private:
 	//수신 스레드
 	TSharedPtr<RecvThread> RecvWorker;
 
 	//송신 스레드
 	TSharedPtr<SendThread> SendWorker;
 	//SendThread* SendWorker = nullptr;
-	
 	FSocket* Socket;
 	//TQueue는 single processor single consumer에서 안전하게 되어있다.
 	//이 세션의 RecvPacketQueue를 메인쓰레드에서 접근해서 꺼내가서 처리해야한다.
-	TQueue<CPacket*> RecvPacketQueue;
 	NetworkRingBuffer SendBuffer;
+	
+	//연결할 IP, Port
+	FString _IpText;
+	int16 _Port;
 
-	FString IpText;
-	int16 Port;
+	TAtomic<bool> Connected = false;
 
-	bool Connected;
+private:
+	void StartNetwork();
+	void ClearSession();
+	void NetworkDisconnect();
 };

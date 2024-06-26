@@ -14,7 +14,8 @@ class ClientSession;
 class MMO_API RecvThread : public FRunnable
 {
 public:
-	RecvThread(ClientSession* s, FSocket* socket);
+	RecvThread(TSharedPtr<ClientSession> clientSession);
+
 	~RecvThread();
 
 	// FRunnable을(를) 통해 상속됨
@@ -22,13 +23,13 @@ public:
 	virtual uint32 Run() override;
 	virtual void Exit() override;
 
-	void Shutdown();
+	void StopThread();
 
 private:
 	bool bShutdown = false;
 	FRunnableThread* Thread = nullptr;
 	FSocket* Socket = nullptr;
-	ClientSession* Session = nullptr;
+	TWeakPtr<ClientSession> Session;
 	NetworkRingBuffer recvBuffer;
 	
 };

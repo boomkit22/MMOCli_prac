@@ -31,17 +31,17 @@ void UMMOGameInstance::Shutdown()
 
 void UMMOGameInstance::ConnectGameServer()
 {
-	_GameServerSession->Connect();
+	_GameServerSession->Connect(FString("127.0.0.1"), 10300);
 }
 
 void UMMOGameInstance::ConnectLoginServer()
 {
-	_LoginServerSession->Connect();
+	_LoginServerSession->Connect(FString("127.0.0.1"), 10301);
 }
 
 void UMMOGameInstance::ConnectChattingServer()
 {
-	_ChattingServerSession->Connect();
+	_ChattingServerSession->Connect(FString("127.0.0.1"), 10302);
 }
 
 
