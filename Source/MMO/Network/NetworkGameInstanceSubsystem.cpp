@@ -17,7 +17,7 @@ void UNetworkGameInstanceSubsystem::Initialize(FSubsystemCollectionBase& Collect
 bool UNetworkGameInstanceSubsystem::Tick(float DeltaTime)
 {
 	//이걸로 로그인 틱 테스트할가
-	UE_LOG(LogTemp, Warning, TEXT("UNetworkGameInstanceSubsystem::Tick"));
+	//UE_LOG(LogTemp, Warning, TEXT("UNetworkGameInstanceSubsystem::Tick"));
 
 	
 	return true; // return true to keep the ticker running, false to stop

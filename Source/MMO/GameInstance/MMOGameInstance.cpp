@@ -3,9 +3,13 @@
 
 #include "GameInstance/MMOGameInstance.h"
 #include "Network/NetworkGameInstanceSubsystem.h"
-#include "Network/GameServerSession.h"
-#include "Network/LoginServerSession.h"
-#include "Network/ChattingServerSession.h"
+#include "ClientSession/GameServerSession.h"
+#include "ClientSession/LoginServerSession.h"
+#include "ClientSession/ChattingServerSession.h"
+#include "PacketMaker/LoginPacketMaker.h"
+#include "PacketMaker/GamePacketMaker.h"
+#include "PacketMaker/ChattingPacketMaker.h"
+
 
 void UMMOGameInstance::Init()
 {
@@ -21,28 +25,56 @@ void UMMOGameInstance::Init()
 	}
 	
 	//TODO: session 생성
+	_GameServerSession = MakeShared<GameServerSession>();
+	_LoginServerSession = MakeShared<LoginServerSession>();
+	_ChattingServerSession = MakeShared<ChattingServerSession>();
 
+	TickDelegateHandle = FTSTicker::GetCoreTicker().AddTicker(FTickerDelegate::CreateUObject(this, &UMMOGameInstance::Tick));
 }
 
 
 void UMMOGameInstance::Shutdown()
 {
+	Super::Shutdown();
+	FTSTicker::GetCoreTicker().RemoveTicker(TickDelegateHandle);
+
+	_GameServerSession->Disconnect();
+	_LoginServerSession->Disconnect();
+	_ChattingServerSession->Disconnect();
+
+
 }
 
-void UMMOGameInstance::ConnectGameServer()
+bool UMMOGameInstance::ConnectGameServer()
 {
-	_GameServerSession->Connect(FString("127.0.0.1"), 10300);
+	return _GameServerSession->Connect(FString("127.0.0.1"), 10300);
 }
 
-void UMMOGameInstance::ConnectLoginServer()
+bool UMMOGameInstance::ConnectLoginServer()
 {
-	_LoginServerSession->Connect(FString("127.0.0.1"), 10301);
+	return _LoginServerSession->Connect(FString("127.0.0.1"), 10301);
 }
 
-void UMMOGameInstance::ConnectChattingServer()
+bool UMMOGameInstance::ConnectChattingServer()
 {
-	_ChattingServerSession->Connect(FString("127.0.0.1"), 10302);
+	return _ChattingServerSession->Connect(FString("127.0.0.1"), 10302);
 }
+
+void UMMOGameInstance::DisconnectGameServer()
+{
+	_GameServerSession->Disconnect();;
+}
+
+void UMMOGameInstance::DisconnectLoginServer()
+{
+	_LoginServerSession->Disconnect();
+}
+
+void UMMOGameInstance::DisconnectChattingServer()
+{
+	_ChattingServerSession->Disconnect();
+}
+
 
 
 void UMMOGameInstance::SendPacket_GameServer(CPacket* packet)
@@ -57,6 +89,7 @@ void UMMOGameInstance::SendPacket_LoginServer(CPacket* packet)
 {
 	if (_LoginServerSession)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("SendPacket_LoginServer"));
 		_LoginServerSession->SendPacket(packet);
 	}
 }
@@ -94,5 +127,52 @@ void UMMOGameInstance::HandleLogin(CPacket* packet)
 		}
 	}
 	*/
+}
+
+void UMMOGameInstance::HandleEcho(CPacket* packet)
+{
+	//TODO : 다시 패킷 보내기
+	//TODO: log찍기
+	static int colorIndex = 0;
+	colorIndex++;
+	FColor color;
+	if (colorIndex % 3 == 0)
+	{
+		color = FColor::Red;
+	}
+	else if (colorIndex % 3 == 1)
+	{
+		color = FColor::Green;
+	}
+	else if (colorIndex % 3 == 2)
+	{
+		color = FColor::Blue;
+	}
+
+
+	GEngine->AddOnScreenDebugMessage(1, 1.f, color, FString::Printf(TEXT("EchoReceieved")));
+
+	CPacket* echoPacket = CPacket::Alloc();
+	LoginPacketMaker::MP_CS_REQ_ECHO(echoPacket);
+	SendPacket_LoginServer(echoPacket);
+}
+
+bool UMMOGameInstance::Tick(float DeltaTime)
+{
+	if (_GameServerSession->IsConnecetd())
+	{
+		_GameServerSession->HandleRecvPacket();
+	}
+
+	if (_LoginServerSession->IsConnecetd())
+	{
+		_LoginServerSession->HandleRecvPacket();
+	}
+
+	if (_ChattingServerSession->IsConnecetd())
+	{
+		_ChattingServerSession->HandleRecvPacket();
+	}
+	return true;
 }
 

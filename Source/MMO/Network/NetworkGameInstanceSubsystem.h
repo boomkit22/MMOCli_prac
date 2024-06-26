@@ -4,8 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "Subsystems/GameInstanceSubsystem.h"
-#include "ClientSession.h"
+#include "ClientSession/ClientSession.h"
 #include "NetworkGameInstanceSubsystem.generated.h"
+
 
 /**
  * 

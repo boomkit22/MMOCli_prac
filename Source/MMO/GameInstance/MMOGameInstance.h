@@ -28,9 +28,13 @@ public:
 	virtual void Shutdown() override;
 
 public:
-	void ConnectGameServer();
-	void ConnectLoginServer();
-	void ConnectChattingServer();
+	bool ConnectGameServer();
+	bool ConnectLoginServer();
+	bool ConnectChattingServer();
+
+	void DisconnectGameServer();
+	void DisconnectLoginServer();
+	void DisconnectChattingServer();
 
 
 public:
@@ -38,9 +42,14 @@ public:
 	void SendPacket_LoginServer(CPacket* packet);
 	void SendPacket_ChattingServer(CPacket* packet);
 
+/*
+Login Handle
+*/
+
 public:
 	void HandleLogin(CPacket* packet);
-
+	void HandleEcho(CPacket* packet);
+	
 
 private:
 	TSharedPtr<GameServerSession> _GameServerSession;
@@ -50,5 +59,9 @@ private:
 	/*GameServerSession* _GameServerSession = nullptr;
 	LoginServerSession* _LoginServerSession = nullptr;
 	ChattingServerSession* _ChattingServerSession = nullptr;*/
+
+private:
+	FTSTicker::FDelegateHandle TickDelegateHandle;
+	bool Tick(float DeltaTime);
 
 };
