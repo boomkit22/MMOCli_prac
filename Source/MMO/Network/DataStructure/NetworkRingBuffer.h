@@ -19,7 +19,8 @@ public:
 	NetworkRingBuffer()
 	{
 		_realBufferSize = _bufferSize + 1;
-		_buffer = (char*)malloc(sizeof(char) * _realBufferSize);
+		_buffer = (char*)FMemory::Malloc(_realBufferSize);
+		//_buffer = (char*)malloc(sizeof(char) * _realBufferSize);
 		_front = 0;
 		_rear = 0;
 	}
@@ -27,7 +28,7 @@ public:
 	NetworkRingBuffer(int bufferSize)
 	{
 		_realBufferSize = bufferSize + 1;
-		_buffer = (char*)malloc(sizeof(char) * _realBufferSize);
+		_buffer = (char*)FMemory::Malloc(_realBufferSize);
 		_bufferSize = bufferSize;
 		_front = 0;
 		_rear = 0;
@@ -35,7 +36,8 @@ public:
 
 	~NetworkRingBuffer()
 	{
-		delete _buffer;
+		FMemory::Free(_buffer);
+		//delete _buffer;
 	}
 
 	void Resize(int size)
@@ -98,12 +100,15 @@ public:
 				{
 					//»óÈ² 1
 					// µÚ¿¡ ´Ù ³Ö¾î¾ßÇÔ
-					memcpy(&_buffer[_rear], chpData, dataSize);
+					FMemory::Memcpy(&_buffer[_rear], chpData, dataSize);
+					//memcpy(&_buffer[_rear], chpData, dataSize);
 					_rear = (_rear + dataSize) % _realBufferSize;
 				}
 				else {
 					//»óÈ² 2: ³ª´²³Ö¾î¾ßÇÔ
-					memcpy(&_buffer[_rear], chpData, backBufferSize);
+					FMemory::Memcpy(&_buffer[_rear], chpData, backBufferSize);
+					//memcpy(&_buffer[_rear], chpData, backBufferSize);
+					FMemory::Memcpy(&_buffer[0], chpData + backBufferSize, dataSize - backBufferSize);
 					memcpy(&_buffer[0], chpData + backBufferSize, dataSize - backBufferSize);
 					_rear = (_rear + dataSize) % _realBufferSize;
 				}
@@ -111,7 +116,8 @@ public:
 			else {
 				// front°¡ µÚÀÎ°æ¿ì : »óÈ² 3
 				// ±×³É rearºÎÅÍ ³ÖÀ¸¸éµÊ
-				memcpy(&_buffer[_rear], chpData, dataSize);
+				FMemory::Memcpy(&_buffer[_rear], chpData, dataSize);
+				//memcpy(&_buffer[_rear], chpData, dataSize);
 				_rear = (_rear + dataSize) % _realBufferSize;
 			}
 			return dataSize;
@@ -148,20 +154,24 @@ public:
 				if (backBufferSize >= dataSize)
 				{
 					// ±×³É •û¸é µÊ
-					memcpy(chpDest, &_buffer[_front], dataSize);
+					FMemory::Memcpy(chpDest, &_buffer[_front], dataSize);
+					//memcpy(chpDest, &_buffer[_front], dataSize);
 					_front = (_front + dataSize) % _realBufferSize;
 				}
 				else {
 					//³ª´²¼­ »©¸éµÊ
-					memcpy(chpDest, &_buffer[_front], backBufferSize);
-					memcpy(chpDest + backBufferSize, &_buffer[0], dataSize - backBufferSize);
+					FMemory::Memcpy(chpDest, &_buffer[_front], backBufferSize);
+					//memcpy(chpDest, &_buffer[_front], backBufferSize);
+					FMemory::Memcpy(chpDest + backBufferSize, &_buffer[0], dataSize - backBufferSize);
+					//memcpy(chpDest + backBufferSize, &_buffer[0], dataSize - backBufferSize);
 					_front = (_front + dataSize) % _realBufferSize;
 				}
 			}
 			else {
 				// rear°¡ µÚÀÎ°æ¿ì
 				// ±×³É »©¸é µÊ
-				memcpy(chpDest, &_buffer[_front], dataSize);
+				FMemory::Memcpy(chpDest, &_buffer[_front], dataSize);
+				//memcpy(chpDest, &_buffer[_front], dataSize);
 				_front = (_front + dataSize) % _realBufferSize;
 			}
 
@@ -207,18 +217,22 @@ public:
 				if (backBufferSize >= dataSize)
 				{
 					// ±×³É •û¸é µÊ
-					memcpy(chpDest, &_buffer[_front], dataSize);
+					FMemory::Memcpy(chpDest, &_buffer[_front], dataSize);
+					//memcpy(chpDest, &_buffer[_front], dataSize);
 				}
 				else {
 					//³ª´²¼­ »©¸éµÊ
-					memcpy(chpDest, &_buffer[_front], backBufferSize);
-					memcpy(chpDest + backBufferSize, &_buffer[0], dataSize - backBufferSize);
+					FMemory::Memcpy(chpDest, &_buffer[_front], backBufferSize);
+					//memcpy(chpDest, &_buffer[_front], backBufferSize);
+					FMemory::Memcpy(chpDest + backBufferSize, &_buffer[0], dataSize - backBufferSize);
+					//memcpy(chpDest + backBufferSize, &_buffer[0], dataSize - backBufferSize);
 				}
 			}
 			else {
 				// rear°¡ µÚÀÎ°æ¿ì
 				// ±×³É »©¸é µÊ
-				memcpy(chpDest, &_buffer[_front], dataSize);
+				FMemory::Memcpy(chpDest, &_buffer[_front], dataSize);
+				//memcpy(chpDest, &_buffer[_front], dataSize);
 			}
 			return dataSize;
 		}

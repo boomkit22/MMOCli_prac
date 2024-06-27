@@ -32,10 +32,12 @@ protected:
 
 private:
 	//수신 스레드
-	RecvThread* RecvWorker= nullptr;
+	TSharedPtr<RecvThread> RecvWorker;
+	//RecvThread* RecvWorker= nullptr;
 
 	//송신 스레드
-	SendThread* SendWorker = nullptr;
+	TSharedPtr<SendThread> SendWorker;
+	//SendThread* SendWorker = nullptr;
 	//SendThread* SendWorker = nullptr;
 
 	UPROPERTY()

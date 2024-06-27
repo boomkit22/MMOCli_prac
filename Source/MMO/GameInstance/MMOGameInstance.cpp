@@ -46,7 +46,6 @@ void UMMOGameInstance::Shutdown()
 	_GameServerSession.Reset();
 	_LoginServerSession.Reset();
 	_ChattingServerSession.Reset();
-
 }
 
 bool UMMOGameInstance::ConnectGameServer()
@@ -184,24 +183,28 @@ bool UMMOGameInstance::Tick(float DeltaTime)
 UMMOGameInstance* UMMOGameInstance::GetInstance()
 {
 #if WITH_EDITOR
-	UWorld* World = GEditor->PlayWorld;
-	if(World)
+	if (GEditor)
 	{
-		UGameInstance* g = World->GetGameInstance();
-
-		if (auto* GameInstance = Cast<UMMOGameInstance>(World->GetGameInstance()))
+		UWorld* World = GEditor->PlayWorld;
+		if (World)
 		{
-			return GameInstance;
+			UGameInstance* g = World->GetGameInstance();
+
+			if (auto* GameInstance = Cast<UMMOGameInstance>(World->GetGameInstance()))
+			{
+				return GameInstance;
+			}
 		}
 	}
 	return nullptr;
 #endif
-
-	if(auto* GameInstance = Cast<UMMOGameInstance>(GWorld->GetGameInstance()))
+	if (GWorld)
 	{
-		return GameInstance;
+		if (auto* GameInstance = Cast<UMMOGameInstance>(GWorld->GetGameInstance()))
+		{
+			return GameInstance;
+		}
 	}
-
 
 	return nullptr;
 }

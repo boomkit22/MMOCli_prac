@@ -29,7 +29,8 @@ class MMO_API CPacket
 	public:
 	CPacket()
 	{
-		_buffer = (char*)malloc(sizeof(char) * BUFFER_DEFAULT_SIZE);
+		_buffer = (char*)FMemory::Malloc(sizeof(char) * BUFFER_DEFAULT_SIZE);
+		//_buffer = (char*)malloc(sizeof(char) * BUFFER_DEFAULT_SIZE);
 		if (_buffer == nullptr)
 		{
 			__debugbreak();
@@ -39,7 +40,8 @@ class MMO_API CPacket
 
 	CPacket(int bufferSize)
 	{
-		_buffer = (char*)malloc(sizeof(char) * bufferSize);
+		_buffer = (char*)FMemory::Malloc(sizeof(char) * bufferSize);
+		//_buffer = (char*)malloc(sizeof(char) * bufferSize);
 		if (_buffer == nullptr)
 		{
 			__debugbreak();
@@ -49,7 +51,8 @@ class MMO_API CPacket
 
 	~CPacket()
 	{
-		free(_buffer);
+		FMemory::Free(_buffer);
+		//free(_buffer);
 	}
 
 public:

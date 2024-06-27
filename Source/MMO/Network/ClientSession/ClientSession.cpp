@@ -55,9 +55,10 @@ bool ClientSession::Connect(FString IPText, int16 Port)
 
 void ClientSession::StartNetwork()
 {
-	RecvWorker = new RecvThread(AsShared());
-	SendWorker = new SendThread(AsShared());
-
+	RecvWorker = MakeShared<RecvThread>(AsShared());
+	//RecvWorker = new RecvThread(AsShared());
+	SendWorker = MakeShared<SendThread>(AsShared());
+	//SendWorker = new SendThread(AsShared());
 }
 
 
@@ -91,7 +92,7 @@ void ClientSession::ClearSession()
 		Socket = nullptr;
 	}
 
-	if (RecvWorker)
+	if (RecvWorker.IsValid())
 	{
 		UE_LOG(LogTemp, Warning, TEXT("RecvWorker Stop"));
 		if (RecvWorker == nullptr)
@@ -101,17 +102,17 @@ void ClientSession::ClearSession()
 
 		UE_LOG(LogTemp, Warning, TEXT("before stop"));
 		RecvWorker->StopThread();
-		delete RecvWorker;
+		RecvWorker.Reset();
 		RecvWorker = nullptr;
 
 		UE_LOG(LogTemp, Warning, TEXT("after stop"));
 	}
 
-	if (SendWorker)
+	if (SendWorker.IsValid())
 	{
 		UE_LOG(LogTemp, Warning, TEXT("SendWorker Stop"));
 		SendWorker->StopThread();
-		delete SendWorker;
+		SendWorker.Reset();
 		SendWorker = nullptr;
 	}
 
