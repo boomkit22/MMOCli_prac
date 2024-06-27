@@ -7,9 +7,15 @@
 /**
  * 
  */
+class CPacket;
+
 class MMO_API GamePacketMaker
 {
 public:
-	GamePacketMaker();
-	~GamePacketMaker();
+public:
+	static void MP_CS_REQ_LOGIN(CPacket* Packet, int64& accountNo);
+
+private:
+	inline static uint16 GamePacketCode = 0x77;
+
 };

@@ -7,9 +7,12 @@
 /**
  * 
  */
+class CPacket;
 class MMO_API GamePacketHandler
 {
 public:
-	GamePacketHandler();
-	~GamePacketHandler();
+	static void HandlePacket(CPacket* packet);
+
+private:
+	static void HandleLogin(CPacket* packet);
 };

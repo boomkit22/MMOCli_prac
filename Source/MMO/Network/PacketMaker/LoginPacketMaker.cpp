@@ -20,7 +20,8 @@ void LoginPacketMaker::MP_CS_REQ_LOGIN(CPacket* Packet, TCHAR* Id, TCHAR* PassWo
 	Packet->PutData((char*)PassWord, dfPASSWORD_LEN * sizeof(TCHAR));
 
 	uint16 len = (uint16)(Packet->GetDataSize() - sizeof(NetHeader));
-	memcpy(Packet->GetBufferPtr() + NET_HEADER_SIZE_INDEX, (void*)&len, sizeof(uint16));
+	FMemory::Memcpy(Packet->GetBufferPtr() + NET_HEADER_SIZE_INDEX, (void*)&len, sizeof(uint16));
+
 }
 
 void LoginPacketMaker::MP_CS_REQ_ECHO(CPacket* Packet)
@@ -35,5 +36,5 @@ void LoginPacketMaker::MP_CS_REQ_ECHO(CPacket* Packet)
 	*Packet << type;
 
 	uint16 len = (uint16)(Packet->GetDataSize() - sizeof(NetHeader));
-	memcpy(Packet->GetBufferPtr() + NET_HEADER_SIZE_INDEX, (void*)&len, sizeof(uint16));
+	FMemory::Memcpy(Packet->GetBufferPtr() + NET_HEADER_SIZE_INDEX, (void*)&len, sizeof(uint16));
 }

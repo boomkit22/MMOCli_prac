@@ -11,21 +11,37 @@
  */
 
 class ULoginOverlay;
+class UCharacterSelectOverlay;
 UCLASS()
 class MMO_API ALoginHUD : public AHUD
 {
 	GENERATED_BODY()
 	
+public:
+	void ChangeOverlay(TSubclassOf<UUserWidget> NewOverlayClass);
+	TSubclassOf<ULoginOverlay> GetLoginOverlayClass() const { return LoginOverlayClass; };
+	TSubclassOf<UCharacterSelectOverlay> GetCharacterSelectOverlayClass() const { return CharacterSelectOverlayClass; };
+
+
 protected:
 	virtual void BeginPlay() override;
+
 
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "MMO")
 	TSubclassOf<ULoginOverlay> LoginOverlayClass;
+	UPROPERTY(EditDefaultsOnly, Category = "MMO")
+	TSubclassOf<UCharacterSelectOverlay> CharacterSelectOverlayClass;
+	
+	//UPROPERTY()
+	//ULoginOverlay* LoginOverlay;
+	//UPROPERTY()
+	//UCharacterSelectOverlay* CharacterSelectOverlay;
 
-	UPROPERTY()
-	ULoginOverlay* LoginOverlay;
+	UUserWidget* CurrentOverlay;
+
 
 public:
-	FORCEINLINE ULoginOverlay* GetLoginOverlay() const { return LoginOverlay; }
+	/*FORCEINLINE ULoginOverlay* GetLoginOverlay() const { return LoginOverlay; }
+	FORCEINLINE UCharacterSelectOverlay* GetCharacterSelectOverlay() const { return CharacterSelectOverlay; }*/
 };

@@ -47,8 +47,11 @@ Login Handle
 */
 
 public:
-	void HandleLogin(CPacket* packet);
-	void HandleEcho(CPacket* packet);
+	void HandleLoginLogin(CPacket* packet);
+	void HandleLoginEcho(CPacket* packet);
+
+public:
+	void HandleGameLogin(CPacket* packet);
 	
 
 private:
@@ -66,4 +69,10 @@ private:
 
 public:
 	static UMMOGameInstance* GetInstance();
+
+public:
+	FORCEINLINE int64 GetAccountId() { return AccountId; };
+
+private:
+	int64 AccountId;
 };

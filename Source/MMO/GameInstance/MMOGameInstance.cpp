@@ -10,6 +10,8 @@
 #include "PacketMaker/GamePacketMaker.h"
 #include "PacketMaker/ChattingPacketMaker.h"
 #include "Editor.h"
+#include "Login/LoginHUD.h"
+#include "Login/CharacterSelectOverlay.h"
 
 void UMMOGameInstance::Init()
 {
@@ -104,8 +106,48 @@ void UMMOGameInstance::SendPacket_ChattingServer(CPacket* packet)
 	}
 }
 
-void UMMOGameInstance::HandleLogin(CPacket* packet)
+void UMMOGameInstance::HandleLoginLogin(CPacket* packet)
 {
+	int64 accountNo;
+	uint8 status;
+	TCHAR GameServerIP[16];
+	uint16 GameServerPort;
+	TCHAR ChatServerIP[16];
+	uint16 ChatServerPort;
+
+	*packet >> accountNo;
+	AccountId = accountNo;
+	*packet >> status;
+	packet->GetData((char*)GameServerIP, 16 * sizeof(TCHAR));
+	*packet >> GameServerPort;
+	packet->GetData((char*)ChatServerIP, 16 * sizeof(TCHAR));
+	*packet >> ChatServerPort;
+
+	UE_LOG(LogTemp, Warning, TEXT("Handle login status : %d"), status);
+	
+	if (status == 1)
+	{
+		// 로그인 성공
+		// 로그인 서버 끊고
+		// 게임 서버 연결하고
+		DisconnectLoginServer();
+		bool bConnectSuccess = ConnectGameServer();
+		if (!bConnectSuccess)
+		{
+			//TODO: 로그인 실패창 띄우기
+			//Text : 게임서버 연결 실패
+		}
+
+		CPacket* gameServerLoginPacket = CPacket::Alloc();
+		GamePacketMaker::MP_CS_REQ_LOGIN(gameServerLoginPacket, accountNo);
+		SendPacket_GameServer(gameServerLoginPacket);
+	}
+	else {
+		//TODO:
+		// 로그인 실패창 띄우기
+		// Text: 계정 없음
+	}
+
 	//TODO: 성공 실패
 	// if 성공
 	// LoginServer 끊고
@@ -131,7 +173,7 @@ void UMMOGameInstance::HandleLogin(CPacket* packet)
 	*/
 }
 
-void UMMOGameInstance::HandleEcho(CPacket* packet)
+void UMMOGameInstance::HandleLoginEcho(CPacket* packet)
 {
 	//TODO : 다시 패킷 보내기
 	//TODO: log찍기
@@ -154,9 +196,53 @@ void UMMOGameInstance::HandleEcho(CPacket* packet)
 
 	GEngine->AddOnScreenDebugMessage(1, 1.f, color, FString::Printf(TEXT("EchoReceieved")));
 
+	//Echo Test
+	/*
+	* 
 	CPacket* echoPacket = CPacket::Alloc();
 	LoginPacketMaker::MP_CS_REQ_ECHO(echoPacket);
 	SendPacket_LoginServer(echoPacket);
+	*/
+}
+
+void UMMOGameInstance::HandleGameLogin(CPacket* packet)
+{
+	/*
+	게임서버 로그인은 언제 실패해야하지
+	redis에 세션키 등록안돼있을때?
+	*/
+	//여기서 응답오면
+	int64 AccountNo;
+	uint8 Status;
+	uint16 CharacterLevel;
+
+	*packet >> AccountNo >> Status >> CharacterLevel;
+	
+	if (Status)
+	{
+		//로그인 성공하면?
+		// 1. OverLay 변경
+		UWorld* World = GetWorld();
+		if (World)
+		{
+			APlayerController* Controller = World->GetFirstPlayerController();
+			if (Controller)
+			{
+				AHUD* HUD = Controller->GetHUD();
+				ALoginHUD* LoginHUD = Cast<ALoginHUD>(HUD);
+				if (LoginHUD)
+				{
+					// CharacterSelectOverlay 클래스로 오버레이 변경
+					LoginHUD->ChangeOverlay(LoginHUD->GetCharacterSelectOverlayClass());
+				}
+			}
+		}
+	}
+	else {
+		// TODO: 로그인 실패에서 할일
+		// 로그인 실패
+		// 다시 로그인 씬 가는게 좋은 선택인가
+	}
 }
 
 bool UMMOGameInstance::Tick(float DeltaTime)

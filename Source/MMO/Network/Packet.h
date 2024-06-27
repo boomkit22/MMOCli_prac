@@ -40,7 +40,7 @@ enum PACKET_TYPE
 	//		BYTE	Status				// 0 (세션오류) / 1 (성공) ...  하단 defines 사용
 	//
 	// 
-	//		WCHAR	GameServerIP[16]	// 접속대상 게임,채팅 서버 정보
+	//		WCHAR	GameServerIP[16]	//	접속대상 게임,채팅 서버 정보
 	//		USHORT	GameServerPort
 	//		WCHAR	ChatServerIP[16]
 	//		USHORT	ChatServerPort
@@ -83,6 +83,10 @@ enum PACKET_TYPE
 	//	{
 	//		WORD	Type
 	//		INT64	AccountNo // 캐릭터 ID 캐릭터 PASSWORD
+	//		uint8	Status
+	//		uint16  CharacterLevel
+	//      TODO: 캐릭터 닉네임 및 기타정보
+	// 
 	//	}
 	//------------------------------------------------------------
 	PACKET_SC_GAME_RES_LOGIN = 1002

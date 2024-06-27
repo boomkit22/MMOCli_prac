@@ -44,7 +44,7 @@ void LoginPacketHandler::HandleLogin(CPacket* packet)
 
 	if (UMMOGameInstance* GameInstance = UMMOGameInstance::GetInstance())
 	{
-		GameInstance->HandleLogin(packet);
+		GameInstance->HandleLoginLogin(packet);
 	} else {
 		UE_LOG(LogTemp, Warning, TEXT("Handle Login GAme instacne null"));
 	}
@@ -54,7 +54,7 @@ void LoginPacketHandler::HandleEcho(CPacket* packet)
 {
 	if (UMMOGameInstance* GameInstance = UMMOGameInstance::GetInstance())
 	{
-		GameInstance->HandleEcho(packet);
+		GameInstance->HandleLoginEcho(packet);
 	}
 	else {
 		UE_LOG(LogTemp, Warning, TEXT("HHandleEcho Game instacne null"));
