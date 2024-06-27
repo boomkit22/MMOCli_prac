@@ -16,7 +16,7 @@ void ALoginHUD::ChangeOverlay(TSubclassOf<UUserWidget> NewOverlayClass)
     // 현재 활성화된 오버레이가 있다면 제거
     if (CurrentOverlay)
     {
-        CurrentOverlay->RemoveFromViewport();
+        CurrentOverlay->RemoveFromParent();
         CurrentOverlay = nullptr;
     }
 
