@@ -9,18 +9,25 @@ void AGamePlayerController::BeginPlay()
 
 }
 
-void AGamePlayerController::SpawnCharacter()
+void AGamePlayerController::SpawnMyCharacter(FVector spawnLocation)
 {
+    UE_LOG(LogTemp, Warning, TEXT("spawn3"));
+
     if (GameCharacterClass)
     {
         FActorSpawnParameters SpawnParams;
+        FVector l{ 100, 100, 100 };
+        FRotator Rotation = FRotator(0.0f, 0.0f, 0.0f); // 예시 회전
         SpawnParams.Owner = this;
-
         // 캐릭터 스폰
-        AActor* SpawnedCharacter = GetWorld()->SpawnActor<AActor>(GameCharacterClass, SpawnParams);
+        UE_LOG(LogTemp, Warning, TEXT("%s"), *(GetWorld()->GetName()));
+        AActor* SpawnedCharacter = GetWorld()->SpawnActor<AActor>(GameCharacterClass, l, Rotation, SpawnParams);
         if (SpawnedCharacter)
         {
+            UE_LOG(LogTemp, Warning, TEXT("spawn1"));
             Possess(Cast<APawn>(SpawnedCharacter));
         }
+        UE_LOG(LogTemp, Warning, TEXT("spawn2"));
+
     }
 }

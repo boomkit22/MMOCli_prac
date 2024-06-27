@@ -15,4 +15,7 @@ public:
 
 private:
 	static void HandleLogin(CPacket* packet);
+	static void HandleFieldMove(CPacket* packet);
+	static void HandleSpawnMyCharacter(CPacket* packet);
+
 };

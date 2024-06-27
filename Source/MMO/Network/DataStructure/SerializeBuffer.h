@@ -251,6 +251,14 @@ public:
 		return *this;
 	}
 
+	CPacket& operator << (FVector& vValue)
+	{
+		FMemory::Memcpy(&_buffer[_writePos], &vValue, sizeof(double) * 3);
+		_writePos += sizeof(FVector);
+		_dataSize += sizeof(FVector);
+		return *this;
+	}
+
 
 
 
@@ -342,6 +350,14 @@ public:
 		return *this;
 	}
 
+	CPacket& operator >> (FVector& vValue)
+	{
+		FMemory::Memcpy(&vValue, &_buffer[_readPos], sizeof(FVector));
+		_readPos += sizeof(FVector);
+		_dataSize -= sizeof(FVector);
+
+		return *this;
+	}
 
 	//////////////////////////////////////////////////////////////////////////
 	// 데이타 얻기.

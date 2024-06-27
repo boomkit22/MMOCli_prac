@@ -19,7 +19,7 @@ public:
 
 
 public:
-	void SpawnCharacter();
+	void SpawnMyCharacter(FVector SpawnLocation);
 
 public:
 	// YourCharacterClass 변수를 TSubclassOf를 사용하여 선언

@@ -50,8 +50,14 @@ public:
 	void HandleLoginLogin(CPacket* packet);
 	void HandleLoginEcho(CPacket* packet);
 
+/*
+Game Handle
+*/
 public:
 	void HandleGameLogin(CPacket* packet);
+	void HandleFieldMove(CPacket* packet);
+	void HandleSpawnMyCharacter(CPacket* packet);
+
 	
 
 private:

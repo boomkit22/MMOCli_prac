@@ -12,6 +12,10 @@
 #include "Editor.h"
 #include "Login/LoginHUD.h"
 #include "Login/CharacterSelectOverlay.h"
+#include "Kismet/GameplayStatics.h"
+#include "Kismet/GameplayStatics.h"
+#include "Character/GamePlayerController.h"
+
 
 void UMMOGameInstance::Init()
 {
@@ -52,7 +56,7 @@ void UMMOGameInstance::Shutdown()
 
 bool UMMOGameInstance::ConnectGameServer()
 {
-	return _GameServerSession->Connect(FString("127.0.0.1"), 10300);
+	return _GameServerSession->Connect(FString("127.0.0.1"), 10303);
 }
 
 bool UMMOGameInstance::ConnectLoginServer()
@@ -243,6 +247,36 @@ void UMMOGameInstance::HandleGameLogin(CPacket* packet)
 		// 로그인 실패
 		// 다시 로그인 씬 가는게 좋은 선택인가
 	}
+}
+
+void UMMOGameInstance::HandleFieldMove(CPacket* packet)
+{
+	UGameplayStatics::OpenLevel(this, TEXT("/Game/Maps/DefaultMap"), TRAVEL_Absolute);
+}
+
+void UMMOGameInstance::HandleSpawnMyCharacter(CPacket* packet)
+{
+	FVector SpawnLocation;
+	*packet >> SpawnLocation;
+	UE_LOG(LogTemp, Warning, TEXT("HandleSpawn1"));
+	UWorld* World = GetWorld();
+	if (World)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("HandleSpawn2"));
+		APlayerController* PlayerController = World->GetFirstPlayerController();
+		if (PlayerController)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("HandleSpawn3"));
+
+			AGamePlayerController* MyController = Cast<AGamePlayerController>(PlayerController);
+			if (MyController)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("HandleSpawn4"));
+				MyController->SpawnMyCharacter(SpawnLocation);
+			}
+		}
+	}
+
 }
 
 bool UMMOGameInstance::Tick(float DeltaTime)

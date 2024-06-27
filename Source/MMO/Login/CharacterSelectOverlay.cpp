@@ -3,6 +3,9 @@
 
 #include "Login/CharacterSelectOverlay.h"
 #include "Components/Button.h"
+#include "Network/DataStructure/SerializeBuffer.h"
+#include "Network/PacketMaker/GamePacketMaker.h"
+#include "GameInstance/MMOGameInstance.h"
 
 void UCharacterSelectOverlay::NativeConstruct()
 {
@@ -16,7 +19,10 @@ void UCharacterSelectOverlay::OnCharacterSelectButtonClicked()
 	// TODO: 필드이동 요청
 	
 	// 1. Req Field Move
-
+	CPacket* packet = CPacket::Alloc();
+	uint16 fieldID = 1;
+	GamePacketMaker::MP_CS_REQ_FIELD_MOVE(packet, fieldID);
+	UMMOGameInstance::GetInstance()->SendPacket_GameServer(packet);
 	// 2. Wait For Response
 	// 2. 1 Res FiledMove
 	// 2. 2 Spawn My Character
