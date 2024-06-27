@@ -15,6 +15,8 @@ void AGamePlayerController::SpawnMyCharacter(FVector spawnLocation)
 
     if (GameCharacterClass)
     {
+        UE_LOG(LogTemp, Warning, TEXT("spawn33"));
+
         FActorSpawnParameters SpawnParams;
         FVector l{ 100, 100, 100 };
         FRotator Rotation = FRotator(0.0f, 0.0f, 0.0f); // 예시 회전

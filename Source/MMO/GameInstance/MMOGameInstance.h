@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
 //#include "Network/GameSession.h"
-
 #include "MMOGameInstance.generated.h"
 
 
@@ -17,6 +16,8 @@ class GameServerSession;
 class LoginServerSession;
 class ChattingServerSession;
 class CPacket;
+
+extern bool bLoading;
 
 UCLASS()
 class MMO_API UMMOGameInstance : public UGameInstance
@@ -81,4 +82,10 @@ public:
 
 private:
 	int64 AccountId;
+	//bool bLoading = false;
+
+
+
+	//FWorldDelegates::FWorldInitializationEvent::FDelegate OnPostWorldInitHandle;
+	void OnLevelLoaded(UWorld* World);
 };

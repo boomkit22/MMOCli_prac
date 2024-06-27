@@ -3,7 +3,7 @@
 
 #include "ClientSession/LoginServerSession.h"
 #include "PacketHandler/LoginPacketHandler.h"
-
+#include "GameInstance/MMOGameInstance.h"
 LoginServerSession::LoginServerSession()
 {
 }
@@ -16,6 +16,11 @@ void LoginServerSession::HandleRecvPacket()
 {
 	for (;;)
 	{
+		if (bLoading)
+		{
+			break;
+		}
+
 		CPacket* packet = nullptr;
 		bool Succeed = RecvPacketQueue.Dequeue(packet);
 		if (!Succeed)

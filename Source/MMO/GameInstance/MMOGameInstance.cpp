@@ -9,13 +9,17 @@
 #include "PacketMaker/LoginPacketMaker.h"
 #include "PacketMaker/GamePacketMaker.h"
 #include "PacketMaker/ChattingPacketMaker.h"
-#include "Editor.h"
+//#if WITH_EDITOR
+//#include "Editor.h"
+//#endif
 #include "Login/LoginHUD.h"
 #include "Login/CharacterSelectOverlay.h"
 #include "Kismet/GameplayStatics.h"
-#include "Kismet/GameplayStatics.h"
+#include "Engine/World.h"
 #include "Character/GamePlayerController.h"
 
+
+bool bLoading = false;
 
 void UMMOGameInstance::Init()
 {
@@ -36,6 +40,12 @@ void UMMOGameInstance::Init()
 	_ChattingServerSession = MakeShared<ChattingServerSession>();
 
 	TickDelegateHandle = FTSTicker::GetCoreTicker().AddTicker(FTickerDelegate::CreateUObject(this, &UMMOGameInstance::Tick));
+
+	FWorldDelegates::OnPostWorldCreation;
+
+	//FWorldDelegates::OnPostWorldInitialization.AddUObject(this, &UMMOGameInstance::OnLevelLoaded);
+	FWorldDelegates::OnPostWorldCreation.AddUObject(this, &UMMOGameInstance::OnLevelLoaded);
+	//FWorldDelegates::
 }
 
 
@@ -251,7 +261,11 @@ void UMMOGameInstance::HandleGameLogin(CPacket* packet)
 
 void UMMOGameInstance::HandleFieldMove(CPacket* packet)
 {
-	UGameplayStatics::OpenLevel(this, TEXT("/Game/Maps/DefaultMap"), TRAVEL_Absolute);
+	bLoading = true;
+	UE_LOG(LogTemp, Warning, TEXT("bLoading %d"), bLoading);
+	UE_LOG(LogTemp, Warning, TEXT("Open Level 1"));
+	UGameplayStatics::OpenLevel(this, TEXT("/Game/Maps/DefaultMap"), false);
+	UE_LOG(LogTemp, Warning, TEXT("Open Level 2"));
 }
 
 void UMMOGameInstance::HandleSpawnMyCharacter(CPacket* packet)
@@ -281,8 +295,11 @@ void UMMOGameInstance::HandleSpawnMyCharacter(CPacket* packet)
 
 bool UMMOGameInstance::Tick(float DeltaTime)
 {
-	if (_GameServerSession->IsConnecetd())
+
+
+	if (_GameServerSession->IsConnecetd() && !bLoading)
 	{
+		//UE_LOG(LogTemp, Warning, TEXT("bLoading %d"), bLoading);
 		_GameServerSession->HandleRecvPacket();
 	}
 
@@ -302,22 +319,23 @@ bool UMMOGameInstance::Tick(float DeltaTime)
 
 UMMOGameInstance* UMMOGameInstance::GetInstance()
 {
-#if WITH_EDITOR
-	if (GEditor)
-	{
-		UWorld* World = GEditor->PlayWorld;
-		if (World)
-		{
-			UGameInstance* g = World->GetGameInstance();
-
-			if (auto* GameInstance = Cast<UMMOGameInstance>(World->GetGameInstance()))
-			{
-				return GameInstance;
-			}
-		}
-	}
-	return nullptr;
-#endif
+//#if WITH_EDITOR
+//	if (GEditor)
+//	{
+//		UWorld* World = GEditor->PlayWorld;
+//		if (World)
+//		{
+//			UGameInstance* g = World->GetGameInstance();
+//
+//			if (auto* GameInstance = Cast<UMMOGameInstance>(World->GetGameInstance()))
+//			{
+//				return GameInstance;
+//			}
+//		}
+//	}
+//	UE_LOG(LogTemp, Warning, TEXT("editor nullptr!"));
+//	return nullptr;
+//#endif
 	if (GWorld)
 	{
 		if (auto* GameInstance = Cast<UMMOGameInstance>(GWorld->GetGameInstance()))
@@ -325,7 +343,17 @@ UMMOGameInstance* UMMOGameInstance::GetInstance()
 			return GameInstance;
 		}
 	}
+	UE_LOG(LogTemp, Warning, TEXT("nullptr!"));
 
 	return nullptr;
+}
+
+void UMMOGameInstance::OnLevelLoaded(UWorld* World)
+{
+	UE_LOG(LogTemp, Warning, TEXT("OnLevelLoaded!"));
+	bLoading = false;
+	//GEngine->AddOnScreenDebugMessage(-1, 5.5f, FColor::Blue, TEXT("OnWorldInit!"));
+	/*FLatentActionInfo Info;
+	UGameplayStatics::LoadStreamLevelBySoftObjectPtr(World, LoadingDrill->DrillSublevel, true, false, Info);*/
 }
 
