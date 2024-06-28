@@ -19,6 +19,7 @@
 #include "Character/GamePlayerController.h"
 #include "Type.h"
 #include "Character/GameCharacter.h"
+#include "Character/RemoteGameCharacter.h"
 
 bool bLoading = false;
 
@@ -318,12 +319,12 @@ void UMMOGameInstance::HandleSpawnOhterCharacter(CPacket* packet)
 		// 캐릭터 스폰
 		UE_LOG(LogTemp, Warning, TEXT("%s"), *(GetWorld()->GetName()));
 		FVector SpawnLocation = spawnOtherCharacterInfo.SpawnLocation;
-		spawnOtherCharacterInfo.NickName; // 이거 캐릭터 위에 띄워야하는데
-		spawnOtherCharacterInfo.Level; // 이거 캐릭터 위에 띄워야하는데
 
-		AGameCharacter* SpawnedCharacter = GetWorld()->SpawnActor<AGameCharacter>(GameCharacterClass, SpawnLocation, Rotation, SpawnParams);
+		AGameCharacter* SpawnedCharacter = Cast<AGameCharacter>(GetWorld()->SpawnActor<ARemoteGameCharacter>(RemoteGameCharacterClass, SpawnLocation, Rotation, SpawnParams));
 		if (SpawnedCharacter)
 		{
+			SpawnedCharacter->InitCharAttributeComponent(100, spawnOtherCharacterInfo.NickName, spawnOtherCharacterInfo.Level);
+
 			CharacterMap.Add(spawnOtherCharacterInfo.PlayerID, SpawnedCharacter);
 		}
 		else

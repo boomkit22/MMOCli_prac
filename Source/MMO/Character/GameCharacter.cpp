@@ -146,7 +146,7 @@ void AGameCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	PlayerInputComponent->BindAction("MonsterDeath", IE_Pressed, this, &AGameCharacter::MonsterDeath);
 	PlayerInputComponent->BindAction("MonsterDamage", IE_Pressed, this, &AGameCharacter::MonsterDamage);
 	PlayerInputComponent->BindAction("DamageTest", IE_Pressed, this, &AGameCharacter::DamageTest);
-
+	PlayerInputComponent->BindAction("SpawnOtherCharacter", IE_Pressed, this, &AGameCharacter::SpawnOtherCharacter);
 }
 
 void AGameCharacter::AttackEnd()
@@ -275,6 +275,7 @@ void AGameCharacter::MonsterDamage()
 	}
 }
 
+
 void AGameCharacter::PlayAttackMontage()
 {
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
@@ -377,6 +378,21 @@ void AGameCharacter::DamageTest()
 void AGameCharacter::SetDestination(FVector Dest)
 {
 	Destination = Dest;
+}
+
+void AGameCharacter::SpawnOtherCharacter()
+{
+	CPacket* packet;
+	packet = CPacket::Alloc();
+	SpawnOtherCharacterInfo spawnOtherCharacterInfo;
+	spawnOtherCharacterInfo.SpawnLocation = GetActorLocation();
+	spawnOtherCharacterInfo.PlayerID = 1;
+	spawnOtherCharacterInfo.Level = 1;
+	FString NickName = "TestCharacter";
+	FCString::Strcpy(spawnOtherCharacterInfo.NickName, *NickName);
+
+	*packet << spawnOtherCharacterInfo;
+	UMMOGameInstance::GetInstance()->SendPacket_GameServer(packet);
 }
 
 void AGameCharacter::InitCharAttributeComponent(int32 Health, FString CharName, int32 Level)

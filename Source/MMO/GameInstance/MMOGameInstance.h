@@ -63,6 +63,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character")
 	TSubclassOf<AActor> GameCharacterClass;
 	
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character")
+	TSubclassOf<AActor> RemoteGameCharacterClass;
+
 
 private:
 	TSharedPtr<GameServerSession> _GameServerSession;

@@ -89,19 +89,23 @@ public:
 	void Death();
 	void MonsterDeath();
 	void MonsterDamage();
-	void GetHit(int damage);
 	void DamageTest();
 	void SetDestination(FVector Dest);
+	void SpawnOtherCharacter();
+
+protected:
+	virtual void GetHit(int32 damage);
 
 public:
 	void InitCharAttributeComponent(int32 Health, FString CharName, int32 Level);
 	
+protected:
+	UPROPERTY(VisibleAnywhere)
+	class UCharAttributeComponent* CharAttributeComponent;
+	
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Collision, meta = (AllowPrivateAccess = "true"))
 	class UCapsuleComponent* CollisionComponent;
-
-	UPROPERTY(VisibleAnywhere)
-	class UCharAttributeComponent* CharAttributeComponent;
 
 	UPROPERTY()
 	UMMOOverlay* MMOOverlay;

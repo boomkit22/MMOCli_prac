@@ -26,6 +26,8 @@ public:
 
 	void Init(int32 Health, FString CharName, int32 Level);
 	FORCEINLINE FString GetCharName() { return CharName; };
+	FORCEINLINE int32 GetLevel() { return Level; };
+
 
 private:
 	//Current Health
