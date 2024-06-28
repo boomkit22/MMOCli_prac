@@ -91,6 +91,10 @@ public:
 	void MonsterDamage();
 	void GetHit(int damage);
 	void DamageTest();
+	void SetDestination(FVector Dest);
+
+public:
+	void InitCharAttributeComponent(int32 Health, FString CharName, int32 Level);
 	
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Collision, meta = (AllowPrivateAccess = "true"))

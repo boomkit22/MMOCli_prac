@@ -5,6 +5,7 @@
 #include "Network/PacketHeader.h"
 #include "DataStructure/SerializeBuffer.h"
 #include "Network/Packet.h"
+#include "Type.h"
 
 void LoginPacketMaker::MP_CS_REQ_LOGIN(CPacket* Packet, TCHAR* Id, TCHAR* PassWord)
 {
@@ -16,8 +17,8 @@ void LoginPacketMaker::MP_CS_REQ_LOGIN(CPacket* Packet, TCHAR* Id, TCHAR* PassWo
 
 	uint16 type = PACKET_CS_LOGIN_REQ_LOGIN;
 	*Packet << type;
-	Packet->PutData((char*)Id, dfID_LEN * sizeof(TCHAR));
-	Packet->PutData((char*)PassWord, dfPASSWORD_LEN * sizeof(TCHAR));
+	Packet->PutData((char*)Id, ID_LEN * sizeof(TCHAR));
+	Packet->PutData((char*)PassWord, PASSWORD_LEN * sizeof(TCHAR));
 
 	uint16 len = (uint16)(Packet->GetDataSize() - sizeof(NetHeader));
 	FMemory::Memcpy(Packet->GetBufferPtr() + NET_HEADER_SIZE_INDEX, (void*)&len, sizeof(uint16));

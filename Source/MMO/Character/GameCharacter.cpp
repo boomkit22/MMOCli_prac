@@ -13,6 +13,11 @@
 #include "MMOComponent/CharAttributeComponent.h"
 #include "HUD/MMOHUD.h"
 #include "HUD/MMOOverlay.h"
+#include "GameInstance/MMOGameInstance.h"
+#include "Network/DataStructure/SerializeBuffer.h"
+#include "PacketMaker/GamePacketMaker.h"
+
+//#include "GameInstacne/MMOGameInstacne.h""
 
 // Sets default values
 AGameCharacter::AGameCharacter()
@@ -89,8 +94,6 @@ AGameCharacter::AGameCharacter()
 
 	// 캐릭터 속성 컴포넌트 생성
 	CharAttributeComponent = CreateDefaultSubobject<UCharAttributeComponent>(TEXT("CharAttribute"));
-	CharAttributeComponent->Init(100, FString("KingWangJJang"), 1);
-
 }
 
 // Called when the game starts or when spawned
@@ -112,15 +115,6 @@ void AGameCharacter::BeginPlay()
 		if (MMOHUD)
 		{
 			MMOOverlay = MMOHUD->GetMMOOverlay();
-			if (MMOOverlay)
-			{
-				MMOOverlay->SetHealthBarPercent(CharAttributeComponent->GetHelathPercent());
-				MMOOverlay->SetStaminaBarPercent(0.5);
-				MMOOverlay->SetExperienceBarPercent(0.25);
-				MMOOverlay->SetLevelTextBlock(50);
-
-			}
-
 		}
 	}
 
@@ -226,11 +220,15 @@ void AGameCharacter::LeftMouseClick()
 	FHitResult Hit;
 	bHitSuccessful = PlayerController->GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, true, Hit);
 	
-	if (bHitSuccessful)
+	CPacket* MoveReqPacket = CPacket::Alloc();
+	GamePacketMaker::MP_CS_REQ_CHARACTER_MOVE(MoveReqPacket, Hit.Location);
+	UMMOGameInstance::GetInstance()->SendPacket_GameServer(MoveReqPacket);
+
+	/*if (bHitSuccessful)
 	{
 		Destination = Hit.Location;
 		UE_LOG(LogTemp, Warning, TEXT("Destination: %s"), *Destination.ToString());
-	}
+	}*/
 }
 
 void AGameCharacter::SpawnMonster()
@@ -374,6 +372,16 @@ void AGameCharacter::Death()
 void AGameCharacter::DamageTest()
 {
 	GetHit(20);
+}
+
+void AGameCharacter::SetDestination(FVector Dest)
+{
+	Destination = Dest;
+}
+
+void AGameCharacter::InitCharAttributeComponent(int32 Health, FString CharName, int32 Level)
+{
+	CharAttributeComponent->Init(Health, CharName, Level);
 }
 
 void AGameCharacter::GetHit(int32 damage)

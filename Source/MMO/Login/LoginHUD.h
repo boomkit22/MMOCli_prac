@@ -21,7 +21,8 @@ public:
 	void ChangeOverlay(TSubclassOf<UUserWidget> NewOverlayClass);
 	TSubclassOf<ULoginOverlay> GetLoginOverlayClass() const { return LoginOverlayClass; };
 	TSubclassOf<UCharacterSelectOverlay> GetCharacterSelectOverlayClass() const { return CharacterSelectOverlayClass; };
-
+	
+	FORCEINLINE UUserWidget* GetCurrentOverlay() { return CurrentOverlay; };
 
 protected:
 	virtual void BeginPlay() override;

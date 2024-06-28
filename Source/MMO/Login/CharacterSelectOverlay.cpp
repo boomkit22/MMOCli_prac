@@ -6,11 +6,18 @@
 #include "Network/DataStructure/SerializeBuffer.h"
 #include "Network/PacketMaker/GamePacketMaker.h"
 #include "GameInstance/MMOGameInstance.h"
+#include "Components/TextBlock.h"
 
 void UCharacterSelectOverlay::NativeConstruct()
 {
 	Super::NativeConstruct();
 	CharacterSelectButton->OnClicked.AddDynamic(this, &UCharacterSelectOverlay::OnCharacterSelectButtonClicked);
+}
+
+void UCharacterSelectOverlay::SetCharacterSelectText(const FString& CharacterName, uint16 CharacterLevel)
+{
+	CharacterNameText->SetText(FText::FromString(CharacterName));
+	CharacterLevelText->SetText(FText::FromString(FString::FromInt(CharacterLevel)));
 }
 
 void UCharacterSelectOverlay::OnCharacterSelectButtonClicked()

@@ -15,7 +15,7 @@ public:
 public:
 	static void MP_CS_REQ_LOGIN(CPacket* Packet, int64& accountNo);
 	static void MP_CS_REQ_FIELD_MOVE(CPacket* Packet, uint16& fieldID);
-
+	static void MP_CS_REQ_CHARACTER_MOVE(CPacket* Packet, FVector& Destination);
 
 private:
 	inline static uint16 GamePacketCode = 0x77;

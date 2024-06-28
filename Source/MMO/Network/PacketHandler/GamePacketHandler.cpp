@@ -33,6 +33,19 @@ void GamePacketHandler::HandlePacket(CPacket* packet)
 	}
 	break;
 
+	case PACKET_SC_GAME_SPAWN_OTHER_CHAACTER:
+	{
+		HandleSpawnOtherCharacter(packet);
+	}
+	break;
+
+	case PACKET_SC_GAME_RES_CHARACTER_MOVE:
+	{
+		HandleCharacterMove(packet);
+	}
+	break;
+
+
 	default:
 		break;
 	}
@@ -72,3 +85,27 @@ void GamePacketHandler::HandleSpawnMyCharacter(CPacket* packet)
 		UE_LOG(LogTemp, Warning, TEXT("Handle Login GAme instacne null"));
 	}
 }
+
+
+void GamePacketHandler::HandleSpawnOtherCharacter(CPacket* packet)
+{
+	if (UMMOGameInstance* GameInstance = UMMOGameInstance::GetInstance())
+	{
+		GameInstance->HandleSpawnOhterCharacter(packet);
+	}
+	else {
+		UE_LOG(LogTemp, Warning, TEXT("Handle Login GAme instacne null"));
+	}
+}
+
+void GamePacketHandler::HandleCharacterMove(CPacket* packet)
+{
+	if (UMMOGameInstance* GameInstance = UMMOGameInstance::GetInstance())
+	{
+		GameInstance->HandleCharacterMove(packet);
+	}
+	else {
+		UE_LOG(LogTemp, Warning, TEXT("Handle Login GAme instacne null"));
+	}
+}
+

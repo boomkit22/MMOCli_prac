@@ -8,9 +8,6 @@
  * 
  */
 
-#define dfID_LEN 20
-#define dfPASSWORD_LEN 20
-
 enum PACKET_TYPE
 {
 	//------------------------------------------------------
@@ -82,9 +79,10 @@ enum PACKET_TYPE
 	//------------------------------------------------------------
 	//	{
 	//		WORD	Type
-	//		INT64	AccountNo // 캐릭터 ID 캐릭터 PASSWORD
+	//		INT64	AccountNo // 멀티플레이어 게임 식별용
 	//		uint8	Status
 	//		uint16  CharacterLevel
+	//	    TCHAR   NickName[20] // null포함
 	//      TODO: 캐릭터 닉네임 및 기타정보
 	// 
 	//	}
@@ -112,8 +110,50 @@ enum PACKET_TYPE
 	//------------------------------------------------------------
 	//	{
 	//		WORD	Type
-	//		FVector SpawnLocation
+	//		SpawnMyCharacterInfo spawnMyCharacterInfo
 	//	}
 	//------------------------------------------------------------
 	PACKET_SC_GAME_SPAWN_MY_CHARACTER = 1005,
+
+
+	//------------------------------------------------------------
+	//	{
+	//		WORD	Type
+	//		SpawnOtherCharacterInfo spawnOtherCharacterInfo
+	//	}
+	//------------------------------------------------------------
+	PACKET_SC_GAME_SPAWN_OTHER_CHAACTER = 1006,
+
+	//------------------------------------------------------------
+	//	 이거 필요한가
+	//		WORD	Type
+	//------------------------------------------------------------
+	PACKET_SC_GAME_DESPAWN_MY_CHARACTER = 1007,
+
+
+	//------------------------------------------------------------
+	//	 
+	//	WORD	Type
+	//  int64 CharacterNO
+	//------------------------------------------------------------
+	PACKET_SC_GAME_DESPAWN_OTHER_CHARACTER = 1008,
+
+
+	//------------------------------------------------------------
+	// {
+	//		WORD	Type
+	//		FVector Destination
+	//	}
+	//------------------------------------------------------------
+	PACKET_CS_GAME_REQ_CHARACTER_MOVE = 1009,
+
+
+	//------------------------------------------------------------
+	// {
+	//		WORD	Type
+	//		int64 CharacterNO
+	//		FVector Destination
+	//	}
+	//------------------------------------------------------------
+	PACKET_SC_GAME_RES_CHARACTER_MOVE = 1010,
 };

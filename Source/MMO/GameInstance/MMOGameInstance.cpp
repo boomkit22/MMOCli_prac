@@ -9,15 +9,16 @@
 #include "PacketMaker/LoginPacketMaker.h"
 #include "PacketMaker/GamePacketMaker.h"
 #include "PacketMaker/ChattingPacketMaker.h"
-//#if WITH_EDITOR
-//#include "Editor.h"
-//#endif
+#if WITH_EDITOR
+#include "Editor.h"
+#endif
 #include "Login/LoginHUD.h"
 #include "Login/CharacterSelectOverlay.h"
 #include "Kismet/GameplayStatics.h"
 #include "Engine/World.h"
 #include "Character/GamePlayerController.h"
-
+#include "Type.h"
+#include "Character/GameCharacter.h"
 
 bool bLoading = false;
 
@@ -226,12 +227,13 @@ void UMMOGameInstance::HandleGameLogin(CPacket* packet)
 	redis에 세션키 등록안돼있을때?
 	*/
 	//여기서 응답오면
-	int64 AccountNo;
-	uint8 Status;
-	uint16 CharacterLevel;
+	ResGameLoginInfo resLoginInfo;
+	*packet >> resLoginInfo;
+	int64 AccountNo = resLoginInfo.AccountNo;
+	uint8 Status = resLoginInfo.Status;
+	uint16 characterLevel = resLoginInfo.Level;
+	FString CharacterID = resLoginInfo.NickName;
 
-	*packet >> AccountNo >> Status >> CharacterLevel;
-	
 	if (Status)
 	{
 		//로그인 성공하면?
@@ -247,7 +249,13 @@ void UMMOGameInstance::HandleGameLogin(CPacket* packet)
 				if (LoginHUD)
 				{
 					// CharacterSelectOverlay 클래스로 오버레이 변경
+					//TSubclassOf<UCharacterSelectOverlay> characterSelectOvelay = LoginHUD->GetCharacterSelectOverlayClass();
 					LoginHUD->ChangeOverlay(LoginHUD->GetCharacterSelectOverlayClass());
+					UCharacterSelectOverlay* CharacterSelectOverlay = Cast<UCharacterSelectOverlay>(LoginHUD->GetCurrentOverlay());
+					if (CharacterSelectOverlay)
+					{
+						CharacterSelectOverlay->SetCharacterSelectText(CharacterID, characterLevel);
+					}
 				}
 			}
 		}
@@ -270,27 +278,72 @@ void UMMOGameInstance::HandleFieldMove(CPacket* packet)
 
 void UMMOGameInstance::HandleSpawnMyCharacter(CPacket* packet)
 {
-	FVector SpawnLocation;
-	*packet >> SpawnLocation;
-	UE_LOG(LogTemp, Warning, TEXT("HandleSpawn1"));
+	SpawnMyCharacterInfo spawnMyCharacterInfo;
+	*packet >> spawnMyCharacterInfo;
 	UWorld* World = GetWorld();
 	if (World)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("HandleSpawn2"));
 		APlayerController* PlayerController = World->GetFirstPlayerController();
 		if (PlayerController)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("HandleSpawn3"));
 
 			AGamePlayerController* MyController = Cast<AGamePlayerController>(PlayerController);
 			if (MyController)
 			{
-				UE_LOG(LogTemp, Warning, TEXT("HandleSpawn4"));
-				MyController->SpawnMyCharacter(SpawnLocation);
+				AGameCharacter* GameCharacter = MyController->SpawnMyCharacter(spawnMyCharacterInfo);
+				if (GameCharacter)
+				{
+					CharacterMap.Add(spawnMyCharacterInfo.PlayerID, GameCharacter);
+				}else
+				{
+					UE_LOG(LogTemp, Error, TEXT("HandleSpawn game character null"));
+
+				}
+
 			}
 		}
 	}
 
+}
+
+void UMMOGameInstance::HandleSpawnOhterCharacter(CPacket* packet)
+{
+	SpawnOtherCharacterInfo spawnOtherCharacterInfo;
+	*packet >> spawnOtherCharacterInfo;
+
+	if (GameCharacterClass)
+	{
+		FActorSpawnParameters SpawnParams;
+		FRotator Rotation = FRotator(0.0f, 0.0f, 0.0f); // 예시 회전
+		// 캐릭터 스폰
+		UE_LOG(LogTemp, Warning, TEXT("%s"), *(GetWorld()->GetName()));
+		FVector SpawnLocation = spawnOtherCharacterInfo.SpawnLocation;
+		spawnOtherCharacterInfo.NickName; // 이거 캐릭터 위에 띄워야하는데
+		spawnOtherCharacterInfo.Level; // 이거 캐릭터 위에 띄워야하는데
+
+		AGameCharacter* SpawnedCharacter = GetWorld()->SpawnActor<AGameCharacter>(GameCharacterClass, SpawnLocation, Rotation, SpawnParams);
+		if (SpawnedCharacter)
+		{
+			CharacterMap.Add(spawnOtherCharacterInfo.PlayerID, SpawnedCharacter);
+		}
+		else
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.5f, FColor::Red, TEXT("Spawne Other Character is null"));
+		}
+	}
+}
+
+void UMMOGameInstance::HandleCharacterMove(CPacket* packet)
+{
+	int64 characterNo;
+	FVector destination;
+	*packet >> characterNo >> destination;
+
+	auto character = CharacterMap.Find(characterNo);
+	if (character)
+	{
+		(*character)->SetDestination(destination);
+	}
 }
 
 bool UMMOGameInstance::Tick(float DeltaTime)
@@ -319,23 +372,21 @@ bool UMMOGameInstance::Tick(float DeltaTime)
 
 UMMOGameInstance* UMMOGameInstance::GetInstance()
 {
-//#if WITH_EDITOR
-//	if (GEditor)
-//	{
-//		UWorld* World = GEditor->PlayWorld;
-//		if (World)
-//		{
-//			UGameInstance* g = World->GetGameInstance();
-//
-//			if (auto* GameInstance = Cast<UMMOGameInstance>(World->GetGameInstance()))
-//			{
-//				return GameInstance;
-//			}
-//		}
-//	}
-//	UE_LOG(LogTemp, Warning, TEXT("editor nullptr!"));
-//	return nullptr;
-//#endif
+#if WITH_EDITOR
+	if (GEditor)
+	{
+		UWorld* World = GEditor->PlayWorld;
+		if (World)
+		{
+			UGameInstance* g = World->GetGameInstance();
+
+			if (auto* GameInstance = Cast<UMMOGameInstance>(World->GetGameInstance()))
+			{
+				return GameInstance;
+			}
+		}
+	}
+
 	if (GWorld)
 	{
 		if (auto* GameInstance = Cast<UMMOGameInstance>(GWorld->GetGameInstance()))
@@ -343,8 +394,18 @@ UMMOGameInstance* UMMOGameInstance::GetInstance()
 			return GameInstance;
 		}
 	}
-	UE_LOG(LogTemp, Warning, TEXT("nullptr!"));
 
+	GEngine->AddOnScreenDebugMessage(-1, 5.5f, FColor::Blue, TEXT("editor nullptr!"));
+	return nullptr;
+#endif
+	if (GWorld)
+	{
+		if (auto* GameInstance = Cast<UMMOGameInstance>(GWorld->GetGameInstance()))
+		{
+			return GameInstance;
+		}
+	}
+	GEngine->AddOnScreenDebugMessage(-1, 5.5f, FColor::Blue, TEXT("nullptr!"));
 	return nullptr;
 }
 

@@ -20,7 +20,14 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	class UButton* CharacterSelectButton;
 	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	class UTextBlock* CharacterNameText;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	class UTextBlock* CharacterLevelText;
+
+public:
+	void SetCharacterSelectText(const FString& CharacterName, uint16 CharacterLevel);
 protected:
 	// bind하는건 UFUNCTION안하면 에러남
 	UFUNCTION()

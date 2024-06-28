@@ -5,10 +5,22 @@
 #include "CoreMinimal.h"
 #include "TlsObjectPool.h"
 #include "PacketHeader.h"
+#include "Type.h"
 
 
 class MMO_API CPacket
 {
+
+	friend CPacket& operator<<(CPacket& packet, FVector& vec);
+	friend CPacket& operator>>(CPacket& packet, FVector& vec);
+	friend CPacket& operator<<(CPacket& packet, ResGameLoginInfo& resLoginInfo);
+	friend CPacket& operator>>(CPacket& packet, ResGameLoginInfo& resLoginInfo);
+	friend CPacket& operator<<(CPacket& packet, SpawnMyCharacterInfo& spawnMyCharacterInfo);
+	friend CPacket& operator>>(CPacket& packet, SpawnMyCharacterInfo& spawnMyCharacterInfo);
+	friend CPacket& operator<<(CPacket& packet, SpawnOtherCharacterInfo& spawnOtherCharacterInfo);
+	friend CPacket& operator>>(CPacket& packet, SpawnOtherCharacterInfo& spawnOtherCharacterInfo);
+
+
 	friend class TlsObjectPool<CPacket, false>;
 
 	/*---------------------------------------------------------------
@@ -251,18 +263,6 @@ public:
 		return *this;
 	}
 
-	CPacket& operator << (FVector& vValue)
-	{
-		FMemory::Memcpy(&_buffer[_writePos], &vValue, sizeof(double) * 3);
-		_writePos += sizeof(FVector);
-		_dataSize += sizeof(FVector);
-		return *this;
-	}
-
-
-
-
-
 
 	//////////////////////////////////////////////////////////////////////////
 	// 빼기.	각 변수 타입마다 모두 만듬.
@@ -347,15 +347,6 @@ public:
 		_readPos += sizeof(double);
 
 		_dataSize -= sizeof(double);
-		return *this;
-	}
-
-	CPacket& operator >> (FVector& vValue)
-	{
-		FMemory::Memcpy(&vValue, &_buffer[_readPos], sizeof(FVector));
-		_readPos += sizeof(FVector);
-		_dataSize -= sizeof(FVector);
-
 		return *this;
 	}
 

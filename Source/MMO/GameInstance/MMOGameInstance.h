@@ -58,7 +58,10 @@ public:
 	void HandleGameLogin(CPacket* packet);
 	void HandleFieldMove(CPacket* packet);
 	void HandleSpawnMyCharacter(CPacket* packet);
-
+	void HandleSpawnOhterCharacter(CPacket* packet);
+	void HandleCharacterMove(CPacket* packet);
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character")
+	TSubclassOf<AActor> GameCharacterClass;
 	
 
 private:
@@ -88,4 +91,9 @@ private:
 
 	//FWorldDelegates::FWorldInitializationEvent::FDelegate OnPostWorldInitHandle;
 	void OnLevelLoaded(UWorld* World);
+
+
+
+private:
+	TMap<int64, class AGameCharacter*> CharacterMap;
 };
