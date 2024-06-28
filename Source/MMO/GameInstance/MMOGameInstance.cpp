@@ -324,7 +324,6 @@ void UMMOGameInstance::HandleSpawnOhterCharacter(CPacket* packet)
 		if (SpawnedCharacter)
 		{
 			SpawnedCharacter->InitCharAttributeComponent(100, spawnOtherCharacterInfo.NickName, spawnOtherCharacterInfo.Level);
-
 			CharacterMap.Add(spawnOtherCharacterInfo.PlayerID, SpawnedCharacter);
 		}
 		else

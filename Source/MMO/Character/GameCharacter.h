@@ -97,7 +97,7 @@ protected:
 	virtual void GetHit(int32 damage);
 
 public:
-	void InitCharAttributeComponent(int32 Health, FString CharName, int32 Level);
+	virtual void InitCharAttributeComponent(int32 Health, FString CharName, int32 Level);
 	
 protected:
 	UPROPERTY(VisibleAnywhere)

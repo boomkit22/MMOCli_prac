@@ -19,17 +19,17 @@ ARemoteGameCharacter::ARemoteGameCharacter()
 void ARemoteGameCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+}
 
-	//이런코드//
+void ARemoteGameCharacter::InitCharAttributeComponent(int32 Health, FString CharName, int32 Level)
+{
+	CharAttributeComponent->Init(Health, CharName, Level);
 	if (HUDRemoteCharacterComponent)
 	{
 		UE_LOG(LogTemp, Error, TEXT("Set Monster HUD Component."));
 		HUDRemoteCharacterComponent->SetCharacterName(CharAttributeComponent->GetCharName());
 		HUDRemoteCharacterComponent->SetHealthPercent(CharAttributeComponent->GetHelathPercent());
 		HUDRemoteCharacterComponent->SetCharacterLevel(CharAttributeComponent->GetLevel());
-	}
-	else {
-		UE_LOG(LogTemp, Error, TEXT("Monster HUD Component is nullptr."));
 	}
 }
 
