@@ -38,6 +38,7 @@ AGameCharacter* AGamePlayerController::SpawnMyCharacter(SpawnMyCharacterInfo spa
                 FString name = spawnMyCharterInfo.NickName;
                 uint16 level = spawnMyCharterInfo.Level;
 
+                GameCharacter->SetPlayerID(spawnMyCharterInfo.PlayerID);
 				GameCharacter->InitCharAttributeComponent(100, name, level);
 
                 AMMOHUD* MMOHUD = Cast<AMMOHUD>(GetHUD());

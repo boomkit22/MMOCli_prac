@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "CharacterTypes.h"
+#include "Interface/HittableInterface.h"
 #include "GameCharacter.generated.h"
 
 
@@ -15,8 +16,9 @@ class UMMOOverlay;
 class AWeapon;
 
 UCLASS()
-class MMO_API AGameCharacter : public ACharacter
+class MMO_API AGameCharacter : public ACharacter, public IHittableInterface
 {
+	friend class UMMOGameInstance;
 	GENERATED_BODY()
 public:
 	// Sets default values for this character's properties
@@ -43,6 +45,12 @@ public:
 	void OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
 		bool bFromSweep, const FHitResult& SweepResult);
+
+	UFUNCTION()
+	void OnWeaponBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
+		bool bFromSweep, const FHitResult& SweepResult);
+
 
 
 protected:
@@ -125,4 +133,25 @@ protected:
 private:
 	UPROPERTY()
 	UMMOOverlay* MMOOverlay;
+
+	private:
+		float AttackCoolTime = 0.6f;
+		bool bIsCool = false;
+		FTimerHandle AttackCooldownTimerHandle;
+
+		void ResetAttackCoolTime();
+
+public:
+		FORCEINLINE int64 GetPlayerID() const { return PlayerID; }
+		FORCEINLINE void SetPlayerID(int64 NewPlayerID) { PlayerID = NewPlayerID; }
+
+protected:
+		int64 PlayerID;
+
+
+		// IHittableInterface을(를) 통해 상속됨
+		int GetType() override;
+
+		int64 GetId() override;
+
 };

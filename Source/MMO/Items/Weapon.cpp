@@ -13,7 +13,6 @@ AWeapon::AWeapon()
 
 	WeaponBox = CreateDefaultSubobject<UBoxComponent>(TEXT("WeaponBox"));
 	WeaponBox->SetupAttachment(GetRootComponent());
-	WeaponBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 
 
@@ -21,21 +20,20 @@ AWeapon::AWeapon()
 }
 
 
-void AWeapon::OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
-	bool bFromSweep, const FHitResult& SweepResult)
-{
-	// 로그 메시지 출력
-	UE_LOG(LogTemp, Warning, TEXT("Weapon Box Overlap with: %s"), *OtherActor->GetName());
-
-	// 디버그 스피어를 그려 충돌 지점 시각화
-	DrawDebugSphere(GetWorld(), SweepResult.ImpactPoint, 10.0f, 12, FColor::Red, false, 1.0f);
-}
+//void AWeapon::OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+//	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
+//	bool bFromSweep, const FHitResult& 
+//{
+//	// 로그 메시지 출력
+//	UE_LOG(LogTemp, Warning, TEXT("Weapon Box Overlap with: %s"), *OtherActor->GetName());
+//	DrawDebugSphere(GetWorld(), OtherActor->GetActorLocation(), 10.0f, 12, FColor::Red, false, 1.0f);
+//	WeaponBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+//}
 
 void AWeapon::BeginPlay()
 {
 	Super::BeginPlay();
-	WeaponBox->OnComponentBeginOverlap.AddDynamic(this, &AWeapon::OnBoxBeginOverlap);
+	//WeaponBox->OnComponentBeginOverlap.AddDynamic(this, &AWeapon::OnBoxBeginOverlap);
 }
 
 

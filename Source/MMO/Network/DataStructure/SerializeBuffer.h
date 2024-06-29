@@ -19,7 +19,8 @@ class MMO_API CPacket
 	friend CPacket& operator>>(CPacket& packet, SpawnMyCharacterInfo& spawnMyCharacterInfo);
 	friend CPacket& operator<<(CPacket& packet, SpawnOtherCharacterInfo& spawnOtherCharacterInfo);
 	friend CPacket& operator>>(CPacket& packet, SpawnOtherCharacterInfo& spawnOtherCharacterInfo);
-
+	friend CPacket& operator<<(CPacket& packet, AttackInfo& attackInfo);
+	friend CPacket& operator>>(CPacket& packet, AttackInfo& attackInfo);
 
 	friend class TlsObjectPool<CPacket, false>;
 

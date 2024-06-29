@@ -138,8 +138,14 @@ void AGameCharacter::BeginPlay()
 	}
 	 DamageCapsule->OnComponentBeginOverlap.AddDynamic(this, &AGameCharacter::OnBoxBeginOverlap);
 
+	 if (EquippedWeapon)
+	 {
+		 UBoxComponent * WeaponBox = EquippedWeapon->GetWeaponBox();
+		 WeaponBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		 WeaponBox->OnComponentBeginOverlap.AddDynamic(this, &AGameCharacter::OnWeaponBeginOverlap);
+	 }
 
-
+	
 }
 
 // Called every frame
@@ -179,23 +185,63 @@ void AGameCharacter::SetWeaponCollisionEnabled(ECollisionEnabled::Type Collision
 {
 	if (EquippedWeapon && EquippedWeapon->GetWeaponBox())
 	{
+		UE_LOG(LogTemp, Warning, TEXT("set weapon"));
 		EquippedWeapon->GetWeaponBox()->SetCollisionEnabled(CollisionEnabled);
+
 		//EquippedWeapon->SetWeaponCollisionEnabled(CollisionEnabled);
 	}
 }
 
 void AGameCharacter::OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Character OnBoxBeginOverlap"));
+	//UE_LOG(LogTemp, Warning, TEXT("1 Character OnBoxBeginOverlap : %s"), *OtherActor->GetName());
 
-	AGameCharacter* AttackingCharacter = Cast<AGameCharacter>(GetOwner());
-	if (AttackingCharacter)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Character Capsule Overlap with: %s"), *OtherActor->GetName());
-		AGameCharacter* AttackedCharacter = Cast<AGameCharacter>(OtherActor);
+	//AGameCharacter* AttackingCharacter = Cast<AGameCharacter>(GetOwner());
+	//IHittableInterface* AttackingCharacter = Cast<IHittableInterface>(OtherActor);
+
+	//UE_LOG(LogTemp, Warning, TEXT("Overlap Character Attacked %s"), *OtherActor->GetName());
+
+	//if (AttackingCharacter)
+	//{
+		//UE_LOG(LogTemp, Warning, TEXT("Overlap Character Attacked Attacker Id : %lld, Attacker Type : %d"), AttackingCharacter->GetId(), AttackingCharacter->GetType());
+	/*	AGameCharacter* AttackedCharacter = Cast<AGameCharacter>(OtherActor);
 		AttackedCharacter->GetHit(20);
-		DrawDebugSphere(GetWorld(), SweepResult.ImpactPoint, 10.0f, 10, FColor::Red, false, 1.0f);
+		DrawDebugSphere(GetWorld(), SweepResult.ImpactPoint, 10.0f, 10, FColor::Red, false, 1.0f);*/
+	//}
+}
+
+void AGameCharacter::OnWeaponBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	//TODO:
+	//UE_LOG(LogTemp, Warning, TEXT("Weapon Overlap with: %s"), *OtherActor->GetName());
+	//AGameCharacter* AttacedCharacter = Cast<AGameCharacter>(OtherActor);
+	//if (AttacedCharacter)
+	//{
+	//	AttacedCharacter->GetHit(20);
+	//}
+
+	IHittableInterface* AttackedCharacter = Cast<IHittableInterface>(OtherActor);
+	if(AttackedCharacter)
+	{
+		
+		//AttackedCharacter->GetHit(20);
+
+		CPacket* packet = CPacket::Alloc();
+		//packet = CPacket::Alloc();
+		AttackInfo attackInfo;
+		attackInfo.AttackerID = GetId();
+		attackInfo.AttackerType = GetType();
+		attackInfo.TargetID = AttackedCharacter->GetId();
+		attackInfo.TargetType = AttackedCharacter->GetType();
+		attackInfo.Damage = 20;
+
+		UE_LOG(LogTemp, Warning, TEXT("attacker : %lld, target : %lld"), attackInfo.AttackerID, attackInfo.TargetID);
+
+		GamePacketMaker::MP_CS_REQ_CHARACTER_ATTACK(packet, attackInfo);
+		//UMMOGameInstance::GetInstance()->SendPacket_GameServer(packet);
 	}
+
+	EquippedWeapon->GetWeaponBox()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 void AGameCharacter::MoveForward(float Value)
@@ -244,10 +290,20 @@ void AGameCharacter::LookUp(float Value)
 
 void AGameCharacter::Attack()
 {
+	//TODO: Attack CoolTime
+	if (bIsCool)
+	{
+		return;
+	}
+
+	bIsCool = true;
+	GetWorld()->GetTimerManager().SetTimer(AttackCooldownTimerHandle, this, &AGameCharacter::ResetAttackCoolTime, AttackCoolTime, false);
+
 	if(MovingState == EMovingState::EMS_Dead)
 	{
 		return;
 	}
+
 
 	if (ActionState == EActionState::EAS_Unoccupied)
 	{
@@ -445,6 +501,21 @@ void AGameCharacter::SpawnOtherCharacter()
 void AGameCharacter::InitCharAttributeComponent(int32 Health, FString CharName, int32 Level)
 {
 	CharAttributeComponent->Init(Health, CharName, Level);
+}
+
+void AGameCharacter::ResetAttackCoolTime()
+{
+	bIsCool = false;
+}
+
+int AGameCharacter::GetType()
+{
+	return TYPE_PLAYER;
+}
+
+int64 AGameCharacter::GetId()
+{
+	return PlayerID;
 }
 
 void AGameCharacter::GetHit(int32 damage)

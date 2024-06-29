@@ -315,6 +315,7 @@ void UMMOGameInstance::HandleSpawnOhterCharacter(CPacket* packet)
 	if (GameCharacterClass)
 	{
 		FActorSpawnParameters SpawnParams;
+		
 		FRotator Rotation = FRotator(0.0f, 0.0f, 0.0f); // 예시 회전
 		// 캐릭터 스폰
 		UE_LOG(LogTemp, Warning, TEXT("%s"), *(GetWorld()->GetName()));
@@ -323,6 +324,7 @@ void UMMOGameInstance::HandleSpawnOhterCharacter(CPacket* packet)
 		AGameCharacter* SpawnedCharacter = Cast<AGameCharacter>(GetWorld()->SpawnActor<ARemoteGameCharacter>(RemoteGameCharacterClass, SpawnLocation, Rotation, SpawnParams));
 		if (SpawnedCharacter)
 		{
+			SpawnedCharacter->SetPlayerID(spawnOtherCharacterInfo.PlayerID);
 			SpawnedCharacter->InitCharAttributeComponent(100, spawnOtherCharacterInfo.NickName, spawnOtherCharacterInfo.Level);
 			CharacterMap.Add(spawnOtherCharacterInfo.PlayerID, SpawnedCharacter);
 		}
@@ -344,6 +346,27 @@ void UMMOGameInstance::HandleCharacterMove(CPacket* packet)
 	{
 		(*character)->SetDestination(destination);
 	}
+}
+
+void UMMOGameInstance::HandleDamage(CPacket* packet)
+{
+	AttackInfo attackInfo;
+	*packet >> attackInfo;
+
+	int32 type = attackInfo.TargetType;
+
+	if(type == TYPE_PLAYER)
+	{
+		auto target = CharacterMap.Find(attackInfo.TargetID);
+		if (target)
+		{
+			(*target)->GetHit(attackInfo.Damage);
+		}
+	}
+	else if (type == TYPE_MONSTER)
+	{
+	}
+	
 }
 
 bool UMMOGameInstance::Tick(float DeltaTime)

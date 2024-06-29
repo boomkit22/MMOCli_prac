@@ -156,4 +156,29 @@ enum PACKET_TYPE
 	//	}
 	//------------------------------------------------------------
 	PACKET_SC_GAME_RES_CHARACTER_MOVE = 1010,
+
+	//------------------------------------------------------------
+	// {
+	//		WORD	Type
+	//		int32   AttackerType
+	//		int64   AttackerID
+	//		int32   TargetType
+	// 		int64   TargetID
+	// 		int32   Damage
+	//	}
+	//------------------------------------------------------------
+	PACKET_CS_GAME_REQ_CHARACTER_ATTACK = 1011,
+
+
+	//------------------------------------------------------------
+	// {
+	//		WORD	Type
+	//		int32   AttackerType
+	//		int64   AttackerID
+	//		int32   TargetType
+	// 		int64   TargetID
+	// 		int32   Damage
+	//	}
+	//------------------------------------------------------------
+	PACKET_SC_GAME_RES_DAMAGE = 1012,
 };

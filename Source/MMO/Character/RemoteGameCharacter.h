@@ -4,8 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "Character/GameCharacter.h"
+#include "Interface/HittableInterface.h"
 #include "RemoteGameCharacter.generated.h"
-
 /**
  * 
  */
@@ -33,4 +33,10 @@ protected:
 private:
 	UPROPERTY(VisibleAnywhere)
 	class UHUDRemoteCharacterComponent* HUDRemoteCharacterComponent;
+public:
+	
+
+	// IHittableInterface을(를) 통해 상속됨
+	int GetType() override;
+	int64 GetId() override;
 };

@@ -6,7 +6,7 @@
 #include "Components/CapsuleComponent.h"
 #include "MMOComponent/MonsAttributeComponent.h"
 #include "HUD/HUDMonsterComponent.h"
-
+#include "Type.h"
 // Sets default values
 AMonster::AMonster()
 {
@@ -178,5 +178,15 @@ void AMonster::GetHit(int damage)
 	{
         Death();
 	}
+}
+
+int AMonster::GetType()
+{
+    return TYPE_MONSTER;
+}
+
+int64 AMonster::GetId()
+{
+    return MonsterID;
 }
 

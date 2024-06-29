@@ -32,9 +32,9 @@ protected:
 public:
 	FORCEINLINE UBoxComponent* GetWeaponBox() const { return WeaponBox; }
 
-	UFUNCTION()
+	/*UFUNCTION()
 	void OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
-		bool bFromSweep, const FHitResult& SweepResult);
+		bool bFromSweep, const FHitResult& SweepResult);*/
 
 };

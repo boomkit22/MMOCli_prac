@@ -4,6 +4,7 @@
 #include "Character/RemoteGameCharacter.h"
 #include "MMOComponent/CharAttributeComponent.h"
 #include "HUD/HUDRemoteCharacterComponent.h"
+#include "Type.h"
 
 
 ARemoteGameCharacter::ARemoteGameCharacter()
@@ -35,7 +36,6 @@ void ARemoteGameCharacter::InitCharAttributeComponent(int32 Health, FString Char
 
 void ARemoteGameCharacter::GetHit(int32 damage)
 {
-	CharAttributeComponent->GetDamage(damage);
 	//CharAttributeComponent->GetDamage(damage);
 
 	//여기서 이제 HUD접근해서 SetHealthBarPercent를 호출해야함
@@ -47,8 +47,22 @@ void ARemoteGameCharacter::GetHit(int32 damage)
 
 	/*HUDCharacterComponent->SetHealthPercent(MonsAttributeComponent->GetHelathPercent());
 	*/
+	CharAttributeComponent->GetDamage(damage);
+	HUDRemoteCharacterComponent->SetHealthPercent(CharAttributeComponent->GetHelathPercent());
+
 	if (!CharAttributeComponent->IsAlive())
 	{
 		Death();
 	}
 }
+
+int ARemoteGameCharacter::GetType()
+{
+	return TYPE_PLAYER;
+}
+
+int64 ARemoteGameCharacter::GetId()
+{
+	return PlayerID;
+}
+

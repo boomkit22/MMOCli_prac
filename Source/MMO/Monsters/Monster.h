@@ -5,12 +5,15 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Monsters/MonsterState.h"
+#include "Interface/HittableInterface.h"
 #include "Monster.generated.h"
+
+
 
 class UHUDMonsterComponent;
 
 UCLASS()
-class MMO_API AMonster : public ACharacter
+class MMO_API AMonster : public ACharacter, public IHittableInterface
 {
 	GENERATED_BODY()
 
@@ -65,5 +68,12 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Montages")
 	UAnimMontage* DeathMontage;
+
+	// IHittableInterface을(를) 통해 상속됨
+	int GetType() override;
+	int64 GetId() override;
+
+private:
+	int64 MonsterID;
 };
 

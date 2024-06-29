@@ -45,6 +45,12 @@ void GamePacketHandler::HandlePacket(CPacket* packet)
 	}
 	break;
 
+	case PACKET_SC_GAME_RES_DAMAGE:
+	{
+		HandleDamage(packet);
+	}
+	break;
+
 
 	default:
 		break;
@@ -103,6 +109,17 @@ void GamePacketHandler::HandleCharacterMove(CPacket* packet)
 	if (UMMOGameInstance* GameInstance = UMMOGameInstance::GetInstance())
 	{
 		GameInstance->HandleCharacterMove(packet);
+	}
+	else {
+		UE_LOG(LogTemp, Warning, TEXT("Handle Login GAme instacne null"));
+	}
+}
+
+void GamePacketHandler::HandleDamage(CPacket* packet)
+{
+	if (UMMOGameInstance* GameInstance = UMMOGameInstance::GetInstance())
+	{
+		GameInstance->HandleDamage(packet);
 	}
 	else {
 		UE_LOG(LogTemp, Warning, TEXT("Handle Login GAme instacne null"));
