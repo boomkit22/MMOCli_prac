@@ -16,6 +16,9 @@
 #include "GameInstance/MMOGameInstance.h"
 #include "Network/DataStructure/SerializeBuffer.h"
 #include "PacketMaker/GamePacketMaker.h"
+#include "Items/Weapon.h"
+#include "Components/BoxComponent.h"
+#include "Components/CapsuleComponent.h"
 
 //#include "GameInstacne/MMOGameInstacne.h""
 
@@ -62,20 +65,26 @@ AGameCharacter::AGameCharacter()
 	//ViewCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("ViewCamera"));
 	//ViewCamera->SetupAttachment(CameraBoom);
 
+	//TODO: 무기 생성 및 메시 가져와서 hand_rSocket에 붙이기
+	
+
+
+
+	
 	// 무기 메시를 생성하고 로드합니다.
-	WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WeaponMesh"));
-	WeaponMesh->SetupAttachment(GetMesh(), TEXT("hand_rSocket")); // "WeaponSocketName"을 생성한 소켓 이름으로 바꿉니다.
+	//WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WeaponMesh"));
+	//WeaponMesh->SetupAttachment(GetMesh(), TEXT("hand_rSocket")); // "WeaponSocketName"을 생성한 소켓 이름으로 바꿉니다.
 	// 무기 메쉬 설정
 
-	static ConstructorHelpers::FObjectFinder<USkeletalMesh> WeaponAsset(TEXT("/Game/Weapons/Blade_BlackKnight/SK_Blade_BlackKnight"));
-	if (WeaponAsset.Succeeded())
-	{
-		WeaponMesh->SetSkeletalMesh(WeaponAsset.Object);
-	}
-	else
-	{
-		UE_LOG(LogTemp, Error, TEXT("Failed to load weapon skeletal mesh."));
-	}
+	//static ConstructorHelpers::FObjectFinder<USkeletalMesh> WeaponAsset(TEXT("/Game/Weapons/Blade_BlackKnight/SK_Blade_BlackKnight"));
+	//if (WeaponAsset.Succeeded())
+	//{
+	//	WeaponMesh->SetSkeletalMesh(WeaponAsset.Object);
+	//}
+	//else
+	//{
+	//	UE_LOG(LogTemp, Error, TEXT("Failed to load weapon skeletal mesh."));
+	//}
 
 	//test
 	static ConstructorHelpers::FClassFinder<ACharacter> MonsterBPClass(TEXT("/Game/Blueprint/Monsters/BP_Monster"));
@@ -89,8 +98,8 @@ AGameCharacter::AGameCharacter()
 		UE_LOG(LogTemp, Error, TEXT("Failed to load monster class."));
 	}
 
-
-
+	DamageCapsule = CreateDefaultSubobject<UCapsuleComponent>(TEXT("WeaponBox"));
+	DamageCapsule->SetupAttachment(GetRootComponent());
 
 	// 캐릭터 속성 컴포넌트 생성
 	CharAttributeComponent = CreateDefaultSubobject<UCharAttributeComponent>(TEXT("CharAttribute"));
@@ -117,6 +126,18 @@ void AGameCharacter::BeginPlay()
 			MMOOverlay = MMOHUD->GetMMOOverlay();
 		}
 	}
+
+	if (WeaponClass)
+	{
+		EquippedWeapon = GetWorld()->SpawnActor<AWeapon>(WeaponClass);
+		if (EquippedWeapon)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("EquippedWeapon is spawned."))
+			EquippedWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("hand_rSocket"));
+		}
+	}
+	 DamageCapsule->OnComponentBeginOverlap.AddDynamic(this, &AGameCharacter::OnBoxBeginOverlap);
+
 
 
 }
@@ -152,6 +173,29 @@ void AGameCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 void AGameCharacter::AttackEnd()
 {
 	ActionState = EActionState::EAS_Unoccupied;
+}
+
+void AGameCharacter::SetWeaponCollisionEnabled(ECollisionEnabled::Type CollisionEnabled)
+{
+	if (EquippedWeapon && EquippedWeapon->GetWeaponBox())
+	{
+		EquippedWeapon->GetWeaponBox()->SetCollisionEnabled(CollisionEnabled);
+		//EquippedWeapon->SetWeaponCollisionEnabled(CollisionEnabled);
+	}
+}
+
+void AGameCharacter::OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Character OnBoxBeginOverlap"));
+
+	AGameCharacter* AttackingCharacter = Cast<AGameCharacter>(GetOwner());
+	if (AttackingCharacter)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Character Capsule Overlap with: %s"), *OtherActor->GetName());
+		AGameCharacter* AttackedCharacter = Cast<AGameCharacter>(OtherActor);
+		AttackedCharacter->GetHit(20);
+		DrawDebugSphere(GetWorld(), SweepResult.ImpactPoint, 10.0f, 10, FColor::Red, false, 1.0f);
+	}
 }
 
 void AGameCharacter::MoveForward(float Value)

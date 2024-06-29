@@ -12,6 +12,7 @@ class USpringArmComponent;
 class UCameraComponent;
 class UAnimMontage;
 class UMMOOverlay;
+class AWeapon;
 
 UCLASS()
 class MMO_API AGameCharacter : public ACharacter
@@ -35,6 +36,15 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void AttackEnd();
 
+	UFUNCTION(BlueprintCallable)
+	void SetWeaponCollisionEnabled(ECollisionEnabled::Type CollisionEnabled);
+
+	UFUNCTION()
+	void OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
+		bool bFromSweep, const FHitResult& SweepResult);
+
+
 protected:
 	//input
 	void MoveForward(float Value);
@@ -48,7 +58,7 @@ protected:
 	*/
 	void PlayAttackMontage();
 	
-private:
+protected:
 	EActionState ActionState = EActionState::EAS_Unoccupied;
 	UPROPERTY(VisibleAnywhere)
 	USpringArmComponent* CameraBoom;
@@ -56,8 +66,12 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	UCameraComponent* ViewCamera;
 
-	UPROPERTY(VisibleAnywhere, Category = "Weapon")
-	USkeletalMeshComponent* WeaponMesh;
+
+	UPROPERTY(VisibleAnywhere)
+	AWeapon* EquippedWeapon;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
+	TSubclassOf<AWeapon> WeaponClass; 
 
 	/**
 	* Animation montages
@@ -103,10 +117,12 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	class UCharAttributeComponent* CharAttributeComponent;
 	
-private:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Collision, meta = (AllowPrivateAccess = "true"))
-	class UCapsuleComponent* CollisionComponent;
+protected:
+	UPROPERTY(VisibleAnywhere, Category = "Collision")
 
+	class UCapsuleComponent* DamageCapsule;
+
+private:
 	UPROPERTY()
 	UMMOOverlay* MMOOverlay;
 };
