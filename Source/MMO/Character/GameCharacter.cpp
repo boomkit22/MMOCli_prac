@@ -219,6 +219,7 @@ void AGameCharacter::OnWeaponBeginOverlap(UPrimitiveComponent* OverlappedCompone
 	//{
 	//	AttacedCharacter->GetHit(20);
 	//}
+	EquippedWeapon->GetWeaponBox()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	IHittableInterface* AttackedCharacter = Cast<IHittableInterface>(OtherActor);
 	if(AttackedCharacter)
@@ -228,20 +229,21 @@ void AGameCharacter::OnWeaponBeginOverlap(UPrimitiveComponent* OverlappedCompone
 
 		CPacket* packet = CPacket::Alloc();
 		//packet = CPacket::Alloc();
-		AttackInfo attackInfo;
-		attackInfo.AttackerID = GetId();
-		attackInfo.AttackerType = GetType();
-		attackInfo.TargetID = AttackedCharacter->GetId();
-		attackInfo.TargetType = AttackedCharacter->GetType();
-		attackInfo.Damage = 20;
+		
+		int64 AttackerID = GetId();
+		int32 AttackerType = GetType();
+		int64 TargetID = AttackedCharacter->GetId();
+		int32 TargetType = AttackedCharacter->GetType();
+		int64 Damage = 20;
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("attacker : %lld, target : %lld"), AttackerID, TargetID));
+		//UE_LOG(LogTemp, Warning, TEXT("attacker : %lld, target : %lld"), attackInfo.AttackerID, attackInfo.TargetID);
 
-		UE_LOG(LogTemp, Warning, TEXT("attacker : %lld, target : %lld"), attackInfo.AttackerID, attackInfo.TargetID);
-
-		GamePacketMaker::MP_CS_REQ_CHARACTER_ATTACK(packet, attackInfo);
+		GamePacketMaker::MP_CS_REQ_CHARACTER_ATTACK(packet, AttackerType, AttackerID, TargetType, TargetID, Damage);
 		UMMOGameInstance::GetInstance()->SendPacket_GameServer(packet);
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Send Damage Packet")));
+
 	}
 
-	EquippedWeapon->GetWeaponBox()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 void AGameCharacter::MoveForward(float Value)

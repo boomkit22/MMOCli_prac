@@ -15,7 +15,7 @@ public:
 	static void MP_CS_REQ_LOGIN(CPacket* Packet, int64& accountNo);
 	static void MP_CS_REQ_FIELD_MOVE(CPacket* Packet, uint16& fieldID);
 	static void MP_CS_REQ_CHARACTER_MOVE(CPacket* Packet, FVector& Destination, FRotator& StartRotation);
-	static void MP_CS_REQ_CHARACTER_ATTACK(CPacket* packet, AttackInfo& attackInfo);
+	static void MP_CS_REQ_CHARACTER_ATTACK(CPacket* packet, int32 AttackerType, int64 AttackerID, int32 TargetType, int64 TargetID, int32 Damage);
 	static void MP_SC_REQ_CHARACTER_SKILL(CPacket* packet, FRotator& StartRotator, int32 SkillID);
 
 private:

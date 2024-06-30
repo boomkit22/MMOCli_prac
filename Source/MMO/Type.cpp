@@ -90,23 +90,6 @@ CPacket& operator>>(CPacket& packet, SpawnOtherCharacterInfo& spawnOtherCharacte
 	return packet;
 }
 
-CPacket& operator<<(CPacket& packet, AttackInfo& attackInfo)
-{
-	int copySize = sizeof(int32) * 4 + sizeof(int64);
-	memcpy(&packet._buffer[packet._writePos], &attackInfo, copySize);
-	packet._writePos += copySize;
-	packet._dataSize += copySize;
-	return packet;
-}
-
-CPacket& operator>>(CPacket& packet, AttackInfo& attackInfo)
-{
-	int copySize = sizeof(int32) * 4 + sizeof(int64);
-	memcpy(&attackInfo, &packet._buffer[packet._readPos], copySize);
-	packet._readPos += copySize;
-	packet._dataSize -= copySize;
-	return packet;
-}
 
 
 

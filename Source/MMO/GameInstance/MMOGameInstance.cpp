@@ -352,26 +352,26 @@ void UMMOGameInstance::HandleCharacterMove(CPacket* packet)
 
 void UMMOGameInstance::HandleDamage(CPacket* packet)
 {
-	AttackInfo attackInfo;
-	*packet >> attackInfo;
+	
 
-	int32 type = attackInfo.TargetType;
+	int32   AttackerType;
+	int64   AttackerID;
+	int32   TargetType;
+	int64   TargetID;
+	int32   Damage;
+	*packet >> AttackerType >> AttackerID >> TargetType >> TargetID >> Damage;
 
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("1Handle Damage: target ID %lld"), attackInfo.TargetID));
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Handle Damage :%lld\n"), TargetID));
 
-
-	if(type == TYPE_PLAYER)
+	if(TargetType == TYPE_PLAYER)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("2Handle Damage: target ID %lld"), attackInfo.TargetID));
-		
-		auto target = CharacterMap.Find(attackInfo.TargetID);
+		auto target = CharacterMap.Find(TargetID);
 		if (target)
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("3Handle Damage: target ID %lld"), attackInfo.TargetID));
-			(*target)->GetHit(attackInfo.Damage);
+			(*target)->GetHit(Damage);
 		}
 	}
-	else if (type == TYPE_MONSTER)
+	else if (TargetType == TYPE_MONSTER)
 	{
 	}
 	
