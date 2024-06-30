@@ -163,7 +163,6 @@ void AGameCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	//PlayerInputComponent->BindAxis("MoveRight", this, &AGameCharacter::MoveRight);
 	//PlayerInputComponent->BindAxis("Turn", this, &AGameCharacter::Turn);
 	//PlayerInputComponent->BindAxis("LookUp", this, &AGameCharacter::LookUp);
-
 	PlayerInputComponent->BindAction("LeftMouseClick", IE_Pressed, this, &AGameCharacter::LeftMouseClick);
 	PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &AGameCharacter::Attack);
 	PlayerInputComponent->BindAction("SpawnMonster", IE_Pressed, this, &AGameCharacter::SpawnMonster);
@@ -174,6 +173,7 @@ void AGameCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	PlayerInputComponent->BindAction("MonsterDamage", IE_Pressed, this, &AGameCharacter::MonsterDamage);
 	PlayerInputComponent->BindAction("DamageTest", IE_Pressed, this, &AGameCharacter::DamageTest);
 	PlayerInputComponent->BindAction("SpawnOtherCharacter", IE_Pressed, this, &AGameCharacter::SpawnOtherCharacter);
+	PlayerInputComponent->BindAction("RecoverHealth", IE_Pressed, this, &AGameCharacter::RecoverHealth);
 }
 
 void AGameCharacter::AttackEnd()
@@ -234,7 +234,7 @@ void AGameCharacter::OnWeaponBeginOverlap(UPrimitiveComponent* OverlappedCompone
 		int32 AttackerType = GetType();
 		int64 TargetID = AttackedCharacter->GetId();
 		int32 TargetType = AttackedCharacter->GetType();
-		int64 Damage = 20;
+		int64 Damage = 5;
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("attacker : %lld, target : %lld"), AttackerID, TargetID));
 		//UE_LOG(LogTemp, Warning, TEXT("attacker : %lld, target : %lld"), attackInfo.AttackerID, attackInfo.TargetID);
 
@@ -507,6 +507,15 @@ void AGameCharacter::SpawnOtherCharacter()
 	*packet << spawnOtherCharacterInfo;
 	UMMOGameInstance::GetInstance()->HandleSpawnOhterCharacter(packet);
 	CPacket::Free(packet);
+}
+
+void AGameCharacter::RecoverHealth()
+{
+	CharAttributeComponent->RecoverHealth(100);
+	if (MMOOverlay && CharAttributeComponent)
+	{
+		MMOOverlay->SetHealthBarPercent(CharAttributeComponent->GetHelathPercent());
+	}
 }
 
 void AGameCharacter::InitCharAttributeComponent(int32 Health, FString CharName, int32 Level)

@@ -7,7 +7,9 @@
 #include "Components/EditableText.h"
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
-
+#include "Network/DataStructure/SerializeBuffer.h"
+#include "PacketMaker/ChattingPacketMaker.h"
+#include "GameInstance/MMOGameInstance.h"
 void UMMOChatOverlay::NativeConstruct()
 {
 	Super::NativeConstruct();
@@ -16,6 +18,8 @@ void UMMOChatOverlay::NativeConstruct()
 	{
 		SendButton->OnClicked.AddDynamic(this, &UMMOChatOverlay::OnSendButtonClicked);
 	}
+
+    AccountId = UMMOGameInstance::GetInstance()->GetAccountId();
 }
 
 void UMMOChatOverlay::OnSendButtonClicked()
@@ -25,18 +29,28 @@ void UMMOChatOverlay::OnSendButtonClicked()
         FString InputText = MessageEditableText->GetText().ToString();
         if (!InputText.IsEmpty())
         {
-            UTextBlock* NewMessage = NewObject<UTextBlock>(ChatVerticalBox);
-            if (NewMessage)
-            {
-                NewMessage->SetText(FText::FromString(InputText));
-                ChatVerticalBox->InsertChildAt(0, NewMessage);
-
-                // Clear the input box
-                MessageEditableText->SetText(FText::GetEmpty());
-
-                // Scroll to the bottom
-                ChatScrollBox->ScrollToEnd();
-            }
+            CPacket* messagePacket = CPacket::Alloc();
+            ChattingPacketMaker::MP_CS_REQ_MESSAGE(messagePacket, AccountId, InputText);
+            UMMOGameInstance::GetInstance()->SendPacket_ChattingServer(messagePacket);
+            // Clear the input box
+            MessageEditableText->SetText(FText::GetEmpty());
         }
     }
 }
+
+void UMMOChatOverlay::OnRecvMessage(const FString& Message)
+{
+    if (ChatVerticalBox)
+	{
+		UTextBlock* NewMessage = NewObject<UTextBlock>(ChatVerticalBox);
+		if (NewMessage)
+		{
+			NewMessage->SetText(FText::FromString(Message));
+			ChatVerticalBox->InsertChildAt(0, NewMessage);
+
+			// Scroll to the bottom
+			ChatScrollBox->ScrollToEnd();
+		}
+	}
+}
+

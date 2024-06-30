@@ -51,7 +51,6 @@ struct SpawnOtherCharacterInfo
 };
 
 
-
 CPacket& operator<<(CPacket& packet, SpawnOtherCharacterInfo& spawnOtherCharacterInfo);
 CPacket& operator>>(CPacket& packet, SpawnOtherCharacterInfo& spawnOtherCharacterInfo);
 

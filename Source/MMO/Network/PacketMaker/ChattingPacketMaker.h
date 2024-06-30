@@ -3,13 +3,21 @@
 #pragma once
 
 #include "CoreMinimal.h"
-
+#include "Type.h"
 /**
  * 
  */
+
+class CPacket;
+
 class MMO_API ChattingPacketMaker
 {
+
 public:
-	ChattingPacketMaker();
-	~ChattingPacketMaker();
+	static void MP_CS_REQ_LOGIN(CPacket* Packet, int64& accountNo, FString& NickName);
+	static void MP_CS_REQ_MESSAGE(CPacket* Packet, int64& accountNo, FString& message);
+
+private:
+	inline static uint16 GamePacketCode = 0x77;
+
 };

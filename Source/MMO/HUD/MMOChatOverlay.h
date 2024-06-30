@@ -20,6 +20,8 @@ public:
     UFUNCTION()
     void OnSendButtonClicked();
 
+    void OnRecvMessage(const FString& Message);
+
 private:
     UPROPERTY(meta = (BindWidget))
     class UScrollBox* ChatScrollBox;
@@ -32,4 +34,7 @@ private:
 
     UPROPERTY(meta = (BindWidget))
     class UButton* SendButton;
+
+private:
+    int64 AccountId;
 };

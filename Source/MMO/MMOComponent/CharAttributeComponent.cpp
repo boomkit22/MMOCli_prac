@@ -68,3 +68,12 @@ void UCharAttributeComponent::GetDamage(int damage)
 	}
 }
 
+void UCharAttributeComponent::RecoverHealth(int recover)
+{
+	Health += recover;
+	if (Health > MaxHealth)
+	{
+		Health = MaxHealth;
+	}
+}
+

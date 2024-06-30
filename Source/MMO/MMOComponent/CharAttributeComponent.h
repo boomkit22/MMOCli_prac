@@ -49,5 +49,6 @@ public:
 	bool IsAlive();
 	float GetHelathPercent();
 	void GetDamage(int damage);
+	void RecoverHealth(int recover);
 
 };

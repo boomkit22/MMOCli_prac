@@ -35,4 +35,5 @@ private:
 
 public:
 	FORCEINLINE UMMOOverlay* GetMMOOverlay() const { return MMOOverlay; }
+	FORCEINLINE UMMOChatOverlay* GetMMOChatOverlay() const { return MMOChatOverlay; }
 };

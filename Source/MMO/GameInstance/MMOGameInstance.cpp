@@ -20,6 +20,8 @@
 #include "Type.h"
 #include "Character/GameCharacter.h"
 #include "Character/RemoteGameCharacter.h"
+#include "HUD/MMOHUD.h"
+#include "HUD/MMOChatOverlay.h"
 
 bool bLoading = false;
 
@@ -154,9 +156,17 @@ void UMMOGameInstance::HandleLoginLogin(CPacket* packet)
 			//Text : 게임서버 연결 실패
 		}
 
+		//TODO: 채팅서버 연결 및 로그인
+		bool bConnectChat = ConnectChattingServer();
+		if (!bConnectChat)
+		{
+			//TODO: 게임 종료
+		}
+
 		CPacket* gameServerLoginPacket = CPacket::Alloc();
-		GamePacketMaker::MP_CS_REQ_LOGIN(gameServerLoginPacket, accountNo);
+		GamePacketMaker::MP_CS_REQ_LOGIN(gameServerLoginPacket, AccountId);
 		SendPacket_GameServer(gameServerLoginPacket);
+
 	}
 	else {
 		//TODO:
@@ -237,6 +247,11 @@ void UMMOGameInstance::HandleGameLogin(CPacket* packet)
 
 	if (Status)
 	{
+		//로그인 패킷 보내기
+		CPacket* chatLoginPacket = CPacket::Alloc();
+		ChattingPacketMaker::MP_CS_REQ_LOGIN(chatLoginPacket, AccountNo, CharacterID);
+		SendPacket_ChattingServer(chatLoginPacket);
+
 		//로그인 성공하면?
 		// 1. OverLay 변경
 		UWorld* World = GetWorld();
@@ -392,6 +407,52 @@ void UMMOGameInstance::HandleCharacterSkill(CPacket* packet)
 		(*character)->PlaySkill(SkillID);
 	}
 
+}
+
+void UMMOGameInstance::HandleChatMessage(CPacket* packet)
+{
+	int64 AccountNo;
+	TCHAR Nickname[20]; // null 포함, 20자 배열
+	uint16 MessageLen;
+	FString Message;
+
+	*packet >> AccountNo;
+	packet->GetData((char*)Nickname, 20 * sizeof(TCHAR)); // Nickname 추출
+
+	FString NikckNameStr = FString(Nickname);
+
+	*packet >> MessageLen;
+	TCHAR MessageArray[101]; // 최대 100글자로 제한, null 문자를 위한 공간 추가
+
+	// 메시지 길이가 최대 길이를 초과하는지 확인
+	int copyLen = FMath::Min((int)MessageLen, 200); // WCHAR 단위로 변환하므로 200 바이트로 제한
+	packet->GetData((char*)MessageArray, copyLen); // Message 추출
+	MessageArray[copyLen / 2] = '\0'; // null 종료 문자 추가
+
+	Message = FString(MessageArray); // WCHAR 배열을 FString으로 변환
+
+
+	FString TextOnOverlay = NikckNameStr + TEXT(": ") + Message;
+
+	//TODO: 채팅창에 메시지 출력
+	UWorld* World = GetWorld();
+	if (World)
+	{
+		APlayerController* Controller = World->GetFirstPlayerController();
+		if (Controller)
+		{
+			AHUD* HUD = Controller->GetHUD();
+			AMMOHUD* MMOOHUD = Cast<AMMOHUD>(HUD);
+			if (MMOOHUD)
+			{
+				UMMOChatOverlay* ChatOverlay = MMOOHUD->GetMMOChatOverlay();
+				if (ChatOverlay)
+				{
+					ChatOverlay->OnRecvMessage(TextOnOverlay);
+				}
+			}
+		}
+	}
 }
 
 bool UMMOGameInstance::Tick(float DeltaTime)
