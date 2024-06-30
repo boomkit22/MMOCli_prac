@@ -3,6 +3,7 @@
 
 #include "HUD/MMOHUD.h"
 #include "HUD/MMOOverlay.h"
+#include "HUD/MMOChatOverlay.h"
 
 void AMMOHUD::BeginPlay()
 {
@@ -13,12 +14,18 @@ void AMMOHUD::BeginPlay()
 	if (World)
 	{
 		APlayerController* Controller = World->GetFirstPlayerController();
-		if (Controller && MMOOverlayClass)
+		if (Controller && MMOOverlayClass && MMOChatOverlayClass)
 		{
 			MMOOverlay = CreateWidget<UMMOOverlay>(Controller, MMOOverlayClass);
 			if (MMOOverlay)
 			{
 				MMOOverlay->AddToViewport();
+			}
+
+			MMOChatOverlay = CreateWidget<UMMOChatOverlay>(Controller, MMOChatOverlayClass);
+			if (MMOChatOverlay)
+			{
+				MMOChatOverlay->AddToViewport();
 			}
 		}
 	}

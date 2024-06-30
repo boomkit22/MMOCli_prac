@@ -9,7 +9,7 @@
 /**
  * 
  */
-
+class UMMOChatOverlay;
 class UMMOOverlay;
 
 UCLASS()
@@ -24,8 +24,14 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "MMO")
 	TSubclassOf<UMMOOverlay> MMOOverlayClass;
 
+	UPROPERTY(EditDefaultsOnly, Category = "MMO")
+	TSubclassOf<UMMOChatOverlay> MMOChatOverlayClass;
+
 	UPROPERTY()
 	UMMOOverlay* MMOOverlay;
+
+	UPROPERTY()
+	UMMOChatOverlay* MMOChatOverlay;
 
 public:
 	FORCEINLINE UMMOOverlay* GetMMOOverlay() const { return MMOOverlay; }
