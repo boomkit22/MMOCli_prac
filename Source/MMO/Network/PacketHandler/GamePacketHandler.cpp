@@ -12,7 +12,8 @@ void GamePacketHandler::HandlePacket(CPacket* packet)
 	int16 packetType;
 	*packet >> packetType;
 
-	UE_LOG(LogTemp, Warning, TEXT("HandlePacket packetType : %d"), packetType)
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Handle Packet Type : %d"), packetType));
+
 	switch (packetType)
 	{
 	case PACKET_SC_GAME_RES_LOGIN:
@@ -51,8 +52,14 @@ void GamePacketHandler::HandlePacket(CPacket* packet)
 	}
 	break;
 
+	case PACKET_SC_GAME_RES_CHARACTER_SKILL:
+	{
+		HandleCharacterSkill(packet);
+	}
+	break;
 
 	default:
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Unknown Packet Type : %d"), packetType));
 		break;
 	}
 
@@ -120,6 +127,17 @@ void GamePacketHandler::HandleDamage(CPacket* packet)
 	if (UMMOGameInstance* GameInstance = UMMOGameInstance::GetInstance())
 	{
 		GameInstance->HandleDamage(packet);
+	}
+	else {
+		UE_LOG(LogTemp, Warning, TEXT("Handle Login GAme instacne null"));
+	}
+}
+
+void GamePacketHandler::HandleCharacterSkill(CPacket* packet)
+{
+	if (UMMOGameInstance* GameInstance = UMMOGameInstance::GetInstance())
+	{
+		GameInstance->HandleCharacterSkill(packet);
 	}
 	else {
 		UE_LOG(LogTemp, Warning, TEXT("Handle Login GAme instacne null"));

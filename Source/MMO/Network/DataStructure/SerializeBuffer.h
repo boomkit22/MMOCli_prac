@@ -10,7 +10,8 @@
 
 class MMO_API CPacket
 {
-
+	friend CPacket& operator<<(CPacket& packet, FRotator& rot);
+	friend CPacket& operator>>(CPacket& packet, FRotator& rot);
 	friend CPacket& operator<<(CPacket& packet, FVector& vec);
 	friend CPacket& operator>>(CPacket& packet, FVector& vec);
 	friend CPacket& operator<<(CPacket& packet, ResGameLoginInfo& resLoginInfo);

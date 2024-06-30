@@ -22,3 +22,9 @@ enum class EMovingState : uint8
 	EMS_Move UMETA(DisplayName = "Move"),
 	EMS_Idle UMETA(DisplayName = "Idle"),
 };
+
+enum class ECharacterSkill : uint8
+{
+	ECS_Combo1,
+	ECS_Combo1_1,
+};

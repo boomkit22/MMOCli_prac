@@ -20,4 +20,5 @@ private:
 	static void HandleSpawnOtherCharacter(CPacket* packet);
 	static void HandleCharacterMove(CPacket* packet);
 	static void HandleDamage(CPacket* packet);
+	static void HandleCharacterSkill(CPacket* packet);
 };

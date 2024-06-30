@@ -339,11 +339,13 @@ void UMMOGameInstance::HandleCharacterMove(CPacket* packet)
 {
 	int64 characterNo;
 	FVector destination;
-	*packet >> characterNo >> destination;
+	FRotator StartRotation;
+	*packet >> characterNo >> destination >> StartRotation ;
 
 	auto character = CharacterMap.Find(characterNo);
 	if (character)
 	{
+		(*character)->SetActorRotation(StartRotation);
 		(*character)->SetDestination(destination);
 	}
 }
@@ -355,11 +357,17 @@ void UMMOGameInstance::HandleDamage(CPacket* packet)
 
 	int32 type = attackInfo.TargetType;
 
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("1Handle Damage: target ID %lld"), attackInfo.TargetID));
+
+
 	if(type == TYPE_PLAYER)
 	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("2Handle Damage: target ID %lld"), attackInfo.TargetID));
+		
 		auto target = CharacterMap.Find(attackInfo.TargetID);
 		if (target)
 		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("3Handle Damage: target ID %lld"), attackInfo.TargetID));
 			(*target)->GetHit(attackInfo.Damage);
 		}
 	}
@@ -367,6 +375,23 @@ void UMMOGameInstance::HandleDamage(CPacket* packet)
 	{
 	}
 	
+}
+
+void UMMOGameInstance::HandleCharacterSkill(CPacket* packet)
+{
+	//이거는 이 캐릭터 뺴고 보내야지
+	int64 CharacterNo;
+	FRotator StartRotation;
+	int32 SkillID;
+	*packet >> CharacterNo >> StartRotation >>SkillID;
+
+	auto character = CharacterMap.Find(CharacterNo);
+	if (character)
+	{
+		(*character)->SetActorRotation(StartRotation);
+		(*character)->PlaySkill(SkillID);
+	}
+
 }
 
 bool UMMOGameInstance::Tick(float DeltaTime)

@@ -143,6 +143,7 @@ enum PACKET_TYPE
 	// {
 	//		WORD	Type
 	//		FVector Destination
+	//      FVector StartRotation
 	//	}
 	//------------------------------------------------------------
 	PACKET_CS_GAME_REQ_CHARACTER_MOVE = 1009,
@@ -153,6 +154,7 @@ enum PACKET_TYPE
 	//		WORD	Type
 	//		int64 CharacterNO
 	//		FVector Destination
+	//		FVector StartRotation
 	//	}
 	//------------------------------------------------------------
 	PACKET_SC_GAME_RES_CHARACTER_MOVE = 1010,
@@ -181,4 +183,33 @@ enum PACKET_TYPE
 	//	}
 	//------------------------------------------------------------
 	PACKET_SC_GAME_RES_DAMAGE = 1012,
+
+	//------------------------------------------------------------
+	// {
+	//		WORD	Type
+	//      FRotator StartRotation
+	//		int32   SkillID
+	//}
+	//------------------------------------------------------------
+	PACKET_CS_GAME_REQ_CHARACTER_SKILL = 1013,
+
+	//------------------------------------------------------------
+	// {
+	//		WORD	Type
+	//		int64   CharacterNO
+	//		FRotator StartRotation
+	//		int32   SkillID
+	//
+	// }
+	//------------------------------------------------------------
+	PACKET_SC_GAME_RES_CHARACTER_SKILL = 1014,
+
+	//------------------------------------------------------------
+	// {
+	//		WORD	Type
+	//		int64   MonsterNO
+	//		int32   SkillID
+	// }
+	//------------------------------------------------------------
+	PACKET_SC_GAME_RES_MONSTER_SKILL = 1015,
 };

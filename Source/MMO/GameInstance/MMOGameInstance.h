@@ -61,6 +61,7 @@ public:
 	void HandleSpawnOhterCharacter(CPacket* packet);
 	void HandleCharacterMove(CPacket* packet);
 	void HandleDamage(CPacket* packet);
+	void HandleCharacterSkill(CPacket* packet);
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character")
 	TSubclassOf<AActor> GameCharacterClass;
 	

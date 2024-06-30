@@ -11,6 +11,9 @@
 class CPacket;
 
 
+CPacket& operator<<(CPacket& packet, FRotator& rot);
+CPacket& operator>>(CPacket& packet, FRotator& rot);
+
 CPacket& operator<<(CPacket& packet, FVector& vec);
 CPacket& operator>>(CPacket& packet, FVector& vec);
 

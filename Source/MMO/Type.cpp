@@ -2,6 +2,22 @@
 #include "Network/DataStructure/SerializeBuffer.h"
 
 
+CPacket& operator<<(CPacket& packet, FRotator& rot)
+{
+	memcpy(&packet._buffer[packet._writePos], &rot, sizeof(double) * 3);
+	packet._writePos += sizeof(FRotator);
+	packet._dataSize += sizeof(FRotator);
+	return packet;
+}
+
+CPacket& operator>>(CPacket& packet, FRotator& rot)
+{
+	memcpy(&rot, &packet._buffer[packet._readPos], sizeof(FRotator));
+	packet._readPos += sizeof(FRotator);
+	packet._dataSize -= sizeof(FRotator);
+	return packet;
+}
+
 CPacket& operator<<(CPacket& packet, FVector& vec)
 {
 	memcpy(&packet._buffer[packet._writePos], &vec, sizeof(double) * 3);

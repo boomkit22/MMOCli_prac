@@ -64,7 +64,7 @@ protected:
 	/**
 	*Play montage function
 	*/
-	void PlayAttackMontage();
+	void PlaySkill(int SkillID);
 	
 protected:
 	EActionState ActionState = EActionState::EAS_Unoccupied;

@@ -238,7 +238,7 @@ void AGameCharacter::OnWeaponBeginOverlap(UPrimitiveComponent* OverlappedCompone
 		UE_LOG(LogTemp, Warning, TEXT("attacker : %lld, target : %lld"), attackInfo.AttackerID, attackInfo.TargetID);
 
 		GamePacketMaker::MP_CS_REQ_CHARACTER_ATTACK(packet, attackInfo);
-		//UMMOGameInstance::GetInstance()->SendPacket_GameServer(packet);
+		UMMOGameInstance::GetInstance()->SendPacket_GameServer(packet);
 	}
 
 	EquippedWeapon->GetWeaponBox()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -308,7 +308,13 @@ void AGameCharacter::Attack()
 	if (ActionState == EActionState::EAS_Unoccupied)
 	{
 		StopMove();
-		PlayAttackMontage();
+		int32 SkillID = FMath::RandRange(0, 1);
+		CPacket* Packet = CPacket::Alloc();
+		FRotator StartRotator = GetActorRotation();
+		GamePacketMaker::MP_SC_REQ_CHARACTER_SKILL(Packet, StartRotator, SkillID);
+		UMMOGameInstance::GetInstance()->SendPacket_GameServer(Packet);
+		
+		PlaySkill(SkillID);
 		ActionState = EActionState::EAS_Attacking;
 	}
 	//PlayAttackMontage();
@@ -321,7 +327,8 @@ void AGameCharacter::LeftMouseClick()
 	bHitSuccessful = PlayerController->GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, true, Hit);
 	
 	CPacket* MoveReqPacket = CPacket::Alloc();
-	GamePacketMaker::MP_CS_REQ_CHARACTER_MOVE(MoveReqPacket, Hit.Location);
+	FRotator StartRotation = GetActorRotation();
+	GamePacketMaker::MP_CS_REQ_CHARACTER_MOVE(MoveReqPacket, Hit.Location, StartRotation);
 	UMMOGameInstance::GetInstance()->SendPacket_GameServer(MoveReqPacket);
 
 	/*if (bHitSuccessful)
@@ -375,32 +382,33 @@ void AGameCharacter::MonsterDamage()
 	}
 }
 
-
-void AGameCharacter::PlayAttackMontage()
+void AGameCharacter::PlaySkill(int SkillID)
 {
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 	if (AnimInstance && AttackMontage)
-	{
-		AnimInstance->Montage_Play(AttackMontage);
-		int32 Selection = FMath::RandRange(0, 1);
+	{ 
+		ECharacterSkill Skill = static_cast<ECharacterSkill>(SkillID);
 		FName SelectionName = FName();
-		switch (Selection)
+		AnimInstance->Montage_Play(AttackMontage);
+		switch (Skill)
 		{
-		case 0:
+		case ECharacterSkill::ECS_Combo1:
 		{
-			SelectionName = FName("Combo1");
+			SelectionName = "Comobo";
 		}
 		break;
 
-		case 1:
+		case ECharacterSkill::ECS_Combo1_1:
 		{
-			SelectionName = FName("Combo1-1");
+			SelectionName = "Combo1-1";
 		}
 		break;
+
 
 		default:
 			break;
 		}
+
 		AnimInstance->Montage_JumpToSection(SelectionName, AttackMontage);
 	}
 }
@@ -436,7 +444,8 @@ void AGameCharacter::MoveToDestination(float DeltaTime)
 			FRotator CurrentRotation = GetActorRotation();
 
 			FRotator TargetRotation = Direction.Rotation();
-			FRotator NewRotation = FMath::Lerp(CurrentRotation, TargetRotation, DeltaTime * 5.0f); // 회전 속도 조정 가능
+			//SetActorRotation(TargetRotation);
+			FRotator NewRotation = FMath::Lerp(CurrentRotation, TargetRotation, DeltaTime * 20.0f); // 회전 속도 조정 가능
 			SetActorRotation(NewRotation);
 		}
 		else

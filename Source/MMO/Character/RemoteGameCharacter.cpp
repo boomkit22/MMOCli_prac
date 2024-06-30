@@ -34,6 +34,7 @@ void ARemoteGameCharacter::InitCharAttributeComponent(int32 Health, FString Char
 	}
 }
 
+
 void ARemoteGameCharacter::GetHit(int32 damage)
 {
 	//CharAttributeComponent->GetDamage(damage);
@@ -47,6 +48,8 @@ void ARemoteGameCharacter::GetHit(int32 damage)
 
 	/*HUDCharacterComponent->SetHealthPercent(MonsAttributeComponent->GetHelathPercent());
 	*/
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Remote Game Characater Hit: %d"), damage));
+
 	CharAttributeComponent->GetDamage(damage);
 	HUDRemoteCharacterComponent->SetHealthPercent(CharAttributeComponent->GetHelathPercent());
 

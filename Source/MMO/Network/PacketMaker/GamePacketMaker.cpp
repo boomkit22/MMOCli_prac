@@ -5,7 +5,6 @@
 #include "Network/PacketHeader.h"
 #include "DataStructure/SerializeBuffer.h"
 #include "Network/Packet.h"
-#include "Type.h"
 
 void GamePacketMaker::MP_CS_REQ_LOGIN(CPacket* Packet, int64& accountNo)
 {
@@ -37,7 +36,7 @@ void GamePacketMaker::MP_CS_REQ_FIELD_MOVE(CPacket* Packet, uint16& fieldID)
 	FMemory::Memcpy(Packet->GetBufferPtr() + NET_HEADER_SIZE_INDEX, (void*)&len, sizeof(uint16));
 }
 
-void GamePacketMaker::MP_CS_REQ_CHARACTER_MOVE(CPacket* Packet, FVector& Destination)
+void GamePacketMaker::MP_CS_REQ_CHARACTER_MOVE(CPacket* Packet, FVector& Destination, FRotator& StartRotation)
 {
 	NetHeader Header;
 	Header._code = GamePacketCode;
@@ -46,7 +45,7 @@ void GamePacketMaker::MP_CS_REQ_CHARACTER_MOVE(CPacket* Packet, FVector& Destina
 	Packet->PutData((char*)&Header, sizeof(NetHeader));
 	uint16 type = PACKET_CS_GAME_REQ_CHARACTER_MOVE;
 
-	*Packet << type << Destination;
+	*Packet << type << Destination << StartRotation;
 
 	uint16 len = (uint16)(Packet->GetDataSize() - sizeof(NetHeader));
 	FMemory::Memcpy(Packet->GetBufferPtr() + NET_HEADER_SIZE_INDEX, (void*)&len, sizeof(uint16));
@@ -66,4 +65,20 @@ void GamePacketMaker::MP_CS_REQ_CHARACTER_ATTACK(CPacket* packet, AttackInfo& at
 	uint16 len = (uint16)(packet->GetDataSize() - sizeof(NetHeader));
 	FMemory::Memcpy(packet->GetBufferPtr() + NET_HEADER_SIZE_INDEX, (void*)&len, sizeof(uint16));
 }
+
+void GamePacketMaker::MP_SC_REQ_CHARACTER_SKILL(CPacket* packet, FRotator& StartRotator, int32 SkillID)
+{
+	NetHeader Header;
+	Header._code = GamePacketCode;
+	Header._randKey = rand();
+
+	packet->PutData((char*)&Header, sizeof(NetHeader));
+	uint16 type = PACKET_CS_GAME_REQ_CHARACTER_SKILL;
+
+	*packet << type << StartRotator << SkillID;
+
+	uint16 len = (uint16)(packet->GetDataSize() - sizeof(NetHeader));
+	FMemory::Memcpy(packet->GetBufferPtr() + NET_HEADER_SIZE_INDEX, (void*)&len, sizeof(uint16));
+}
+
 
