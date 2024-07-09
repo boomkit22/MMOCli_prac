@@ -14,6 +14,8 @@ class MMO_API CPacket
 	friend CPacket& operator>>(CPacket& packet, FRotator& rot);
 	friend CPacket& operator<<(CPacket& packet, FVector& vec);
 	friend CPacket& operator>>(CPacket& packet, FVector& vec);
+	friend CPacket& operator<<(CPacket& packet, PlayerInfo& info);
+	friend CPacket& operator>>(CPacket& packet, PlayerInfo& info);
 
 
 	friend class TlsObjectPool<CPacket, false>;
@@ -222,12 +224,12 @@ public:
 		return *this;
 	}
 
-	CPacket& operator <<(DWORD dwValue)
+	CPacket& operator <<(uint32 dwValue)
 	{
-		*((DWORD*)(&_buffer[_writePos])) = dwValue;
-		_writePos += sizeof(DWORD);
+		*((uint32*)(&_buffer[_writePos])) = dwValue;
+		_writePos += sizeof(uint32);
 
-		_dataSize += sizeof(DWORD);
+		_dataSize += sizeof(uint32);
 		return *this;
 	}
 

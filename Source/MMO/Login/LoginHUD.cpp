@@ -3,7 +3,6 @@
 
 #include "Login/LoginHUD.h"
 #include "Login/LoginOverlay.h"
-#include "Login/CharacterSelectOverlay.h"
 
 void ALoginHUD::BeginPlay()
 {

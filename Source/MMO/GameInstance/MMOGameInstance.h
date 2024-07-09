@@ -39,7 +39,7 @@ public:
 public:
 	void SendPacket_GameServer(CPacket* packet);
 	void SendPacket_ChattingServer(CPacket* packet);
-
+	void OpenLevel(FName LevelName);
 
 
 /*

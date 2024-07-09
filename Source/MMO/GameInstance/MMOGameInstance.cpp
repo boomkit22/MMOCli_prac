@@ -11,7 +11,6 @@
 #include "Editor.h"
 #endif
 #include "Login/LoginHUD.h"
-#include "Login/CharacterSelectOverlay.h"
 #include "Kismet/GameplayStatics.h"
 #include "Engine/World.h"
 #include "Character/GamePlayerController.h"
@@ -22,6 +21,9 @@
 #include "HUD/MMOChatOverlay.h"
 #include "Login/LoginOverlay.h"
 #include "Login/SignUpOverlay.h"
+#include <vector>
+using namespace std;
+
 bool bLoading = false;
 
 void UMMOGameInstance::Init()
@@ -107,6 +109,12 @@ void UMMOGameInstance::SendPacket_ChattingServer(CPacket* packet)
 	}
 }
 
+void UMMOGameInstance::OpenLevel(FName LevelName)
+{
+	bLoading = true;
+	UGameplayStatics::OpenLevel(this, LevelName, false);
+}
+
 void UMMOGameInstance::HandleGameLogin(CPacket* packet)
 {
 	/*
@@ -116,54 +124,18 @@ void UMMOGameInstance::HandleGameLogin(CPacket* packet)
 	//여기서 응답오면
 	int64 AccountNo;
 	uint8 Status;
-	uint16 CharacterLevel;
-	TCHAR NickName[20];
-	uint32 Exp;
 
-	*packet >> AccountNo >> Status >> CharacterLevel;
-	packet->GetData((char*)NickName, ID_LEN * sizeof(TCHAR));
-	*packet >> Exp;
-
+	
+	*packet >> AccountNo >> Status;
+	
 	if (Status)
 	{
-		bool bConnectChattingSuccess = ConnectChattingServer();
-		if (!bConnectChattingSuccess)
-		{
-			DisconnectGameServer();
-		}
-
-		//로그인 패킷 보내기
-		CPacket* chatLoginPacket = CPacket::Alloc();
-		ChattingPacketMaker::MP_CS_REQ_LOGIN(chatLoginPacket, AccountNo, NickName);
-		SendPacket_ChattingServer(chatLoginPacket);
-
-		//로그인 성공하면?
-		// 1. OverLay 변경
-		UWorld* World = GetWorld();
-		if (World)
-		{
-			APlayerController* Controller = World->GetFirstPlayerController();
-			if (Controller)
-			{
-				AHUD* HUD = Controller->GetHUD();
-				ALoginHUD* LoginHUD = Cast<ALoginHUD>(HUD);
-				if (LoginHUD)
-				{
-					// CharacterSelectOverlay 클래스로 오버레이 변경
-					//TSubclassOf<UCharacterSelectOverlay> characterSelectOvelay = LoginHUD->GetCharacterSelectOverlayClass();
-					LoginHUD->ChangeOverlay(LoginHUD->GetCharacterSelectOverlayClass());
-					UCharacterSelectOverlay* CharacterSelectOverlay = Cast<UCharacterSelectOverlay>(LoginHUD->GetCurrentOverlay());
-					if (CharacterSelectOverlay)
-					{
-						FString NickNameStr = NickName;
-						CharacterSelectOverlay->SetCharacterSelectText(NickNameStr, CharacterLevel);
-					}
-				}
-			}
-		}
+		//Login 성공
+		OpenLevel(TEXT("/Game/Maps/CharacterSelectMap"));
 	}
 	else {
-		// TODO: 로그인 실패에서 할일
+		// Login 실패
+				// TODO: 로그인 실패에서 할일
 		// 로그인 실패
 		// 다시 로그인 씬 가는게 좋은 선택인가
 
@@ -191,15 +163,51 @@ void UMMOGameInstance::HandleGameLogin(CPacket* packet)
 			}
 		}
 	}
+
+	//if (Status)
+	//{
+	//	bool bConnectChattingSuccess = ConnectChattingServer();
+	//	if (!bConnectChattingSuccess)
+	//	{
+	//		DisconnectGameServer();
+	//	}
+
+	//	//로그인 패킷 보내기
+	//	CPacket* chatLoginPacket = CPacket::Alloc();
+	//	ChattingPacketMaker::MP_CS_REQ_LOGIN(chatLoginPacket, AccountNo, NickName);
+	//	SendPacket_ChattingServer(chatLoginPacket);
+
+	//	//로그인 성공하면?
+	//	// 1. OverLay 변경
+	//	UWorld* World = GetWorld();
+	//	if (World)
+	//	{
+	//		APlayerController* Controller = World->GetFirstPlayerController();
+	//		if (Controller)
+	//		{
+	//			AHUD* HUD = Controller->GetHUD();
+	//			ALoginHUD* LoginHUD = Cast<ALoginHUD>(HUD);
+	//			if (LoginHUD)
+	//			{
+	//				// CharacterSelectOverlay 클래스로 오버레이 변경
+	//				//TSubclassOf<UCharacterSelectOverlay> characterSelectOvelay = LoginHUD->GetCharacterSelectOverlayClass();
+	//				LoginHUD->ChangeOverlay(LoginHUD->GetCharacterSelectOverlayClass());
+	//				UCharacterSelectOverlay* CharacterSelectOverlay = Cast<UCharacterSelectOverlay>(LoginHUD->GetCurrentOverlay());
+	//				if (CharacterSelectOverlay)
+	//				{
+	//					FString NickNameStr = NickName;
+	//					CharacterSelectOverlay->SetCharacterSelectText(NickNameStr, CharacterLevel);
+	//				}
+	//			}
+	//		}
+	//	}
+	//}
+	
 }
 
 void UMMOGameInstance::HandleFieldMove(CPacket* packet)
 {
-	bLoading = true;
-	UE_LOG(LogTemp, Warning, TEXT("bLoading %d"), bLoading);
-	UE_LOG(LogTemp, Warning, TEXT("Open Level 1"));
-	UGameplayStatics::OpenLevel(this, TEXT("/Game/Maps/FieldMap_1"), false);
-	UE_LOG(LogTemp, Warning, TEXT("Open Level 2"));
+	OpenLevel(TEXT("/Game/Maps/FieldMap_1"));
 }
 
 void UMMOGameInstance::HandleSpawnMyCharacter(CPacket* packet)

@@ -11,7 +11,6 @@
  */
 
 class ULoginOverlay;
-class UCharacterSelectOverlay;
 UCLASS()
 class MMO_API ALoginHUD : public AHUD
 {
@@ -20,7 +19,6 @@ class MMO_API ALoginHUD : public AHUD
 public:
 	void ChangeOverlay(TSubclassOf<UUserWidget> NewOverlayClass);
 	TSubclassOf<ULoginOverlay> GetLoginOverlayClass() const { return LoginOverlayClass; };
-	TSubclassOf<UCharacterSelectOverlay> GetCharacterSelectOverlayClass() const { return CharacterSelectOverlayClass; };
 	
 	FORCEINLINE UUserWidget* GetCurrentOverlay() { return CurrentOverlay; };
 
@@ -32,8 +30,7 @@ protected:
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "MMO")
 	TSubclassOf<ULoginOverlay> LoginOverlayClass;
-	UPROPERTY(EditDefaultsOnly, Category = "MMO")
-	TSubclassOf<UCharacterSelectOverlay> CharacterSelectOverlayClass;
+
 	
 	
 	//UPROPERTY()
