@@ -31,11 +31,19 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	class UButton* LoginButton;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	class UButton* SignUpButton;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widgets")
+	TSubclassOf<UUserWidget> SignUpWidgetClass;
 
 protected:
 	// bind하는건 UFUNCTION안하면 에러남
 	UFUNCTION()
 	void OnLoginButtonClicked();
+
+	UFUNCTION()
+	void OnSignUpButtonClicked();
 
 private:
 	void OnLoginSuccess();

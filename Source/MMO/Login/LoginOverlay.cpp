@@ -17,13 +17,16 @@ void ULoginOverlay::NativeConstruct()
     Super::NativeConstruct();
     UE_LOG(LogTemp, Warning, TEXT("NativeConstruct"))
 
-        if (LoginButton != nullptr)
-        {
-            LoginButton->OnClicked.AddDynamic(this, &ULoginOverlay::OnLoginButtonClicked);
-        }
-        else {
-            UE_LOG(LogTemp, Warning, TEXT("LoginButton is nullptr"))
-        }
+    if (LoginButton != nullptr)
+    {
+        LoginButton->OnClicked.AddDynamic(this, &ULoginOverlay::OnLoginButtonClicked);
+    }
+
+    if (SignUpButton != nullptr)
+	{
+		SignUpButton->OnClicked.AddDynamic(this, &ULoginOverlay::OnSignUpButtonClicked);
+	}
+	
 }
 
 FReply ULoginOverlay::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent)
@@ -58,6 +61,18 @@ void ULoginOverlay::OnLoginButtonClicked()
 		UE_LOG(LogTemp, Warning, TEXT("Connect Login Success"));
     }
 
+}
+
+void ULoginOverlay::OnSignUpButtonClicked()
+{
+    if (SignUpWidgetClass)
+    {
+        UUserWidget* SignUpWidget = CreateWidget<UUserWidget>(GetWorld(), SignUpWidgetClass);
+        if (SignUpWidget)
+        {
+            SignUpWidget->AddToViewport();
+        }
+    }
 }
 
 void ULoginOverlay::OnLoginSuccess()
