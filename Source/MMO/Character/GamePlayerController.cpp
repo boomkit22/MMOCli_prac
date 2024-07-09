@@ -12,7 +12,7 @@ void AGamePlayerController::BeginPlay()
 
 }
 
-AGameCharacter* AGamePlayerController::SpawnMyCharacter(SpawnMyCharacterInfo spawnMyCharterInfo)
+AGameCharacter* AGamePlayerController::SpawnMyCharacter(int64 PlayerID, FVector spawnLocation, uint16 Level, TCHAR* NickName)
 {
     AGameCharacter* GameCharacter = nullptr;
     UE_LOG(LogTemp, Warning, TEXT("spawn3"));
@@ -26,7 +26,7 @@ AGameCharacter* AGamePlayerController::SpawnMyCharacter(SpawnMyCharacterInfo spa
         SpawnParams.Owner = this;
         // 캐릭터 스폰
         UE_LOG(LogTemp, Warning, TEXT("%s"), *(GetWorld()->GetName()));
-        AActor* SpawnedCharacter = GetWorld()->SpawnActor<AActor>(GameCharacterClass, spawnMyCharterInfo.SpawnLocation, Rotation, SpawnParams);
+        AActor* SpawnedCharacter = GetWorld()->SpawnActor<AActor>(GameCharacterClass, spawnLocation, Rotation, SpawnParams);
         if (SpawnedCharacter)
         {
             UE_LOG(LogTemp, Warning, TEXT("spawn1"));
@@ -35,10 +35,10 @@ AGameCharacter* AGamePlayerController::SpawnMyCharacter(SpawnMyCharacterInfo spa
             GameCharacter = Cast<AGameCharacter>(SpawnedCharacter);
             if (GameCharacter)
             {
-                FString name = spawnMyCharterInfo.NickName;
-                uint16 level = spawnMyCharterInfo.Level;
+                FString name = NickName;
+                uint16 level = Level;
 
-                GameCharacter->SetPlayerID(spawnMyCharterInfo.PlayerID);
+                GameCharacter->SetPlayerID(PlayerID);
 				GameCharacter->InitCharAttributeComponent(100, name, level);
 
                 AMMOHUD* MMOHUD = Cast<AMMOHUD>(GetHUD());

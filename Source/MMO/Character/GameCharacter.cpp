@@ -495,18 +495,18 @@ void AGameCharacter::SpawnOtherCharacter()
 {
 	UE_LOG(LogTemp, Warning, TEXT("SPawn Other Character"));
 
-	CPacket* packet;
-	packet = CPacket::Alloc();
-	SpawnOtherCharacterInfo spawnOtherCharacterInfo;
-	spawnOtherCharacterInfo.SpawnLocation = GetActorLocation() + FVector{ 100, 100, 0 };
-	spawnOtherCharacterInfo.PlayerID = 1;
-	spawnOtherCharacterInfo.Level = 1;
-	FString NickName = "TestCharacter";
-	FCString::Strcpy(spawnOtherCharacterInfo.NickName, *NickName);
+	//CPacket* packet;
+	//packet = CPacket::Alloc();
+	//SpawnOtherCharacterInfo spawnOtherCharacterInfo;
+	//spawnOtherCharacterInfo.SpawnLocation = GetActorLocation() + FVector{ 100, 100, 0 };
+	//spawnOtherCharacterInfo.PlayerID = 1;
+	//spawnOtherCharacterInfo.Level = 1;
+	//FString NickName = "TestCharacter";
+	//FCString::Strcpy(spawnOtherCharacterInfo.NickName, *NickName);
 
-	*packet << spawnOtherCharacterInfo;
-	UMMOGameInstance::GetInstance()->HandleSpawnOhterCharacter(packet);
-	CPacket::Free(packet);
+	//*packet << spawnOtherCharacterInfo;
+	//UMMOGameInstance::GetInstance()->HandleSpawnOhterCharacter(packet);
+	//CPacket::Free(packet);
 }
 
 void AGameCharacter::RecoverHealth()

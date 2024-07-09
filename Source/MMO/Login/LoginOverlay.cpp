@@ -85,9 +85,6 @@ bool ULoginOverlay::CallServerLoginFunction(const FString& UserName, const FStri
     FCString::Strncpy(id, *UserName, 20);
     FCString::Strncpy(passWord, *Password, 20);
 
-    CPacket* ReqLoginPacket = CPacket::Alloc();
-    GamePacketMaker::MP_CS_REQ_LOGIN(ReqLoginPacket, id, passWord);
-
     
     if (auto GameInstacne = Cast<UMMOGameInstance>(GWorld->GetGameInstance()))
     {
@@ -96,6 +93,9 @@ bool ULoginOverlay::CallServerLoginFunction(const FString& UserName, const FStri
         {
             return false;
         }
+
+        CPacket* ReqLoginPacket = CPacket::Alloc();
+        GamePacketMaker::MP_CS_REQ_LOGIN(ReqLoginPacket, id, passWord);
         GameInstacne->SendPacket_GameServer(ReqLoginPacket);
     }
     else {

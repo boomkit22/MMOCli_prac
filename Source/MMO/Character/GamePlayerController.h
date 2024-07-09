@@ -19,7 +19,7 @@ public:
 
 
 public:
-	AGameCharacter* SpawnMyCharacter(struct SpawnMyCharacterInfo spawnMyCharacterInfo);
+	AGameCharacter* SpawnMyCharacter(int64 PlayerID, FVector SpawnLocation, uint16 Level, TCHAR* NickName);
 
 public:
 	// YourCharacterClass 변수를 TSubclassOf를 사용하여 선언

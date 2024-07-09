@@ -5,11 +5,15 @@
 #include "Network/DataStructure/SerializeBuffer.h"
 #include "Type.h"
 #include "Network/Packet.h"
-#include "GameInstance/MMOGameInstance.h"
 
 
 void ChattingPacketHandler::HandlePacket(CPacket* packet)
 {
+	if (GameInstance == nullptr)
+	{
+		GameInstance = UMMOGameInstance::GetInstance();
+	}
+
 	int16 packetType;
 	*packet >> packetType;
 
@@ -25,10 +29,9 @@ void ChattingPacketHandler::HandlePacket(CPacket* packet)
 
 	case PACKET_SC_CHAT_RES_MESSAGE:
 	{
-		HandleMessage(packet);
+		GameInstance->HandleChatMessage(packet);
 	}
 	break;
-
 
 
 	default:
@@ -53,13 +56,4 @@ void ChattingPacketHandler::HandleLogin(CPacket* packet)
 	}
 }
 
-void ChattingPacketHandler::HandleMessage(CPacket* packet)
-{
-	if (UMMOGameInstance* GameInstance = UMMOGameInstance::GetInstance())
-	{
-		GameInstance->HandleChatMessage(packet);
-	}
-	else {
-		UE_LOG(LogTemp, Warning, TEXT("Handle Login GAme instacne null"));
-	}
-}
+

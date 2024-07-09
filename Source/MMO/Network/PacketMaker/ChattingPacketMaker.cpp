@@ -5,7 +5,7 @@
 #include "Network/DataStructure/SerializeBuffer.h"
 #include "Network/Packet.h"
 
-void ChattingPacketMaker::MP_CS_REQ_LOGIN(CPacket* Packet, int64& accountNo, FString& NickName)
+void ChattingPacketMaker::MP_CS_REQ_LOGIN(CPacket* Packet, int64& AccountNo, TCHAR* NickName)
 {
 	NetHeader Header;
 	Header._code = GamePacketCode;
@@ -13,12 +13,9 @@ void ChattingPacketMaker::MP_CS_REQ_LOGIN(CPacket* Packet, int64& accountNo, FSt
 
 	Packet->PutData((char*)&Header, sizeof(NetHeader));
 	uint16 type = PACKET_CS_CHAT_REQ_LOGIN;
-	*Packet << type << accountNo;
-
-	TCHAR NicknameArray[20] = { 0 }; // null로 초기화
-	FCString::Strncpy(NicknameArray, *NickName, 20);
-
-	Packet->PutData((char*)NicknameArray, sizeof(NicknameArray));
+	*Packet << type << AccountNo;
+	
+    Packet->PutData((char*)NickName, NICKNAME_LEN * sizeof(TCHAR));
 
 	uint16 len = (uint16)(Packet->GetDataSize() - sizeof(NetHeader));
 	FMemory::Memcpy(Packet->GetBufferPtr() + NET_HEADER_SIZE_INDEX, (void*)&len, sizeof(uint16));

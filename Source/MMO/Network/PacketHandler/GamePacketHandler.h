@@ -2,11 +2,14 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 
+
+#include "GameInstance/MMOGameInstance.h"
+#include "CoreMinimal.h"
 /**
  * 
  */
+
 class CPacket;
 class MMO_API GamePacketHandler
 {
@@ -21,4 +24,7 @@ private:
 	static void HandleCharacterMove(CPacket* packet);
 	static void HandleDamage(CPacket* packet);
 	static void HandleCharacterSkill(CPacket* packet);
+
+private:
+	inline static UMMOGameInstance* GameInstance = nullptr;
 };

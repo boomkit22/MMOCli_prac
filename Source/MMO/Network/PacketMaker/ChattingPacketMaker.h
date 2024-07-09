@@ -14,8 +14,8 @@ class MMO_API ChattingPacketMaker
 {
 
 public:
-	static void MP_CS_REQ_LOGIN(CPacket* Packet, int64& accountNo, FString& NickName);
-	static void MP_CS_REQ_MESSAGE(CPacket* Packet, int64& accountNo, FString& message);
+	static void MP_CS_REQ_LOGIN(CPacket* Packet, int64& AccountNo, TCHAR* NickName);
+	static void MP_CS_REQ_MESSAGE(CPacket* Packet, int64& AccountNo, FString& message);
 
 private:
 	inline static uint16 GamePacketCode = 0x77;

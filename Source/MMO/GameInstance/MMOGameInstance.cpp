@@ -111,12 +111,15 @@ void UMMOGameInstance::HandleGameLogin(CPacket* packet)
 	redis에 세션키 등록안돼있을때?
 	*/
 	//여기서 응답오면
-	ResGameLoginInfo resLoginInfo;
-	*packet >> resLoginInfo;
-	int64 AccountNo = resLoginInfo.AccountNo;
-	uint8 Status = resLoginInfo.Status;
-	uint16 characterLevel = resLoginInfo.Level;
-	FString CharacterID = resLoginInfo.NickName;
+	int64 AccountNo;
+	uint8 Status;
+	uint16 CharacterLevel;
+	TCHAR NickName[20];
+	uint32 Exp;
+
+	*packet >> AccountNo >> Status >> CharacterLevel;
+	packet->GetData((char*)NickName, ID_LEN * sizeof(TCHAR));
+	*packet >> Exp;
 
 	if (Status)
 	{
@@ -128,7 +131,7 @@ void UMMOGameInstance::HandleGameLogin(CPacket* packet)
 
 		//로그인 패킷 보내기
 		CPacket* chatLoginPacket = CPacket::Alloc();
-		ChattingPacketMaker::MP_CS_REQ_LOGIN(chatLoginPacket, AccountNo, CharacterID);
+		ChattingPacketMaker::MP_CS_REQ_LOGIN(chatLoginPacket, AccountNo, NickName);
 		SendPacket_ChattingServer(chatLoginPacket);
 
 		//로그인 성공하면?
@@ -149,7 +152,8 @@ void UMMOGameInstance::HandleGameLogin(CPacket* packet)
 					UCharacterSelectOverlay* CharacterSelectOverlay = Cast<UCharacterSelectOverlay>(LoginHUD->GetCurrentOverlay());
 					if (CharacterSelectOverlay)
 					{
-						CharacterSelectOverlay->SetCharacterSelectText(CharacterID, characterLevel);
+						FString NickNameStr = NickName;
+						CharacterSelectOverlay->SetCharacterSelectText(NickNameStr, CharacterLevel);
 					}
 				}
 			}
@@ -173,8 +177,16 @@ void UMMOGameInstance::HandleFieldMove(CPacket* packet)
 
 void UMMOGameInstance::HandleSpawnMyCharacter(CPacket* packet)
 {
-	SpawnMyCharacterInfo spawnMyCharacterInfo;
-	*packet >> spawnMyCharacterInfo;
+	int64 PlayerID;
+	FVector SpawnLocation;
+	uint16 Level;
+	TCHAR NickName[20];
+
+	*packet >> PlayerID >> SpawnLocation >> Level;
+	packet->GetData((char*)NickName, ID_LEN * sizeof(TCHAR));
+
+
+	
 	UWorld* World = GetWorld();
 	if (World)
 	{
@@ -185,10 +197,10 @@ void UMMOGameInstance::HandleSpawnMyCharacter(CPacket* packet)
 			AGamePlayerController* MyController = Cast<AGamePlayerController>(PlayerController);
 			if (MyController)
 			{
-				AGameCharacter* GameCharacter = MyController->SpawnMyCharacter(spawnMyCharacterInfo);
+				AGameCharacter* GameCharacter = MyController->SpawnMyCharacter(PlayerID, SpawnLocation, Level, NickName);
 				if (GameCharacter)
 				{
-					CharacterMap.Add(spawnMyCharacterInfo.PlayerID, GameCharacter);
+					CharacterMap.Add(PlayerID, GameCharacter);
 				}else
 				{
 					UE_LOG(LogTemp, Error, TEXT("HandleSpawn game character null"));
@@ -203,8 +215,14 @@ void UMMOGameInstance::HandleSpawnMyCharacter(CPacket* packet)
 
 void UMMOGameInstance::HandleSpawnOhterCharacter(CPacket* packet)
 {
-	SpawnOtherCharacterInfo spawnOtherCharacterInfo;
-	*packet >> spawnOtherCharacterInfo;
+	int64 PlayerID;
+	FVector SpawnLocation;
+	uint16 Level;
+	TCHAR NickName[20];
+
+	*packet >> PlayerID >> SpawnLocation >> Level;
+	packet->GetData((char*)NickName, ID_LEN * sizeof(TCHAR));
+
 
 	if (GameCharacterClass)
 	{
@@ -213,14 +231,13 @@ void UMMOGameInstance::HandleSpawnOhterCharacter(CPacket* packet)
 		FRotator Rotation = FRotator(0.0f, 0.0f, 0.0f); // 예시 회전
 		// 캐릭터 스폰
 		UE_LOG(LogTemp, Warning, TEXT("%s"), *(GetWorld()->GetName()));
-		FVector SpawnLocation = spawnOtherCharacterInfo.SpawnLocation;
 
 		AGameCharacter* SpawnedCharacter = Cast<AGameCharacter>(GetWorld()->SpawnActor<ARemoteGameCharacter>(RemoteGameCharacterClass, SpawnLocation, Rotation, SpawnParams));
 		if (SpawnedCharacter)
 		{
-			SpawnedCharacter->SetPlayerID(spawnOtherCharacterInfo.PlayerID);
-			SpawnedCharacter->InitCharAttributeComponent(100, spawnOtherCharacterInfo.NickName, spawnOtherCharacterInfo.Level);
-			CharacterMap.Add(spawnOtherCharacterInfo.PlayerID, SpawnedCharacter);
+			SpawnedCharacter->SetPlayerID(PlayerID);
+			SpawnedCharacter->InitCharAttributeComponent(100, NickName, Level);
+			CharacterMap.Add(PlayerID, SpawnedCharacter);
 		}
 		else
 		{

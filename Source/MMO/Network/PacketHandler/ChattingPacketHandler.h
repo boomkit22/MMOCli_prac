@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameInstance/MMOGameInstance.h"
 
 /**
  * 
@@ -17,4 +18,7 @@ public:
 private:
 	static void HandleLogin(CPacket* packet);
 	static void HandleMessage(CPacket* packet);
+
+private:
+	inline static UMMOGameInstance* GameInstance = nullptr;
 };
