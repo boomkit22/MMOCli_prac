@@ -24,6 +24,7 @@ public:
 	
 	FORCEINLINE UUserWidget* GetCurrentOverlay() { return CurrentOverlay; };
 
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -33,6 +34,7 @@ private:
 	TSubclassOf<ULoginOverlay> LoginOverlayClass;
 	UPROPERTY(EditDefaultsOnly, Category = "MMO")
 	TSubclassOf<UCharacterSelectOverlay> CharacterSelectOverlayClass;
+	
 	
 	//UPROPERTY()
 	//ULoginOverlay* LoginOverlay;

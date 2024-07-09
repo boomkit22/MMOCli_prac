@@ -83,4 +83,21 @@ void GamePacketMaker::MP_SC_REQ_CHARACTER_SKILL(CPacket* packet, FRotator& Start
 	FMemory::Memcpy(packet->GetBufferPtr() + NET_HEADER_SIZE_INDEX, (void*)&len, sizeof(uint16));
 }
 
+void GamePacketMaker::MP_CS_REQ_SIGN_UP(CPacket* Packet, TCHAR* id, TCHAR* passWord)
+{
+	NetHeader Header;
+	Header._code = GamePacketCode;
+	Header._randKey = rand();
+
+	Packet->PutData((char*)&Header, sizeof(NetHeader));
+	uint16 type = PACKET_CS_GAME_REQ_SIGN_UP;
+
+	*Packet << type;
+	Packet->PutData((char*)id, sizeof(TCHAR) * ID_LEN);
+	Packet->PutData((char*)passWord, sizeof(TCHAR) * PASSWORD_LEN);
+
+	uint16 len = (uint16)(Packet->GetDataSize() - sizeof(NetHeader));
+	FMemory::Memcpy(Packet->GetBufferPtr() + NET_HEADER_SIZE_INDEX, (void*)&len, sizeof(uint16));
+}
+
 

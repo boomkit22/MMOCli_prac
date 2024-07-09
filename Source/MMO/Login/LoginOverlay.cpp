@@ -10,6 +10,7 @@
 #include "DataStructure/SerializeBuffer.h"
 #include "GameInstance/MMOGameInstance.h"
 #include "PacketMaker/GamePacketMaker.h"
+#include "SignUpOverlay.h"
 
 
 void ULoginOverlay::NativeConstruct()
@@ -67,12 +68,39 @@ void ULoginOverlay::OnSignUpButtonClicked()
 {
     if (SignUpWidgetClass)
     {
-        UUserWidget* SignUpWidget = CreateWidget<UUserWidget>(GetWorld(), SignUpWidgetClass);
-        if (SignUpWidget)
+        SignUpOverlay = CreateWidget<USignUpOverlay>(GetWorld(), SignUpWidgetClass);
+        if (SignUpOverlay)
         {
-            SignUpWidget->AddToViewport();
+            SignUpOverlay->AddToViewport();
         }
     }
+}
+
+void ULoginOverlay::AddFailWidgetToViewport()
+{
+    if (FailWidgetClass)
+	{
+		FailWidgetInstance = CreateWidget<UUserWidget>(GetWorld(), FailWidgetClass);
+		if (FailWidgetInstance)
+		{
+			FailWidgetInstance->AddToViewport();
+            //TODO: FailWidget에 있는 OkButton에 대한 이벤트 바인딩
+            UButton* OkButton = Cast<UButton>(FailWidgetInstance->GetWidgetFromName(TEXT("OkButton")));
+            if (OkButton)
+            {
+                OkButton->OnClicked.AddDynamic(this, &ULoginOverlay::OnFailWidgetOkButtonClicked);
+            }
+		}
+	}
+}
+
+void ULoginOverlay::OnFailWidgetOkButtonClicked()
+{
+    if (FailWidgetInstance)
+	{
+		FailWidgetInstance->RemoveFromParent();
+		FailWidgetInstance = nullptr;
+	}
 }
 
 void ULoginOverlay::OnLoginSuccess()
@@ -97,18 +125,12 @@ bool ULoginOverlay::CallServerLoginFunction(const FString& UserName, const FStri
 
     TCHAR id[20];
     TCHAR passWord[20];
-    FCString::Strncpy(id, *UserName, 20);
-    FCString::Strncpy(passWord, *Password, 20);
+    FCString::Strncpy(id, *UserName, ID_LEN);
+    FCString::Strncpy(passWord, *Password, PASSWORD_LEN);
 
     
     if (auto GameInstacne = Cast<UMMOGameInstance>(GWorld->GetGameInstance()))
     {
-        bool connectSuccess = GameInstacne->ConnectGameServer();
-        if (!connectSuccess)
-        {
-            return false;
-        }
-
         CPacket* ReqLoginPacket = CPacket::Alloc();
         GamePacketMaker::MP_CS_REQ_LOGIN(ReqLoginPacket, id, passWord);
         GameInstacne->SendPacket_GameServer(ReqLoginPacket);

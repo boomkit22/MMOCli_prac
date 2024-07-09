@@ -62,6 +62,12 @@ void GamePacketHandler::HandlePacket(CPacket* packet)
 	}
 	break;
 
+	case PACKET_SC_GAME_RES_SIGN_UP:
+	{
+		GameInstance->HandleSignUp(packet);
+	}
+	break;
+
 	default:
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Unknown Packet Type : %d"), packetType));
 		break;
@@ -69,3 +75,4 @@ void GamePacketHandler::HandlePacket(CPacket* packet)
 
 	CPacket::Free(packet);
 }
+

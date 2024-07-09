@@ -17,14 +17,5 @@ public:
 	static void HandlePacket(CPacket* packet);
 
 private:
-	static void HandleLogin(CPacket* packet);
-	static void HandleFieldMove(CPacket* packet);
-	static void HandleSpawnMyCharacter(CPacket* packet);
-	static void HandleSpawnOtherCharacter(CPacket* packet);
-	static void HandleCharacterMove(CPacket* packet);
-	static void HandleDamage(CPacket* packet);
-	static void HandleCharacterSkill(CPacket* packet);
-
-private:
 	inline static UMMOGameInstance* GameInstance = nullptr;
 };

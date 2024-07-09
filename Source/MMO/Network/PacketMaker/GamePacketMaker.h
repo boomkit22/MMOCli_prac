@@ -17,6 +17,7 @@ public:
 	static void MP_CS_REQ_CHARACTER_MOVE(CPacket* Packet, FVector& Destination, FRotator& StartRotation);
 	static void MP_CS_REQ_CHARACTER_ATTACK(CPacket* packet, int32 AttackerType, int64 AttackerID, int32 TargetType, int64 TargetID, int32 Damage);
 	static void MP_SC_REQ_CHARACTER_SKILL(CPacket* packet, FRotator& StartRotator, int32 SkillID);
+	static void MP_CS_REQ_SIGN_UP(CPacket* packet, TCHAR* id, TCHAR* password);
 
 private:
 	inline static uint16 GamePacketCode = 0x77;

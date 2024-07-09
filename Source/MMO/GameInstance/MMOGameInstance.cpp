@@ -20,7 +20,8 @@
 #include "Character/RemoteGameCharacter.h"
 #include "HUD/MMOHUD.h"
 #include "HUD/MMOChatOverlay.h"
-
+#include "Login/LoginOverlay.h"
+#include "Login/SignUpOverlay.h"
 bool bLoading = false;
 
 void UMMOGameInstance::Init()
@@ -47,6 +48,8 @@ void UMMOGameInstance::Init()
 	//FWorldDelegates::OnPostWorldInitialization.AddUObject(this, &UMMOGameInstance::OnLevelLoaded);
 	FWorldDelegates::OnPostWorldCreation.AddUObject(this, &UMMOGameInstance::OnLevelLoaded);
 	//FWorldDelegates::
+
+	ConnectGameServer();
 }
 
 
@@ -163,6 +166,30 @@ void UMMOGameInstance::HandleGameLogin(CPacket* packet)
 		// TODO: 로그인 실패에서 할일
 		// 로그인 실패
 		// 다시 로그인 씬 가는게 좋은 선택인가
+
+		//로그
+		GEngine->AddOnScreenDebugMessage(-1, 5.5f, FColor::Red, TEXT("Login Fail"));
+
+		UWorld* World = GetWorld();
+		if (World)
+		{
+			APlayerController* Controller = World->GetFirstPlayerController();
+			if (Controller)
+			{
+				AHUD* HUD = Controller->GetHUD();
+				ALoginHUD* LoginHUD = Cast<ALoginHUD>(HUD);
+				if (LoginHUD)
+				{
+					// CharacterSelectOverlay 클래스로 오버레이 변경
+					//TSubclassOf<UCharacterSelectOverlay> characterSelectOvelay = LoginHUD->GetCharacterSelectOverlayClass();
+					ULoginOverlay* LoginOverlay = Cast<ULoginOverlay>(LoginHUD->GetCurrentOverlay());
+					if (LoginOverlay)
+					{
+						LoginOverlay->AddFailWidgetToViewport();
+					}
+				}
+			}
+		}
 	}
 }
 
@@ -303,6 +330,57 @@ void UMMOGameInstance::HandleCharacterSkill(CPacket* packet)
 		(*character)->PlaySkill(SkillID);
 	}
 
+}
+
+void UMMOGameInstance::HandleSignUp(CPacket* packet)
+{
+	USignUpOverlay* SignUpOverlay = nullptr;
+
+
+	uint8 Status;
+	*packet >> Status;
+	UWorld* World = GetWorld();
+	if (World)
+	{
+		APlayerController* Controller = World->GetFirstPlayerController();
+		if (Controller)
+		{
+			AHUD* HUD = Controller->GetHUD();
+			ALoginHUD* LoginHUD = Cast<ALoginHUD>(HUD);
+			if (LoginHUD)
+			{
+				// CharacterSelectOverlay 클래스로 오버레이 변경
+				//TSubclassOf<UCharacterSelectOverlay> characterSelectOvelay = LoginHUD->GetCharacterSelectOverlayClass();
+				ULoginOverlay* LoginOverlay = Cast<ULoginOverlay>(LoginHUD->GetCurrentOverlay());
+				if (LoginOverlay)
+				{
+					SignUpOverlay = LoginOverlay->GetSignUpOverlay();
+				}
+			}
+		}
+	}
+
+	if (Status)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.5f, FColor::Red, TEXT("Sign up Succeed"));
+
+		if (SignUpOverlay)
+		{
+			SignUpOverlay->AddSuccessWidgetToViewport();
+		}
+		else {
+			GEngine->AddOnScreenDebugMessage(-1, 5.5f, FColor::Red, TEXT("Sign up Overlay null"));
+
+		}
+	}
+	else {
+		GEngine->AddOnScreenDebugMessage(-1, 5.5f, FColor::Red, TEXT("Sign up Fail"));
+		//로그
+		if (SignUpOverlay)
+		{
+			SignUpOverlay->AddFailWidgetToViewport();
+		}
+	}
 }
 
 void UMMOGameInstance::HandleChatMessage(CPacket* packet)

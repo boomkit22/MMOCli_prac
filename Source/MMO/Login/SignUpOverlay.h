@@ -16,10 +16,13 @@ class MMO_API USignUpOverlay : public UUserWidget
 	
 public:
 	virtual void NativeConstruct() override;
+	void AddSuccessWidgetToViewport();
+	void AddFailWidgetToViewport();
+
 
 protected:
 	UPROPERTY(meta = (BindWidget))
-	class UEditableTextBox* UsernameTextBox;
+	class UEditableTextBox* UserNameTextBox;
 
 	UPROPERTY(meta = (BindWidget))
 	class UEditableTextBox* PasswordTextBox;

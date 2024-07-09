@@ -21,6 +21,10 @@ public:
 
 	bool CallServerLoginFunction(const FString& UserName, const FString& Password);
 
+	void AddFailWidgetToViewport();
+
+	class USignUpOverlay* GetSignUpOverlay() const { return SignUpOverlay; }
+
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	class UEditableTextBox* UserNameTextBox;
@@ -37,6 +41,14 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widgets")
 	TSubclassOf<UUserWidget> SignUpWidgetClass;
 
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widgets")
+	TSubclassOf<UUserWidget> FailWidgetClass;
+
+	UPROPERTY()
+	class UUserWidget* FailWidgetInstance;
+
+
 protected:
 	// bind하는건 UFUNCTION안하면 에러남
 	UFUNCTION()
@@ -45,6 +57,11 @@ protected:
 	UFUNCTION()
 	void OnSignUpButtonClicked();
 
+
+	UFUNCTION()
+	void OnFailWidgetOkButtonClicked();
+
 private:
 	void OnLoginSuccess();
+	class USignUpOverlay* SignUpOverlay;
 };
