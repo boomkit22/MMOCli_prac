@@ -30,26 +30,17 @@ public:
 
 public:
 	bool ConnectGameServer();
-	bool ConnectLoginServer();
 	bool ConnectChattingServer();
 
 	void DisconnectGameServer();
-	void DisconnectLoginServer();
 	void DisconnectChattingServer();
 
 
 public:
 	void SendPacket_GameServer(CPacket* packet);
-	void SendPacket_LoginServer(CPacket* packet);
 	void SendPacket_ChattingServer(CPacket* packet);
 
-/*
-Login Handle
-*/
 
-public:
-	void HandleLoginLogin(CPacket* packet);
-	void HandleLoginEcho(CPacket* packet);
 
 /*
 Game Handle
@@ -67,7 +58,6 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character")
 	TSubclassOf<AActor> RemoteGameCharacterClass;
-
 /*
 Chat Handle
 */
@@ -76,7 +66,6 @@ public:
 
 private:
 	TSharedPtr<GameServerSession> _GameServerSession;
-	TSharedPtr<LoginServerSession> _LoginServerSession;
 	TSharedPtr<ChattingServerSession> _ChattingServerSession;
 
 	/*GameServerSession* _GameServerSession = nullptr;
@@ -98,11 +87,8 @@ private:
 	//bool bLoading = false;
 
 
-
 	//FWorldDelegates::FWorldInitializationEvent::FDelegate OnPostWorldInitHandle;
 	void OnLevelLoaded(UWorld* World);
-
-
 
 private:
 	TMap<int64, class AGameCharacter*> CharacterMap;

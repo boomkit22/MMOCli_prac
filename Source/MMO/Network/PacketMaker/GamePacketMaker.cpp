@@ -6,7 +6,7 @@
 #include "DataStructure/SerializeBuffer.h"
 #include "Network/Packet.h"
 
-void GamePacketMaker::MP_CS_REQ_LOGIN(CPacket* Packet, int64& accountNo)
+void GamePacketMaker::MP_CS_REQ_LOGIN(CPacket* Packet, TCHAR* id, TCHAR* passWord)
 {
 	NetHeader Header;
 	Header._code = GamePacketCode;
@@ -15,7 +15,9 @@ void GamePacketMaker::MP_CS_REQ_LOGIN(CPacket* Packet, int64& accountNo)
 	Packet->PutData((char*)&Header, sizeof(NetHeader));
 	uint16 type = PACKET_CS_GAME_REQ_LOGIN;
 
-	*Packet << type << accountNo;
+	*Packet << type;
+	Packet->PutData((char*)id, sizeof(TCHAR) * ID_LEN);
+	Packet->PutData((char*)passWord, sizeof(TCHAR) * PASSWORD_LEN);
 
 	uint16 len = (uint16)(Packet->GetDataSize() - sizeof(NetHeader));
 	FMemory::Memcpy(Packet->GetBufferPtr() + NET_HEADER_SIZE_INDEX, (void*)&len, sizeof(uint16));

@@ -7,9 +7,9 @@
 #include "Kismet/GameplayStatics.h"
 #include "Containers/UnrealString.h"
 #include "Misc/CString.h"
-#include "PacketMaker/LoginPacketMaker.h"
 #include "DataStructure/SerializeBuffer.h"
 #include "GameInstance/MMOGameInstance.h"
+#include "PacketMaker/GamePacketMaker.h"
 
 
 void ULoginOverlay::NativeConstruct()
@@ -86,19 +86,17 @@ bool ULoginOverlay::CallServerLoginFunction(const FString& UserName, const FStri
     FCString::Strncpy(passWord, *Password, 20);
 
     CPacket* ReqLoginPacket = CPacket::Alloc();
-    LoginPacketMaker::MP_CS_REQ_LOGIN(ReqLoginPacket, id, passWord);
-    CPacket* EchoStartPacket = CPacket::Alloc();
-    LoginPacketMaker::MP_CS_REQ_ECHO(EchoStartPacket);
+    GamePacketMaker::MP_CS_REQ_LOGIN(ReqLoginPacket, id, passWord);
+
     
     if (auto GameInstacne = Cast<UMMOGameInstance>(GWorld->GetGameInstance()))
     {
-        bool connectSuccess = GameInstacne->ConnectLoginServer();
+        bool connectSuccess = GameInstacne->ConnectGameServer();
         if (!connectSuccess)
         {
             return false;
         }
-        GameInstacne->SendPacket_LoginServer(ReqLoginPacket);
-        GameInstacne->SendPacket_LoginServer(EchoStartPacket);
+        GameInstacne->SendPacket_GameServer(ReqLoginPacket);
     }
     else {
         return false;
