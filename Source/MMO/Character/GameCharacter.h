@@ -43,6 +43,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void AttackEnd();
+	bool hasHit = false;
 
 	UFUNCTION(BlueprintCallable)
 	void SetWeaponCollisionEnabled(ECollisionEnabled::Type CollisionEnabled);

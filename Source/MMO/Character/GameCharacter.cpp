@@ -154,6 +154,7 @@ void AGameCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 void AGameCharacter::AttackEnd()
 {
 	ActionState = EActionState::EAS_Unoccupied;
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("AttackEnd")));
 }
 
 void AGameCharacter::SetWeaponCollisionEnabled(ECollisionEnabled::Type CollisionEnabled)
@@ -194,29 +195,24 @@ void AGameCharacter::OnWeaponBeginOverlap(UPrimitiveComponent* OverlappedCompone
 	//{
 	//	AttacedCharacter->GetHit(20);
 	//}
-	EquippedWeapon->GetWeaponBox()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	if (hasHit)
+		return;
 
 	IHittableInterface* AttackedCharacter = Cast<IHittableInterface>(OtherActor);
 	if(AttackedCharacter)
 	{
-		
+		hasHit = true;
 		//AttackedCharacter->GetHit(20);
-
 		CPacket* packet = CPacket::Alloc();
 		//packet = CPacket::Alloc();
-		
 		int64 AttackerID = GetId();
 		int32 AttackerType = GetType();
 		int64 TargetID = AttackedCharacter->GetId();
 		int32 TargetType = AttackedCharacter->GetType();
 		int32 Damage = 5;
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("attacker : %lld, target : %lld"), AttackerID, TargetID));
-		//UE_LOG(LogTemp, Warning, TEXT("attacker : %lld, target : %lld"), attackInfo.AttackerID, attackInfo.TargetID);
-
 		GamePacketMaker::MP_CS_REQ_CHARACTER_ATTACK(packet, AttackerType, AttackerID, TargetType, TargetID, Damage);
 		UMMOGameInstance::GetInstance()->SendPacket_GameServer(packet);
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Send Damage Packet")));
-
 	}
 
 }
@@ -267,6 +263,7 @@ void AGameCharacter::LookUp(float Value)
 
 void AGameCharacter::Attack()
 {
+
 	//TODO: Attack CoolTime
 	if (bIsCool)
 	{
@@ -281,30 +278,40 @@ void AGameCharacter::Attack()
 		return;
 	}
 
+	hasHit = false;
 
 	if (ActionState == EActionState::EAS_Unoccupied)
 	{
+		ActionState = EActionState::EAS_Attacking;
+
 		StopMove();
 		int32 SkillID = FMath::RandRange(0, 1);
 		CPacket* Packet = CPacket::Alloc();
+		FVector StartLocation = GetActorLocation();
 		FRotator StartRotator = GetActorRotation();
-		GamePacketMaker::MP_SC_REQ_CHARACTER_SKILL(Packet, StartRotator, SkillID);
+		GamePacketMaker::MP_SC_REQ_CHARACTER_SKILL(Packet, StartLocation, StartRotator, SkillID);
 		UMMOGameInstance::GetInstance()->SendPacket_GameServer(Packet);
 		
 		PlaySkill(SkillID);
-		ActionState = EActionState::EAS_Attacking;
 	}
 	//PlayAttackMontage();
 }
 
 void AGameCharacter::LeftMouseClick()
 {
+	if (ActionState == EActionState::EAS_Attacking)
+	{
+		return;
+	}
+
 	bool bHitSuccessful = false;
 	FHitResult Hit;
 	bHitSuccessful = PlayerController->GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, true, Hit);
 	
 	CPacket* MoveReqPacket = CPacket::Alloc();
+	//FRotat StartPosition = GetActorLocation();
 	FRotator StartRotation = GetActorRotation();
+
 	GamePacketMaker::MP_CS_REQ_CHARACTER_MOVE(MoveReqPacket, Hit.Location, StartRotation);
 	UMMOGameInstance::GetInstance()->SendPacket_GameServer(MoveReqPacket);
 

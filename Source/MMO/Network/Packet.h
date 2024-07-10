@@ -93,7 +93,7 @@ enum PACKET_TYPE
 	// {
 	//		WORD	Type
 	//		FVector Destination
-	//      FVector StartRotation
+	//      FRotator StartRotation
 	//	}
 	//------------------------------------------------------------
 	PACKET_CS_GAME_REQ_CHARACTER_MOVE = 1009,
@@ -104,7 +104,7 @@ enum PACKET_TYPE
 	//		WORD	Type
 	//		int64 CharacterNO
 	//		FVector Destination
-	//		FVector StartRotation
+	//		FRotator StartRotation
 	//	}
 	//------------------------------------------------------------
 	PACKET_SC_GAME_RES_CHARACTER_MOVE = 1010,
@@ -137,6 +137,7 @@ enum PACKET_TYPE
 	//------------------------------------------------------------
 	// {
 	//		WORD	Type
+	//		FVector  StartLocation
 	//      FRotator StartRotation
 	//		int32   SkillID
 	//}
@@ -147,6 +148,7 @@ enum PACKET_TYPE
 	// {
 	//		WORD	Type
 	//		int64   CharacterNO
+	//		FVector StartLocation
 	//		FRotator StartRotation
 	//		int32   SkillID
 	//
