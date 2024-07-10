@@ -14,6 +14,9 @@ void ACharacterSelectHUD::BeginPlay()
 		APlayerController* Controller = World->GetFirstPlayerController();
 		if (Controller && CharacterSelectOverlayClass)
 		{
+			// Mouse
+			Controller->bShowMouseCursor = true;
+
 			CharacterSelectOverlay = CreateWidget<UCharacterSelectOverlay>(Controller, CharacterSelectOverlayClass);
 			if (CharacterSelectOverlay)
 			{

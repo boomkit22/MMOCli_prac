@@ -4,11 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "CharacterSelectOverlay.h"
+#include "Character/GameCharacter.h"
 #include "CreateCharacterOverlay.generated.h"
 
 /**
  * 
  */
+
+class UCharacterEntry;
+
 UCLASS()
 class MMO_API UCreateCharacterOverlay : public UUserWidget
 {
@@ -17,11 +22,20 @@ class MMO_API UCreateCharacterOverlay : public UUserWidget
 	virtual void NativeConstruct() override;
 
 public:
+	void SetCharacterSelectOverlay(UCharacterSelectOverlay* CharacterSelectOverlay);
+	UCharacterSelectOverlay* CharacterSelectOverlay = nullptr;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	class UButton* SwordClassButton;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	class UButton* AxeClassButton;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	class UButton* OkButton;
+
+	UPROPERTY(meta = (BindWidget))
+	class UEditableTextBox* IDTextBox;
 
 	// YourCharacterClass 변수를 TSubclassOf를 사용하여 선언
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character")
@@ -33,4 +47,13 @@ private:
 
 	UFUNCTION()
 	void OnAxeClassButtonClicked();
+
+	UFUNCTION()
+	void OnOkButtonClicked();
+
+	class AGameCharacter* SpawnedCharacter = nullptr;
+	ECharacterClassType CharacterClassType = ECharacterClassType::CCT_None;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Entry")
+	TSubclassOf<UCharacterEntry> UCharacterEntryClass;
 };

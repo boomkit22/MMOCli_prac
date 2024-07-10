@@ -25,7 +25,15 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	class UButton* CreateButton;
 	
-private:
+public:
+	// 새 항목을 추가하는 메서드
+	UFUNCTION(BlueprintCallable, Category = "Entry")
+	void AddCharacterEntry(class UCharacterEntry* NewEntry);
+
+protected:
+	UPROPERTY(meta = (BindWidget))
+	class UVerticalBox* CharacterListVerticalBox;
+
 	UFUNCTION()
 	void OnCreateButtonClicked();
 };

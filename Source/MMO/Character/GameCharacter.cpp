@@ -22,17 +22,16 @@
 
 //#include "GameInstacne/MMOGameInstacne.h""
 
-// Sets default values
 AGameCharacter::AGameCharacter()
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-	
+
 	// Dont rotate character to camera direction
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationRoll = false;
-	
+
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->RotationRate = FRotator(0.f, 540.f, 0.f);
 
@@ -53,38 +52,6 @@ AGameCharacter::AGameCharacter()
 	FRotator CameraRotation = FRotator(-60.0f, 0.0f, 0.0f); // Adjust the angle as needed
 	CameraBoom->SetWorldRotation(CameraRotation);
 
-	// 콜리전 컴포넌트 설정
-	//CollisionComponent = GetCapsuleComponent();
-	//CollisionComponent->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel2); // Player 채널 설정
-	//CollisionComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel1, ECR_Ignore); // Monster 채널 무시
-
-	//CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
-	//CameraBoom->SetupAttachment(GetRootComponent());
-	//CameraBoom->TargetArmLength = 500.f;
-
-	//ViewCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("ViewCamera"));
-	//ViewCamera->SetupAttachment(CameraBoom);
-
-	//TODO: 무기 생성 및 메시 가져와서 hand_rSocket에 붙이기
-	
-
-
-
-	
-	// 무기 메시를 생성하고 로드합니다.
-	//WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WeaponMesh"));
-	//WeaponMesh->SetupAttachment(GetMesh(), TEXT("hand_rSocket")); // "WeaponSocketName"을 생성한 소켓 이름으로 바꿉니다.
-	// 무기 메쉬 설정
-
-	//static ConstructorHelpers::FObjectFinder<USkeletalMesh> WeaponAsset(TEXT("/Game/Weapons/Blade_BlackKnight/SK_Blade_BlackKnight"));
-	//if (WeaponAsset.Succeeded())
-	//{
-	//	WeaponMesh->SetSkeletalMesh(WeaponAsset.Object);
-	//}
-	//else
-	//{
-	//	UE_LOG(LogTemp, Error, TEXT("Failed to load weapon skeletal mesh."));
-	//}
 
 	//test
 	static ConstructorHelpers::FClassFinder<ACharacter> MonsterBPClass(TEXT("/Game/Blueprint/Monsters/BP_Monster"));
@@ -103,6 +70,30 @@ AGameCharacter::AGameCharacter()
 
 	// 캐릭터 속성 컴포넌트 생성
 	CharAttributeComponent = CreateDefaultSubobject<UCharAttributeComponent>(TEXT("CharAttribute"));
+}
+
+void AGameCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+
+	if (AttackCooldownTimerHandle.IsValid())
+	{
+		GetWorld()->GetTimerManager().ClearTimer(AttackCooldownTimerHandle);
+	}
+
+	if (EquippedWeapon)
+	{
+		EquippedWeapon->Destroy();
+		EquippedWeapon = nullptr;
+	}
+}
+
+
+void AGameCharacter::Initialize(ECharacterClassType characterClassType)
+{
+	CharacterClassType = characterClassType;
+	EquipWeapon();
+
 }
 
 // Called when the game starts or when spawned
@@ -127,25 +118,7 @@ void AGameCharacter::BeginPlay()
 		}
 	}
 
-	if (WeaponClass)
-	{
-		EquippedWeapon = GetWorld()->SpawnActor<AWeapon>(WeaponClass);
-		if (EquippedWeapon)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("EquippedWeapon is spawned."))
-			EquippedWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("hand_rSocket"));
-		}
-	}
-	 DamageCapsule->OnComponentBeginOverlap.AddDynamic(this, &AGameCharacter::OnBoxBeginOverlap);
-
-	 if (EquippedWeapon)
-	 {
-		 UBoxComponent * WeaponBox = EquippedWeapon->GetWeaponBox();
-		 WeaponBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		 WeaponBox->OnComponentBeginOverlap.AddDynamic(this, &AGameCharacter::OnWeaponBeginOverlap);
-	 }
-
-	
+	DamageCapsule->OnComponentBeginOverlap.AddDynamic(this, &AGameCharacter::OnBoxBeginOverlap);
 }
 
 // Called every frame
@@ -536,6 +509,52 @@ int AGameCharacter::GetType()
 int64 AGameCharacter::GetId()
 {
 	return PlayerID;
+}
+
+void AGameCharacter::EquipWeapon()
+{
+	switch (CharacterClassType)
+	{
+		case ECharacterClassType::CCT_Sword:
+		{
+			if (SwordClass)
+			{
+				EquippedWeapon = GetWorld()->SpawnActor<AWeapon>(SwordClass);
+				if (EquippedWeapon)
+				{
+					UE_LOG(LogTemp, Warning, TEXT("EquippedWeapon is spawned."))
+						EquippedWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("hand_rSocket"));
+				}
+			}
+			break;
+		}
+
+		case ECharacterClassType::CCT_Axe:
+		{
+			if (AxeClass)
+			{
+				EquippedWeapon = GetWorld()->SpawnActor<AWeapon>(AxeClass);
+				if (EquippedWeapon)
+				{
+					UE_LOG(LogTemp, Warning, TEXT("EquippedWeapon is spawned."))
+						EquippedWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("hand_rSocket"));
+				}
+			}
+			break;
+		}
+		break;
+
+		default:
+			break;
+	}
+
+	if (EquippedWeapon)
+	{
+		UBoxComponent* WeaponBox = EquippedWeapon->GetWeaponBox();
+		WeaponBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		WeaponBox->OnComponentBeginOverlap.AddDynamic(this, &AGameCharacter::OnWeaponBeginOverlap);
+	}
+
 }
 
 void AGameCharacter::GetHit(int32 damage)

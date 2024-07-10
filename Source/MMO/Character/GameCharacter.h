@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "CharacterTypes.h"
+#include "Character/CharacterTypes.h"
 #include "Interface/HittableInterface.h"
 #include "GameCharacter.generated.h"
 
@@ -15,14 +15,20 @@ class UAnimMontage;
 class UMMOOverlay;
 class AWeapon;
 
+
+
 UCLASS()
 class MMO_API AGameCharacter : public ACharacter, public IHittableInterface
 {
 	friend class UMMOGameInstance;
+
 	GENERATED_BODY()
 public:
+
 	// Sets default values for this character's properties
 	AGameCharacter();
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+	void Initialize(ECharacterClassType CharacterClassType);
 
 protected:
 	// Called when the game starts or when spawned
@@ -78,8 +84,13 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	AWeapon* EquippedWeapon;
 
+
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
-	TSubclassOf<AWeapon> WeaponClass; 
+	TSubclassOf<AWeapon> SwordClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
+	TSubclassOf<AWeapon> AxeClass;
+
 
 	/**
 	* Animation montages
@@ -155,4 +166,13 @@ protected:
 
 		int64 GetId() override;
 
+
+protected:
+		UPROPERTY(EditAnywhere, Category = "Character")
+		ECharacterClassType CharacterClassType;
+
+
+protected:
+	//Act By Class
+	void EquipWeapon();
 };

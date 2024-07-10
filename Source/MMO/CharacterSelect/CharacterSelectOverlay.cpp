@@ -5,12 +5,22 @@
 
 #include "Components/Button.h"
 #include "CharacterSelect/CreateCharacterOverlay.h"
+#include "Components/VerticalBox.h"
+#include "CharacterSelect/CharacterEntry.h"
 
 void UCharacterSelectOverlay::NativeConstruct()
 {
 	Super::NativeConstruct();
 
 	CreateButton->OnClicked.AddDynamic(this, &UCharacterSelectOverlay::OnCreateButtonClicked);
+}
+
+void UCharacterSelectOverlay::AddCharacterEntry(UCharacterEntry* NewEntry)
+{
+	if (CharacterListVerticalBox && NewEntry)
+	{
+		CharacterListVerticalBox->AddChild(NewEntry);
+	}
 }
 
 void UCharacterSelectOverlay::OnCreateButtonClicked()
@@ -21,6 +31,7 @@ void UCharacterSelectOverlay::OnCreateButtonClicked()
 		if (CreateCharacterOverlay)
 		{
 			CreateCharacterOverlay->AddToViewport();
+			CreateCharacterOverlay->SetCharacterSelectOverlay(this);
 		}
 	}
 }

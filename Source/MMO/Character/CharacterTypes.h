@@ -8,6 +8,14 @@
 //	ECT_Rogue
 //};
 
+UENUM(BlueprintType)
+enum class ECharacterClassType : uint8
+{
+	CCT_None UMETA(DisplayName = "None"),
+	CCT_Sword UMETA(DisplayName = "Sword"),
+	CCT_Axe UMETA(DisplayName = "Axe"),
+};
+
 enum class EActionState : uint8
 {
 	EAS_Unoccupied UMETA(DisplayName = "Unoccupied"),

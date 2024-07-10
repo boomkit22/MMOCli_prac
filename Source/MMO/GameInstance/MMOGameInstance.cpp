@@ -66,6 +66,8 @@ void UMMOGameInstance::Shutdown()
 
 	_GameServerSession.Reset();
 	_ChattingServerSession.Reset();
+
+
 }
 
 bool UMMOGameInstance::ConnectGameServer()
