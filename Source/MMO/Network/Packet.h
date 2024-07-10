@@ -58,10 +58,8 @@ enum PACKET_TYPE
 	//------------------------------------------------------------
 	//	{
 	//		WORD	Type
-	// 		int64 PlayerID // 한 계정에 플레이어가 여러개 있어도 PlayerID는 고유하다
-	//		FVector SpawnLocation
-	// 		uint16 Level
-	// 		TCHAR NickName[20] // null포함
+	//		PlayerInfo playerInfo
+	//		SpawnLocation spawnLocation
 	//	}
 	//------------------------------------------------------------
 	PACKET_SC_GAME_SPAWN_MY_CHARACTER = 1005,
@@ -70,10 +68,8 @@ enum PACKET_TYPE
 	//------------------------------------------------------------
 	//	{
 	//		WORD	Type
-	//		int64 PlayerID // 한 계정에 플레이어가 여러개 있어도 PlayerID는 고유하다
-	// 		FVector SpawnLocation
-	// 		uint16 Level
-	// 		TCHAR NickName[20] // null포함
+	//		PlayerInfo playerInfo
+	//		SpawnLocation spawnLocation
 	//	}
 	//------------------------------------------------------------
 	PACKET_SC_GAME_SPAWN_OTHER_CHAACTER = 1006,

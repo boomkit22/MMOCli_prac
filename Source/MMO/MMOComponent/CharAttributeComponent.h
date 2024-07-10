@@ -41,9 +41,12 @@ private:
 	FString CharName;
 
 	UPROPERTY(EditAnywhere, Category = "CharAttribute")
-	int32 Level;
+	uint16 Level;
 
-
+	UPROPERTY(EditAnywhere, Category = "CharAttribute")
+	uint32 Exp;
+	
+	int64 PlayerID;
 
 public:
 	bool IsAlive();

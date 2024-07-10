@@ -109,7 +109,7 @@ public:
 					FMemory::Memcpy(&_buffer[_rear], chpData, backBufferSize);
 					//memcpy(&_buffer[_rear], chpData, backBufferSize);
 					FMemory::Memcpy(&_buffer[0], chpData + backBufferSize, dataSize - backBufferSize);
-					memcpy(&_buffer[0], chpData + backBufferSize, dataSize - backBufferSize);
+					FMemory::Memcpy(&_buffer[0], chpData + backBufferSize, dataSize - backBufferSize);
 					_rear = (_rear + dataSize) % _realBufferSize;
 				}
 			}

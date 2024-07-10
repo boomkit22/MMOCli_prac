@@ -10,6 +10,8 @@
 #include "GameInstance/MMOGameInstance.h"
 #include "Network/DataStructure/SerializeBuffer.h"
 #include "PacketMaker/GamePacketMaker.h"
+#include "CharacterSelect/CharacterEntry.h"
+
 
 void UCharacterSelectOverlay::NativeConstruct()
 {
@@ -19,6 +21,15 @@ void UCharacterSelectOverlay::NativeConstruct()
 	CPacket* reqCharacterListPacket = CPacket::Alloc();
 	GamePacketMaker::MP_CS_REQ_PLAYER_LIST(reqCharacterListPacket);
 	UMMOGameInstance::GetInstance()->SendPacket_GameServer(reqCharacterListPacket);
+}
+
+void UCharacterSelectOverlay::NativeDestruct()
+{
+	Super::NativeDestruct();
+	if (CharacterListVerticalBox)
+	{
+		CharacterListVerticalBox->ClearChildren();
+	}
 }
 
 void UCharacterSelectOverlay::AddCharacterEntry(UCharacterEntry* NewEntry)
@@ -31,7 +42,7 @@ void UCharacterSelectOverlay::AddCharacterEntry(UCharacterEntry* NewEntry)
 
 void UCharacterSelectOverlay::AddCharacterEntry(ECharacterClassType characterClassType, uint16 Level, FString NikcName)
 {
-	UCharacterEntry* NewEntry = CreateWidget<UCharacterEntry>(GetWorld(), UCreateCharacterOverlayClass);
+	UCharacterEntry* NewEntry = CreateWidget<UCharacterEntry>(GetWorld(), UChaterEntryClass);
 	if (NewEntry)
 	{
 		NewEntry->Init(characterClassType, FString::FromInt(Level), NikcName);
@@ -43,7 +54,7 @@ void UCharacterSelectOverlay::SetCharacterList(std::vector<PlayerInfo>& playerIn
 {
 	for (auto& playerInfo : playerInfos)
 	{
-		UCharacterEntry* NewEntry = CreateWidget<UCharacterEntry>(GetWorld(), UCreateCharacterOverlayClass);
+		UCharacterEntry* NewEntry = CreateWidget<UCharacterEntry>(GetWorld(), UChaterEntryClass);
 		if (NewEntry)
 		{
 			NewEntry->Init(static_cast<ECharacterClassType>(playerInfo.Class), FString::FromInt(playerInfo.Level), playerInfo.NickName);

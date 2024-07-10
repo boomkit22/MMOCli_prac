@@ -7,6 +7,7 @@
 #include "CharacterSelect/CharacterEntry.h"
 #include "GameInstance/MMOGameInstance.h"
 #include "Network/DataStructure/SerializeBuffer.h"
+#include "PacketMaker/GamePacketMaker.h"
 
 void UCreateCharacterOverlay::NativeConstruct()
 {
@@ -84,20 +85,13 @@ void UCreateCharacterOverlay::OnOkButtonClicked()
     // res받아서 추가하고
     // 서버에서는 db에 저장하고
     CPacket* ReqCreateCharacterPacket = CPacket::Alloc();
-
-
-    
-    if (UCharacterEntryClass)
-    {
-        UCharacterEntry* CharacterEntry = CreateWidget<UCharacterEntry>(GetWorld(), UCharacterEntryClass);
-        if (CharacterEntry)
-        {
-            CharacterEntry->Init(CharacterClassType, TEXT("1"), IDTextBox->GetText().ToString());
-            if(CharacterSelectOverlay)
-			{
-				CharacterSelectOverlay->AddCharacterEntry(CharacterEntry);
-			}
-        }
-    }
+    uint16 Class;
+    TCHAR NickName[NICKNAME_LEN];
+    FString NickNameString = IDTextBox->GetText().ToString();
+    FCString::Strcpy(NickName, *NickNameString);
+    Class = static_cast<uint16>(CharacterClassType);
+    GamePacketMaker::MP_CS_REQ_CREATE_PLAYER(ReqCreateCharacterPacket, Class, NickName);
+    UMMOGameInstance::GetInstance()->SendPacket_GameServer(ReqCreateCharacterPacket);
 	RemoveFromParent();
+
 }

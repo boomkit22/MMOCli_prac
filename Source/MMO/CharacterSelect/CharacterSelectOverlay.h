@@ -12,17 +12,24 @@
  * 
  */
 class UCreateCharacterOverlay;
-
+class UCharacterEntry;
 UCLASS()
 class MMO_API UCharacterSelectOverlay : public UUserWidget
 {
 	GENERATED_BODY()
 
 	virtual void NativeConstruct() override;
+	virtual void NativeDestruct() override;
+
 public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Overlay")
 	TSubclassOf<UCreateCharacterOverlay> UCreateCharacterOverlayClass;
+
+
+	UPROPERTY(EditDefaultsOnly, Category = "Overlay")
+	TSubclassOf<UCharacterEntry> UChaterEntryClass;
+
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	class UButton* CreateButton;

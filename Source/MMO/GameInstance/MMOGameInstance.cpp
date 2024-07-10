@@ -69,6 +69,8 @@ void UMMOGameInstance::Shutdown()
 	_GameServerSession.Reset();
 	_ChattingServerSession.Reset();
 
+	CharacterMap.Empty();
+
 
 }
 
@@ -116,7 +118,7 @@ void UMMOGameInstance::SendPacket_ChattingServer(CPacket* packet)
 void UMMOGameInstance::OpenLevel(FName LevelName)
 {
 	bLoading = true;
-	UGameplayStatics::OpenLevel(this, LevelName, false);
+	UGameplayStatics::OpenLevel(GetInstance(), LevelName, false);
 }
 
 void UMMOGameInstance::HandleGameLogin(CPacket* packet)
@@ -216,15 +218,9 @@ void UMMOGameInstance::HandleFieldMove(CPacket* packet)
 
 void UMMOGameInstance::HandleSpawnMyCharacter(CPacket* packet)
 {
-	int64 PlayerID;
 	FVector SpawnLocation;
-	uint16 Level;
-	TCHAR NickName[20];
-
-	*packet >> PlayerID >> SpawnLocation >> Level;
-	packet->GetData((char*)NickName, ID_LEN * sizeof(TCHAR));
-
-
+	PlayerInfo playerInfo;
+	*packet >> playerInfo >> SpawnLocation;
 	
 	UWorld* World = GetWorld();
 	if (World)
@@ -236,10 +232,10 @@ void UMMOGameInstance::HandleSpawnMyCharacter(CPacket* packet)
 			AGamePlayerController* MyController = Cast<AGamePlayerController>(PlayerController);
 			if (MyController)
 			{
-				AGameCharacter* GameCharacter = MyController->SpawnMyCharacter(PlayerID, SpawnLocation, Level, NickName);
+				AGameCharacter* GameCharacter = MyController->SpawnMyCharacter(SpawnLocation, playerInfo);
 				if (GameCharacter)
 				{
-					CharacterMap.Add(PlayerID, GameCharacter);
+					CharacterMap.Add(playerInfo.PlayerID, GameCharacter);
 				}else
 				{
 					UE_LOG(LogTemp, Error, TEXT("HandleSpawn game character null"));
@@ -254,14 +250,11 @@ void UMMOGameInstance::HandleSpawnMyCharacter(CPacket* packet)
 
 void UMMOGameInstance::HandleSpawnOhterCharacter(CPacket* packet)
 {
-	int64 PlayerID;
+	PlayerInfo playerInfo;
 	FVector SpawnLocation;
-	uint16 Level;
-	TCHAR NickName[20];
 
-	*packet >> PlayerID >> SpawnLocation >> Level;
-	packet->GetData((char*)NickName, ID_LEN * sizeof(TCHAR));
-
+	*packet >> playerInfo >> SpawnLocation;
+	int64 PlayerID = playerInfo.PlayerID;
 
 	if (GameCharacterClass)
 	{
@@ -274,8 +267,10 @@ void UMMOGameInstance::HandleSpawnOhterCharacter(CPacket* packet)
 		AGameCharacter* SpawnedCharacter = Cast<AGameCharacter>(GetWorld()->SpawnActor<ARemoteGameCharacter>(RemoteGameCharacterClass, SpawnLocation, Rotation, SpawnParams));
 		if (SpawnedCharacter)
 		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.5f, FColor::Red, TEXT("Handle spawn Ohter Character"));
+			SpawnedCharacter->Initialize(static_cast<ECharacterClassType>(playerInfo.Class));
 			SpawnedCharacter->SetPlayerID(PlayerID);
-			SpawnedCharacter->InitCharAttributeComponent(100, NickName, Level);
+			SpawnedCharacter->InitCharAttributeComponent(100, playerInfo.NickName, playerInfo.Level);
 			CharacterMap.Add(PlayerID, SpawnedCharacter);
 		}
 		else
@@ -398,35 +393,40 @@ void UMMOGameInstance::HandleSignUp(CPacket* packet)
 void UMMOGameInstance::HandlePlayerList(CPacket* packet)
 {
 	uint8 playerCount;
-	*packet >> playerCount;
 	PlayerInfo playerInfo;
 	vector<PlayerInfo> playerList;
+	*packet >> playerCount;
 
-	for (int i = 0; i < playerCount; i++)
-	{
-		*packet >> playerInfo;
-		playerList.push_back(playerInfo);
-	}
+	
 
-	//TODO: 채팅창에 메시지 출력
-	UWorld* World = GetWorld();
-	if (World)
+	if (playerCount > 0)
 	{
-		APlayerController* Controller = World->GetFirstPlayerController();
-		if (Controller)
+		for (int i = 0; i < playerCount; i++)
 		{
-			AHUD* HUD = Controller->GetHUD();
-			ACharacterSelectHUD* CharacterSelectHUD = Cast<ACharacterSelectHUD>(HUD);
-			if (CharacterSelectHUD)
+			*packet >> playerInfo;
+			playerList.push_back(playerInfo);
+		}	
+		//TODO: 채팅창에 메시지 출력
+		UWorld* World = GetMMOWorld();
+		if (World)
+		{
+			APlayerController* Controller = World->GetFirstPlayerController();
+			if (Controller)
 			{
-				UCharacterSelectOverlay* CharacaterSelectOverlay = CharacterSelectHUD->GetCharacterSelectOverlay();
-				if (CharacaterSelectOverlay)
+				AHUD* HUD = Controller->GetHUD();
+				ACharacterSelectHUD* CharacterSelectHUD = Cast<ACharacterSelectHUD>(HUD);
+				if (CharacterSelectHUD)
 				{
-					CharacaterSelectOverlay->SetCharacterList(playerList);
+					UCharacterSelectOverlay* CharacaterSelectOverlay = CharacterSelectHUD->GetCharacterSelectOverlay();
+					if (CharacaterSelectOverlay)
+					{
+						CharacaterSelectOverlay->SetCharacterList(playerList);
+					}
 				}
 			}
 		}
 	}
+	
 }
 
 void UMMOGameInstance::HandleCreatePlayer(CPacket* packet)
@@ -458,6 +458,7 @@ void UMMOGameInstance::HandleCreatePlayer(CPacket* packet)
 				UCharacterSelectOverlay* CharacaterSelectOverlay = CharacterSelectHUD->GetCharacterSelectOverlay();
 				if (CharacaterSelectOverlay)
 				{
+
 					CharacaterSelectOverlay->AddCharacterEntry(static_cast<ECharacterClassType>(Class), 1, NickName);
 				}
 			}
@@ -542,6 +543,30 @@ bool UMMOGameInstance::Tick(float DeltaTime)
 		_ChattingServerSession->HandleRecvPacket();
 	}
 	return true;
+}
+
+UWorld* UMMOGameInstance::GetMMOWorld()
+{
+#if WITH_EDITOR
+	if (GEditor)
+	{
+		UWorld* World = GEditor->PlayWorld;
+		if (World)
+		{
+			return World;
+		}
+	}
+
+	if (GWorld)
+	{
+		return GWorld;
+	}
+
+	GEngine->AddOnScreenDebugMessage(-1, 5.5f, FColor::Blue, TEXT("editor nullptr!"));
+	return nullptr;
+#endif
+
+	return GWorld;
 }
 
 UMMOGameInstance* UMMOGameInstance::GetInstance()

@@ -91,6 +91,8 @@ void AGameCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 void AGameCharacter::Initialize(ECharacterClassType characterClassType)
 {
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Initialize %d"), (int)characterClassType));
+
 	CharacterClassType = characterClassType;
 	EquipWeapon();
 
@@ -207,7 +209,7 @@ void AGameCharacter::OnWeaponBeginOverlap(UPrimitiveComponent* OverlappedCompone
 		int32 AttackerType = GetType();
 		int64 TargetID = AttackedCharacter->GetId();
 		int32 TargetType = AttackedCharacter->GetType();
-		int64 Damage = 5;
+		int32 Damage = 5;
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("attacker : %lld, target : %lld"), AttackerID, TargetID));
 		//UE_LOG(LogTemp, Warning, TEXT("attacker : %lld, target : %lld"), attackInfo.AttackerID, attackInfo.TargetID);
 
@@ -522,12 +524,12 @@ void AGameCharacter::EquipWeapon()
 				EquippedWeapon = GetWorld()->SpawnActor<AWeapon>(SwordClass);
 				if (EquippedWeapon)
 				{
-					UE_LOG(LogTemp, Warning, TEXT("EquippedWeapon is spawned."))
-						EquippedWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("hand_rSocket"));
+					GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("EquippedWeapon is spawned CCT_Sword.")));
+					EquippedWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("hand_rSocket"));
 				}
 			}
-			break;
 		}
+		break;
 
 		case ECharacterClassType::CCT_Axe:
 		{
@@ -536,20 +538,22 @@ void AGameCharacter::EquipWeapon()
 				EquippedWeapon = GetWorld()->SpawnActor<AWeapon>(AxeClass);
 				if (EquippedWeapon)
 				{
-					UE_LOG(LogTemp, Warning, TEXT("EquippedWeapon is spawned."))
-						EquippedWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("hand_rSocket"));
+					GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("EquippedWeapon is spawned. CCT_Axe")));
+					EquippedWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("hand_rSocket"));
 				}
 			}
-			break;
 		}
 		break;
 
 		default:
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("spawn weapon defualt")));
+
 			break;
 	}
 
 	if (EquippedWeapon)
 	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Set Weapon Overlap ")));
 		UBoxComponent* WeaponBox = EquippedWeapon->GetWeaponBox();
 		WeaponBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		WeaponBox->OnComponentBeginOverlap.AddDynamic(this, &AGameCharacter::OnWeaponBeginOverlap);

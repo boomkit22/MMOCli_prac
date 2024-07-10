@@ -3,7 +3,6 @@
 
 #include "Character/GamePlayerController.h"
 #include "Character/GameCharacter.h"
-#include "Type.h"
 #include "HUD/MMOHUD.h"
 #include "HUD/MMOOverlay.h"
 void AGamePlayerController::BeginPlay()
@@ -12,7 +11,7 @@ void AGamePlayerController::BeginPlay()
 
 }
 
-AGameCharacter* AGamePlayerController::SpawnMyCharacter(int64 PlayerID, FVector spawnLocation, uint16 Level, TCHAR* NickName)
+AGameCharacter* AGamePlayerController::SpawnMyCharacter(FVector spawnLocation, PlayerInfo playerInfo)
 {
     AGameCharacter* GameCharacter = nullptr;
     UE_LOG(LogTemp, Warning, TEXT("spawn3"));
@@ -35,12 +34,13 @@ AGameCharacter* AGamePlayerController::SpawnMyCharacter(int64 PlayerID, FVector 
             GameCharacter = Cast<AGameCharacter>(SpawnedCharacter);
             if (GameCharacter)
             {
-                FString name = NickName;
-                uint16 level = Level;
+                FString name = playerInfo.NickName;
+                uint16 level = playerInfo.Level;
 
-                GameCharacter->SetPlayerID(PlayerID);
+                GameCharacter->Initialize(static_cast<ECharacterClassType>(playerInfo.Class));
+                GameCharacter->SetPlayerID(playerInfo.PlayerID);
 				GameCharacter->InitCharAttributeComponent(100, name, level);
-
+                
                 AMMOHUD* MMOHUD = Cast<AMMOHUD>(GetHUD());
                 if (MMOHUD)
                 {

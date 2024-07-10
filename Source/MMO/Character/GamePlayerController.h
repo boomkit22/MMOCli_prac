@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
+#include "Type.h"
 #include "GamePlayerController.generated.h"
 class AGameCharacter;
 /**
@@ -19,7 +20,7 @@ public:
 
 
 public:
-	AGameCharacter* SpawnMyCharacter(int64 PlayerID, FVector SpawnLocation, uint16 Level, TCHAR* NickName);
+	AGameCharacter* SpawnMyCharacter(FVector SpawnLocation, PlayerInfo playerInfo);
 
 public:
 	// YourCharacterClass 변수를 TSubclassOf를 사용하여 선언

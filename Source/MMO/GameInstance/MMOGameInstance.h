@@ -81,6 +81,7 @@ private:
 	bool Tick(float DeltaTime);
 
 public:
+	static UWorld* GetMMOWorld();
 	static UMMOGameInstance* GetInstance();
 
 public:
