@@ -4,10 +4,19 @@
 #include "CharacterSelect/CharacterEntry.h"
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
+#include "Components/Button.h"
+#include "Network/DataStructure/SerializeBuffer.h"
+#include "GameInstance/MMOGameInstance.h"
+#include "PacketMaker/GamePacketMaker.h"
 
 void UCharacterEntry::NativeConstruct()
 {
 	Super::NativeConstruct();
+
+	if (SelectButton)
+	{
+		SelectButton->OnClicked.AddDynamic(this, &UCharacterEntry::OnSelectButtonClicked);
+	}
 }
 
 void UCharacterEntry::Init(ECharacterClassType characterClassType, FString level, FString id)
@@ -30,3 +39,20 @@ void UCharacterEntry::Init(ECharacterClassType characterClassType, FString level
 	LevelText->SetText(FText::FromString(level));
 	IDText->SetText(FText::FromString(id));
 }
+
+void UCharacterEntry::SetPlayerID(int64 playerID)
+{
+	PlayerID = playerID;
+}
+
+void UCharacterEntry::OnSelectButtonClicked()
+{
+	// 캐릭터 한개 선택하면
+	// 캐릭터 선택 응답쏴주고
+	// 응답오면 필드이동하고
+	// 스폰 쏴주고
+	CPacket* reqSelectCharacterPacket = CPacket::Alloc();
+	GamePacketMaker::MP_CS_REQ_SELECT_PLAYER(reqSelectCharacterPacket, PlayerID);
+	UMMOGameInstance::GetInstance()->SendPacket_GameServer(reqSelectCharacterPacket);
+}
+

@@ -68,6 +68,24 @@ void GamePacketHandler::HandlePacket(CPacket* packet)
 	}
 	break;
 
+	case PACKET_SC_GAME_RES_PLAYER_LIST:
+	{
+		GameInstance->HandlePlayerList(packet);
+	}
+	break;
+
+	case PACKET_SC_GAME_RES_CREATE_PLAYER:
+	{
+		GameInstance->HandleCreatePlayer(packet);
+	}
+	break;
+
+	case PACKET_SC_GAME_RES_SELECT_PLAYER:
+	{
+		GameInstance->HandleSelectPlayer(packet);
+	}
+	break;
+
 	default:
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Unknown Packet Type : %d"), packetType));
 		break;

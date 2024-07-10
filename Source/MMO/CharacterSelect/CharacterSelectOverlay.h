@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include <vector>
+#include "Type.h"
 #include "CharacterSelectOverlay.generated.h"
 
 /**
@@ -29,7 +31,8 @@ public:
 	// 새 항목을 추가하는 메서드
 	UFUNCTION(BlueprintCallable, Category = "Entry")
 	void AddCharacterEntry(class UCharacterEntry* NewEntry);
-
+	void AddCharacterEntry(ECharacterClassType characterClassType, uint16 Level, FString NikcName);
+	void SetCharacterList(std::vector<PlayerInfo>& playerInfos);
 protected:
 	UPROPERTY(meta = (BindWidget))
 	class UVerticalBox* CharacterListVerticalBox;

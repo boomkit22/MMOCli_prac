@@ -17,6 +17,9 @@ class MMO_API ACharacterSelectHUD : public AHUD
 {
 	GENERATED_BODY()
 
+public:
+	class UCharacterSelectOverlay* GetCharacterSelectOverlay() const { return CharacterSelectOverlay; }
+
 protected:
 	virtual void BeginPlay() override;
 

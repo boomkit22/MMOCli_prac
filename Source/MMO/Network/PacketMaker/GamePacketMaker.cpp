@@ -100,4 +100,50 @@ void GamePacketMaker::MP_CS_REQ_SIGN_UP(CPacket* Packet, TCHAR* id, TCHAR* passW
 	FMemory::Memcpy(Packet->GetBufferPtr() + NET_HEADER_SIZE_INDEX, (void*)&len, sizeof(uint16));
 }
 
+void GamePacketMaker::MP_CS_REQ_PLAYER_LIST(CPacket* packet)
+{
+	NetHeader Header;
+	Header._code = GamePacketCode;
+	Header._randKey = rand();
+
+	packet->PutData((char*)&Header, sizeof(NetHeader));
+	uint16 type = PACKET_CS_GAME_REQ_PLAYER_LIST;
+
+	*packet << type;
+
+	uint16 len = (uint16)(packet->GetDataSize() - sizeof(NetHeader));
+	FMemory::Memcpy(packet->GetBufferPtr() + NET_HEADER_SIZE_INDEX, (void*)&len, sizeof(uint16));
+}
+
+void GamePacketMaker::MP_CS_REQ_CREATE_PLAYER(CPacket* packet, uint16 Class, TCHAR* NickName)
+{
+	NetHeader Header;
+	Header._code = GamePacketCode;
+	Header._randKey = rand();
+
+	packet->PutData((char*)&Header, sizeof(NetHeader));
+	uint16 type = PACKET_CS_GAME_REQ_CREATE_PLAYER;
+
+	*packet << type << Class;
+	packet->PutData((char*)NickName, sizeof(TCHAR) * NICKNAME_LEN);
+
+	uint16 len = (uint16)(packet->GetDataSize() - sizeof(NetHeader));
+	FMemory::Memcpy(packet->GetBufferPtr() + NET_HEADER_SIZE_INDEX, (void*)&len, sizeof(uint16));
+}
+
+void GamePacketMaker::MP_CS_REQ_SELECT_PLAYER(CPacket* packet, int64 PlayerID)
+{
+	NetHeader Header;
+	Header._code = GamePacketCode;
+	Header._randKey = rand();
+
+	packet->PutData((char*)&Header, sizeof(NetHeader));
+	uint16 type = PACKET_CS_GAME_REQ_SELECT_PLAYER;
+
+	*packet << type << PlayerID;
+
+	uint16 len = (uint16)(packet->GetDataSize() - sizeof(NetHeader));
+	FMemory::Memcpy(packet->GetBufferPtr() + NET_HEADER_SIZE_INDEX, (void*)&len, sizeof(uint16));
+}
+
 

@@ -22,6 +22,8 @@
 #include "Login/LoginOverlay.h"
 #include "Login/SignUpOverlay.h"
 #include <vector>
+#include "CharacterSelect/CharacterSelectHUD.h"
+#include "CharacterSelect/CharacterSelectOverlay.h"
 using namespace std;
 
 bool bLoading = false;
@@ -392,6 +394,94 @@ void UMMOGameInstance::HandleSignUp(CPacket* packet)
 		}
 	}
 }
+
+void UMMOGameInstance::HandlePlayerList(CPacket* packet)
+{
+	uint8 playerCount;
+	*packet >> playerCount;
+	PlayerInfo playerInfo;
+	vector<PlayerInfo> playerList;
+
+	for (int i = 0; i < playerCount; i++)
+	{
+		*packet >> playerInfo;
+		playerList.push_back(playerInfo);
+	}
+
+	//TODO: 채팅창에 메시지 출력
+	UWorld* World = GetWorld();
+	if (World)
+	{
+		APlayerController* Controller = World->GetFirstPlayerController();
+		if (Controller)
+		{
+			AHUD* HUD = Controller->GetHUD();
+			ACharacterSelectHUD* CharacterSelectHUD = Cast<ACharacterSelectHUD>(HUD);
+			if (CharacterSelectHUD)
+			{
+				UCharacterSelectOverlay* CharacaterSelectOverlay = CharacterSelectHUD->GetCharacterSelectOverlay();
+				if (CharacaterSelectOverlay)
+				{
+					CharacaterSelectOverlay->SetCharacterList(playerList);
+				}
+			}
+		}
+	}
+}
+
+void UMMOGameInstance::HandleCreatePlayer(CPacket* packet)
+{
+	uint8 Status;
+	uint16 Class;
+	TCHAR NickName[NICKNAME_LEN];
+	*packet >> Status >> Class;
+	packet->GetData((char*)NickName, NICKNAME_LEN * sizeof(TCHAR));
+
+		//TODO:
+	// LoginHud가져와서 VerticalBox에 추가하기
+	if (!Status)
+	{
+		//TODO: 여기다 캐릭터 생성 실패창 이런거 하면 좋을 것같은데
+		return;
+	}
+
+	UWorld* World = GetWorld();
+	if (World)
+	{
+		APlayerController* Controller = World->GetFirstPlayerController();
+		if (Controller)
+		{
+			AHUD* HUD = Controller->GetHUD();
+			ACharacterSelectHUD* CharacterSelectHUD = Cast<ACharacterSelectHUD>(HUD);
+			if (CharacterSelectHUD)
+			{
+				UCharacterSelectOverlay* CharacaterSelectOverlay = CharacterSelectHUD->GetCharacterSelectOverlay();
+				if (CharacaterSelectOverlay)
+				{
+					CharacaterSelectOverlay->AddCharacterEntry(static_cast<ECharacterClassType>(Class), 1, NickName);
+				}
+			}
+		}
+	}
+}
+
+void UMMOGameInstance::HandleSelectPlayer(CPacket* packet)
+{
+	uint8 Status;
+	*packet >> Status;
+
+	if (!Status)
+	{
+		return;
+	}
+
+	//TODO: field이동 쏘기
+	uint16 fieldId = 1;
+	CPacket* fieldMovePacket = CPacket::Alloc();
+	GamePacketMaker::MP_CS_REQ_FIELD_MOVE(fieldMovePacket, fieldId);
+	SendPacket_GameServer(fieldMovePacket);
+}
+
 
 void UMMOGameInstance::HandleChatMessage(CPacket* packet)
 {

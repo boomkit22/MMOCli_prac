@@ -5,6 +5,8 @@
 #include "Components/Button.h"
 #include "Components/EditableTextBox.h"
 #include "CharacterSelect/CharacterEntry.h"
+#include "GameInstance/MMOGameInstance.h"
+#include "Network/DataStructure/SerializeBuffer.h"
 
 void UCreateCharacterOverlay::NativeConstruct()
 {
@@ -78,7 +80,13 @@ void UCreateCharacterOverlay::OnOkButtonClicked()
 		return;
 	}
 
-   
+    //	TODO: 여기서 패킷 보내고
+    // res받아서 추가하고
+    // 서버에서는 db에 저장하고
+    CPacket* ReqCreateCharacterPacket = CPacket::Alloc();
+
+
+    
     if (UCharacterEntryClass)
     {
         UCharacterEntry* CharacterEntry = CreateWidget<UCharacterEntry>(GetWorld(), UCharacterEntryClass);

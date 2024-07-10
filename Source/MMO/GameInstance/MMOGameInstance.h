@@ -54,6 +54,9 @@ public:
 	void HandleDamage(CPacket* packet);
 	void HandleCharacterSkill(CPacket* packet);
 	void HandleSignUp(CPacket* packet);
+	void HandlePlayerList(CPacket* packet);
+	void HandleCreatePlayer(CPacket* packet);
+	void HandleSelectPlayer(CPacket* packet);
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character")
 	TSubclassOf<AActor> GameCharacterClass;
 	

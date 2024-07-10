@@ -19,7 +19,7 @@ class MMO_API UCharacterEntry : public UUserWidget
 
 public:
 	void Init(ECharacterClassType characterClassType, FString level, FString IDText);
-	
+	void SetPlayerID(int64 playerID);
 protected:
 	UPROPERTY(meta = (BindWidget))
 	class UImage* WeaponImage;
@@ -30,12 +30,21 @@ protected:
 	UPROPERTY(meta = (BindWidget))
 	class UTextBlock* IDText;
 
+	UPROPERTY(meta = (BindWidget))
+	class UButton* SelectButton;
+
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WeaponImage")
 	class UTexture2D* AxeImage;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WeaponImage")
 	class UTexture2D* SwordImage;
+
+	UFUNCTION()
+	void OnSelectButtonClicked();
+
+private:
+	int64 PlayerID;
 
 
 };
