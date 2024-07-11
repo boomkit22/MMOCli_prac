@@ -486,6 +486,17 @@ void UMMOGameInstance::HandleSelectPlayer(CPacket* packet)
 	SendPacket_GameServer(fieldMovePacket);
 }
 
+void UMMOGameInstance::HandleSpawnMonster(CPacket* packet)
+{
+	MonsterInfo monsterInfo;
+	FVector SpawnLocation;
+	*packet >> monsterInfo >> SpawnLocation;
+
+
+}
+
+
+
 
 void UMMOGameInstance::HandleChatMessage(CPacket* packet)
 {

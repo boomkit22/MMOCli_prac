@@ -8,9 +8,13 @@
 #include "Interface/HittableInterface.h"
 #include "Monster.generated.h"
 
+#define MONSTER_TYPE_GUARDIAN 1
+#define MONSTER_TYPE_SPIDER 2
 
 
 class UHUDMonsterComponent;
+class USkeletalMeshComponent;
+class UBoxComponent;
 
 UCLASS()
 class MMO_API AMonster : public ACharacter, public IHittableInterface
@@ -33,6 +37,11 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 public:
+	UPROPERTY(EditAnywhere ,BlueprintReadWrite, Category = "Type")
+	EMonsterType MonsterType;
+
+	void SetMonsterProperties(MonsterInfo monsterInfo);
+
 	//test
 	void SetDestination();
 
@@ -43,8 +52,6 @@ public:
 
 	EMonsterState MonsterState = EMonsterState::EMS_Idle;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Collision, meta = (AllowPrivateAccess = "true"))
-	class UCapsuleComponent* CollisionComponent;
 
 public:
 	void Attack();
@@ -55,23 +62,40 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	class UMonsAttributeComponent* MonsAttributeComponent;
 
-	UPROPERTY(VisibleAnywhere)
-	UHUDMonsterComponent* HUDMonsterComponent;
-	UPROPERTY(VisibleAnywhere, Category = "Weapon")
-	USkeletalMeshComponent* WeaponMesh;
-
 	/**
 	* Animation montages
 	*/
+	
+
+	// IHittableInterface을(를) 통해 상속됨
+	int GetType() override;
+	int64 GetId() override;
+
+protected:
+	// guardian
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
+	USkeletalMeshComponent* GuardianMesh;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
+	UBoxComponent* GuardianCollisionBox;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
+
+	USkeletalMeshComponent* GuardianWeaponMesh;
+
+	// spider
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
+	USkeletalMeshComponent* SpiderMesh;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
+	UBoxComponent* SpiderCollisionBox;
+
 	UPROPERTY(EditDefaultsOnly, Category = "Montages")
 	UAnimMontage* AttackMontage;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Montages")
 	UAnimMontage* DeathMontage;
 
-	// IHittableInterface을(를) 통해 상속됨
-	int GetType() override;
-	int64 GetId() override;
 
 private:
 	int64 MonsterID;

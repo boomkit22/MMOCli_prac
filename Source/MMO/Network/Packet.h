@@ -45,7 +45,7 @@ enum PACKET_TYPE
 	PACKET_CS_GAME_REQ_FIELD_MOVE = 1003,
 
 
-	
+
 
 	//------------------------------------------------------------
 	//	{
@@ -137,7 +137,6 @@ enum PACKET_TYPE
 	//------------------------------------------------------------
 	// {
 	//		WORD	Type
-	//		FVector  StartLocation
 	//      FRotator StartRotation
 	//		int32   SkillID
 	//}
@@ -148,7 +147,6 @@ enum PACKET_TYPE
 	// {
 	//		WORD	Type
 	//		int64   CharacterNO
-	//		FVector StartLocation
 	//		FRotator StartRotation
 	//		int32   SkillID
 	//
@@ -248,6 +246,17 @@ enum PACKET_TYPE
 	//	}
 	//------------------------------------------------------------
 	PACKET_SC_GAME_RES_CREATE_PLAYER = 1023,
+
+
+	//------------------------------------------------------------
+	//	{
+	//		WORD	Type
+	//		MonsterInfo monsterInfo
+	//		SpawnLocation spawnLocation
+	//	}
+	//------------------------------------------------------------
+	PACKET_SC_GAME_SPAWN_MONSTER = 1024,
+
 
 
 

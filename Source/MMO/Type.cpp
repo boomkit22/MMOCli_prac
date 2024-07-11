@@ -38,3 +38,16 @@ CPacket& operator>>(CPacket& packet, PlayerInfo& info)
 	packet >> info.PlayerID >> info.Class >> info.Level >> info.Exp;
 	return packet;
 }
+
+
+CPacket& operator<<(CPacket& packet, MonsterInfo& info)
+{
+	packet << info.MonsterID << info.Type;
+	return packet;
+}
+
+CPacket& operator>>(CPacket& packet, MonsterInfo& info)
+{
+	packet >> info.MonsterID >> info.Type;
+	return packet;
+}

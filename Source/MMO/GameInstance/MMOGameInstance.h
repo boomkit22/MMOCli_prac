@@ -57,6 +57,8 @@ public:
 	void HandlePlayerList(CPacket* packet);
 	void HandleCreatePlayer(CPacket* packet);
 	void HandleSelectPlayer(CPacket* packet);
+	void HandleSpawnMonster(CPacket* packet);
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character")
 	TSubclassOf<AActor> GameCharacterClass;
 	
@@ -97,4 +99,5 @@ private:
 
 private:
 	TMap<int64, class AGameCharacter*> CharacterMap;
+	TMap<int64, class AMonster*> MonsterMap;
 };

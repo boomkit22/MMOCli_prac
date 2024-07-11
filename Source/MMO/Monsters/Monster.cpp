@@ -69,6 +69,20 @@ void AMonster::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 }
 
 
+
+
+void AMonster::SetMonsterProperties(MonsterInfo monsterInfo)
+{
+    MonsterType = static_cast<EMonsterType>(monsterInfo.Type);
+    MonsterID = monsterInfo.MonsterID;
+
+    switch(MonsterType)
+    {
+
+
+    }
+}
+
 void AMonster::SetDestination()
 {
     // 목적지 설정 (예: 캐릭터 앞쪽으로 1000 유닛 거리)

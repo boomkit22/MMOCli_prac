@@ -86,6 +86,12 @@ void GamePacketHandler::HandlePacket(CPacket* packet)
 	}
 	break;
 
+	case PACKET_SC_GAME_SPAWN_MONSTER:
+	{
+		GameInstance->HandleSpawnMonster(packet);
+	}
+	break;
+
 	default:
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Unknown Packet Type : %d"), packetType));
 		break;

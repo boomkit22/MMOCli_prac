@@ -16,7 +16,8 @@ class MMO_API CPacket
 	friend CPacket& operator>>(CPacket& packet, FVector& vec);
 	friend CPacket& operator<<(CPacket& packet, PlayerInfo& info);
 	friend CPacket& operator>>(CPacket& packet, PlayerInfo& info);
-
+	friend CPacket& operator<<(CPacket& packet, MonsterInfo& info);
+	friend CPacket& operator>>(CPacket& packet, MonsterInfo& info);
 
 	friend class TlsObjectPool<CPacket, false>;
 

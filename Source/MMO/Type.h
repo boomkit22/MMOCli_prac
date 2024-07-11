@@ -33,5 +33,12 @@ CPacket& operator>>(CPacket& packet, PlayerInfo& info);
 
 
 
+struct MonsterInfo
+{
+	int64 MonsterID;
+	uint16 Type;
+};
 
+CPacket& operator<<(CPacket& packet, MonsterInfo& info);
+CPacket& operator>>(CPacket& packet, MonsterInfo& info);
 

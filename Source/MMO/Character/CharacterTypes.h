@@ -9,7 +9,7 @@
 //};
 
 UENUM(BlueprintType)
-enum class ECharacterClassType : uint8
+enum class ECharacterClassType : uint16
 {
 	CCT_None UMETA(DisplayName = "None"),
 	CCT_Sword UMETA(DisplayName = "Sword"),
