@@ -35,6 +35,10 @@ AMonster::AMonster()
     RootComponent = MeshComponent;
     CollisionBoxComponent->SetupAttachment(RootComponent);
 
+    
+    /*FRotator InitialRotation = FRotator(0.0f, 0.f, 0.0f);
+    MeshComponent->SetRelativeRotation(InitialRotation);*/
+
     MonsAttributeComponent = CreateDefaultSubobject<UMonsAttributeComponent>(TEXT("MonsAttributeComponent"));
     MonsAttributeComponent->Init(100, FString("Monster"));
 
