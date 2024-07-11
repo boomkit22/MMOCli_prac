@@ -6,8 +6,9 @@
 #include "GameFramework/Character.h"
 #include "Monsters/MonsterState.h"
 #include "Interface/HittableInterface.h"
-#include "Monster.generated.h"
+#include "Type.h"
 
+#include "Monster.generated.h"
 #define MONSTER_TYPE_GUARDIAN 1
 #define MONSTER_TYPE_SPIDER 2
 
@@ -52,6 +53,8 @@ public:
 
 	EMonsterState MonsterState = EMonsterState::EMS_Idle;
 
+	UPROPERTY(VisibleAnywhere)
+	UHUDMonsterComponent* HUDMonsterComponent;
 
 public:
 	void Attack();
@@ -74,28 +77,38 @@ private:
 protected:
 	// guardian
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
-	USkeletalMeshComponent* GuardianMesh;
+	USkeletalMesh* GuardianMesh;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Components")
+	FVector GuardianCollisionExtent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
-	UBoxComponent* GuardianCollisionBox;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
-
 	USkeletalMeshComponent* GuardianWeaponMesh;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations")
+	UAnimMontage* GuardianAttackMontage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations")
+	UAnimMontage* GuardianDeathMontage;
 	// spider
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
-	USkeletalMeshComponent* SpiderMesh;
+	USkeletalMesh* SpiderMesh;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
-	UBoxComponent* SpiderCollisionBox;
+	FVector SpiderCollisionExtent;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Montages")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations")
+	UAnimMontage* SpiderAttackMontage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations")
+	UAnimMontage* SpiderDeathMontage;
+
+
+protected:
 	UAnimMontage* AttackMontage;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Montages")
 	UAnimMontage* DeathMontage;
-
+	
+	USkeletalMeshComponent* MeshComponent;
+	UBoxComponent* CollisionBoxComponent;
 
 private:
 	int64 MonsterID;

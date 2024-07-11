@@ -7,27 +7,30 @@
 #include "MMOComponent/MonsAttributeComponent.h"
 #include "HUD/HUDMonsterComponent.h"
 #include "Type.h"
+#include "Components/BoxComponent.h"
 // Sets default values
+
+ //WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WeaponMesh"));
+    //WeaponMesh->SetupAttachment(GetMesh(), TEXT("b_MF_Weapon_R")); // "WeaponSocketName"을 생성한 소켓 이름으로 바꿉니다.
+    //// 무기 메쉬 설정
+    //static ConstructorHelpers::FObjectFinder<USkeletalMesh> WeaponAsset(TEXT("/Game/Weapons/Blunt_SpikedClub/SK_Blunt_SpikedClub"));
+    //if (WeaponAsset.Succeeded())
+    //{
+    //    WeaponMesh->SetSkeletalMesh(WeaponAsset.Object);
+    //}
+    //else
+    //{
+    //    UE_LOG(LogTemp, Error, TEXT("Failed to load monster weapon skeletal mesh."));
+    //}
+
+
 AMonster::AMonster()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
-    //CollisionComponent = GetCapsuleComponent();
-    //CollisionComponent->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel1); // Monstesr채널 생성
-    //CollisionComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel2, ECR_Ignore); // Player 채널 무시
-    WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WeaponMesh"));
-    WeaponMesh->SetupAttachment(GetMesh(), TEXT("b_MF_Weapon_R")); // "WeaponSocketName"을 생성한 소켓 이름으로 바꿉니다.
-    // 무기 메쉬 설정
-    static ConstructorHelpers::FObjectFinder<USkeletalMesh> WeaponAsset(TEXT("/Game/Weapons/Blunt_SpikedClub/SK_Blunt_SpikedClub"));
-    if (WeaponAsset.Succeeded())
-    {
-        WeaponMesh->SetSkeletalMesh(WeaponAsset.Object);
-    }
-    else
-    {
-        UE_LOG(LogTemp, Error, TEXT("Failed to load monster weapon skeletal mesh."));
-    }
+    
+    MeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("MeshComponent"));
+    CollisionBoxComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("CollisionComponent"));
 
     MonsAttributeComponent = CreateDefaultSubobject<UMonsAttributeComponent>(TEXT("MonsAttributeComponent"));
     MonsAttributeComponent->Init(100, FString("Guardian"));
@@ -76,10 +79,29 @@ void AMonster::SetMonsterProperties(MonsterInfo monsterInfo)
     MonsterType = static_cast<EMonsterType>(monsterInfo.Type);
     MonsterID = monsterInfo.MonsterID;
 
+
     switch(MonsterType)
     {
+        case EMonsterType::EMT_Guardian:
+        {
+            MeshComponent->SetSkeletalMesh(GuardianMesh);
+            CollisionBoxComponent->SetBoxExtent(GuardianCollisionExtent);
+            AttackMontage = GuardianAttackMontage;
+            DeathMontage = GuardianDeathMontage;
+        }
+        break;
 
+        case EMonsterType::EMT_Spider:
+        {
+            MeshComponent->SetSkeletalMesh(SpiderMesh);
+            CollisionBoxComponent->SetBoxExtent(GuardianCollisionExtent);
+            AttackMontage = SpiderAttackMontage;
+            DeathMontage = SpiderDeathMontage;
+        }
+        break;
 
+        default:
+            break;
     }
 }
 

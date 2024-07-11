@@ -1,7 +1,7 @@
 #pragma once
 
 UENUM(BlueprintType)
-enum class EMonsterType : uint16
+enum class EMonsterType : uint8
 {
 	EMT_None UMETA(DisplayName = "None"),
 	EMT_Guardian UMETA(DisplayName = "Sword"),
