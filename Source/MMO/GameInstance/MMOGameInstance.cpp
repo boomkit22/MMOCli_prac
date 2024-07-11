@@ -24,6 +24,8 @@
 #include <vector>
 #include "CharacterSelect/CharacterSelectHUD.h"
 #include "CharacterSelect/CharacterSelectOverlay.h"
+#include "Monsters/Monster.h"
+
 using namespace std;
 
 bool bLoading = false;
@@ -491,8 +493,25 @@ void UMMOGameInstance::HandleSpawnMonster(CPacket* packet)
 	MonsterInfo monsterInfo;
 	FVector SpawnLocation;
 	*packet >> monsterInfo >> SpawnLocation;
+	GEngine->AddOnScreenDebugMessage(-1, 5.5f, FColor::Red, FString::Printf(TEXT("Handle Spawn Monster, X : %f , Y : %f, Z :%f"),SpawnLocation.X, SpawnLocation.Y, SpawnLocation.Z));
 
+	if (MonsterClass)
+	{
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.bNoFail = true; // 위치가 겹쳐도 소환되도록 설정
+		FRotator Rotation = FRotator(0.0f, 0.0f, 0.0f); // 예시 회전
 
+		AMonster* SpawnedMonster = Cast<AMonster>(GetWorld()->SpawnActor<AMonster>(MonsterClass, SpawnLocation, Rotation, SpawnParams));
+		if (SpawnedMonster)
+		{
+			SpawnedMonster->SetMonsterProperties(monsterInfo);
+			MonsterMap.Add(monsterInfo.MonsterID, SpawnedMonster);
+		}
+		else
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.5f, FColor::Red, TEXT("Spawned Monster is null"));
+		}
+	}
 }
 
 

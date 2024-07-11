@@ -32,8 +32,11 @@ AMonster::AMonster()
     MeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("MeshComponent"));
     CollisionBoxComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("CollisionComponent"));
 
+    RootComponent = MeshComponent;
+    CollisionBoxComponent->SetupAttachment(RootComponent);
+
     MonsAttributeComponent = CreateDefaultSubobject<UMonsAttributeComponent>(TEXT("MonsAttributeComponent"));
-    MonsAttributeComponent->Init(100, FString("Guardian"));
+    MonsAttributeComponent->Init(100, FString("Monster"));
 
     HUDMonsterComponent = CreateDefaultSubobject<UHUDMonsterComponent>(TEXT("HUDMonsterComponent"));
     HUDMonsterComponent->SetupAttachment(RootComponent);
@@ -88,6 +91,7 @@ void AMonster::SetMonsterProperties(MonsterInfo monsterInfo)
             CollisionBoxComponent->SetBoxExtent(GuardianCollisionExtent);
             AttackMontage = GuardianAttackMontage;
             DeathMontage = GuardianDeathMontage;
+            MeshComponent->SetAnimInstanceClass(GuardianAnimBlueprint);
         }
         break;
 
@@ -97,6 +101,7 @@ void AMonster::SetMonsterProperties(MonsterInfo monsterInfo)
             CollisionBoxComponent->SetBoxExtent(GuardianCollisionExtent);
             AttackMontage = SpiderAttackMontage;
             DeathMontage = SpiderDeathMontage;
+            MeshComponent->SetAnimInstanceClass(SpiderAnimBlueprint);
         }
         break;
 

@@ -16,7 +16,7 @@
 class UHUDMonsterComponent;
 class USkeletalMeshComponent;
 class UBoxComponent;
-
+class AWeapon;
 UCLASS()
 class MMO_API AMonster : public ACharacter, public IHittableInterface
 {
@@ -51,6 +51,7 @@ public:
 
 	void MoveToDestination(float DeltaTime);
 
+
 	EMonsterState MonsterState = EMonsterState::EMS_Idle;
 
 	UPROPERTY(VisibleAnywhere)
@@ -75,33 +76,50 @@ private:
 	int64 GetId() override;
 
 protected:
+
+	UPROPERTY(VisibleAnywhere)
+	AWeapon* EquippedWeapon;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Guardian")
+	TSubclassOf<AWeapon> GuardianWeaponClass;
+
 	// guardian
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Guardian")
 	USkeletalMesh* GuardianMesh;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Components")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Guardian")
 	FVector GuardianCollisionExtent;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Guardian")
 	USkeletalMeshComponent* GuardianWeaponMesh;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Guardian")
 	UAnimMontage* GuardianAttackMontage;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Guardian")
 	UAnimMontage* GuardianDeathMontage;
+
+	// Animation Blueprint classes (to be set in Blueprints)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Animations")
+	TSubclassOf<UAnimInstance> GuardianAnimBlueprint;
+
+
 	// spider
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spider")
 	USkeletalMesh* SpiderMesh;
 
 	FVector SpiderCollisionExtent;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spider")
 	UAnimMontage* SpiderAttackMontage;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spider")
 	UAnimMontage* SpiderDeathMontage;
 
+	
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Animations")
+	TSubclassOf<UAnimInstance> SpiderAnimBlueprint;
 
 protected:
 	UAnimMontage* AttackMontage;

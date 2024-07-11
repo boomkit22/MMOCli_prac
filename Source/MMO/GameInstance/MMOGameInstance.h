@@ -64,6 +64,10 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character")
 	TSubclassOf<AActor> RemoteGameCharacterClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Monster")
+	TSubclassOf<AActor> MonsterClass;
+
 /*
 Chat Handle
 */
