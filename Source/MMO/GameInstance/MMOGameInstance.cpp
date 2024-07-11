@@ -514,6 +514,23 @@ void UMMOGameInstance::HandleSpawnMonster(CPacket* packet)
 	}
 }
 
+void UMMOGameInstance::HandleMonsterMove(CPacket* packet)
+{
+	int64 MonsterID;
+	FVector destination;
+	FRotator StartRotation;
+	*packet >> MonsterID >> destination >> StartRotation;
+
+	auto Monster = MonsterMap.Find(MonsterID);
+	if (Monster)
+	{
+
+		(*Monster)->SetActorRotation(StartRotation);
+		(*Monster)->SetDestination(destination);
+	}
+
+}
+
 
 
 

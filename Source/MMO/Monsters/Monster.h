@@ -44,7 +44,7 @@ public:
 	void SetMonsterProperties(MonsterInfo monsterInfo);
 
 	//test
-	void SetDestination();
+	void SetDestination(FVector Destination);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
 	FVector Destination;

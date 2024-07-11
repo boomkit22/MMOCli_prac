@@ -110,31 +110,10 @@ void AMonster::SetMonsterProperties(MonsterInfo monsterInfo)
     }
 }
 
-void AMonster::SetDestination()
+void AMonster::SetDestination(FVector destination)
 {
-    // 목적지 설정 (예: 캐릭터 앞쪽으로 1000 유닛 거리)
-    int32 Selection = FMath::RandRange(0, 4);
-
-    switch (Selection)
-    {
-    case 0:
-    Destination = GetActorLocation() - GetActorRightVector() * 1000.0f;
-    break;
-    case 1:
-    Destination = GetActorLocation() + GetActorForwardVector() * 1000.0f;
-	break;
-    case 2:
-	Destination = GetActorLocation() - GetActorForwardVector() * 1000.0f;
-    break;
-	case 3:
-    Destination = GetActorLocation() + GetActorRightVector() * 1000.0f;
-	break;
-
-
-    }
-    //Destination = GetActorLocation() + GetActorForwardVector() * 1000.0f;
+    Destination = destination;
 }
-
 
 void AMonster::MoveToDestination(float DeltaTime)
 {

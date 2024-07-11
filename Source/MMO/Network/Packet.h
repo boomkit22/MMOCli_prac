@@ -157,7 +157,9 @@ enum PACKET_TYPE
 	//------------------------------------------------------------
 	// {
 	//		WORD	Type
-	//		int64   MonsterNO
+	//		int64   MonsterID
+	//		FVector StartPosition
+	//		FRotator StartRotation
 	//		int32   SkillID
 	// }
 	//------------------------------------------------------------
@@ -258,6 +260,18 @@ enum PACKET_TYPE
 	PACKET_SC_GAME_SPAWN_MONSTER = 1024,
 
 
+	//------------------------------------------------------------
+	// {
+	//		WORD		Type
+	//		int64		MonsterID
+	//		FVector		Destination
+	//		FRotator	StartRotation
+	//	}
+	//------------------------------------------------------------
+	PACKET_SC_GAME_MONSTER_MOVE = 1025,
+
+
+
 
 
 	//------------------------------------------------------------
@@ -300,7 +314,7 @@ enum PACKET_TYPE
 	// 채팅서버 채팅보내기 응답  (다른 클라가 보낸 채팅도 이걸로 받음)
 	//
 	//	{
-	//		WORD	Type
+	//		WORD	Type												
 	//
 	//		INT64	AccountNo
 	//		WCHAR	Nickname[20]				// null 포함

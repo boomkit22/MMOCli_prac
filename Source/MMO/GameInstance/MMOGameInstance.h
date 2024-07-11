@@ -58,6 +58,7 @@ public:
 	void HandleCreatePlayer(CPacket* packet);
 	void HandleSelectPlayer(CPacket* packet);
 	void HandleSpawnMonster(CPacket* packet);
+	void HandleMonsterMove(CPacket* packet);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character")
 	TSubclassOf<AActor> GameCharacterClass;

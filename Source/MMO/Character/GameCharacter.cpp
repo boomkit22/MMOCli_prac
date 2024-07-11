@@ -141,7 +141,6 @@ void AGameCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	PlayerInputComponent->BindAction("LeftMouseClick", IE_Pressed, this, &AGameCharacter::LeftMouseClick);
 	PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &AGameCharacter::Attack);
 	PlayerInputComponent->BindAction("SpawnMonster", IE_Pressed, this, &AGameCharacter::SpawnMonster);
-	PlayerInputComponent->BindAction("MoveMonster", IE_Pressed, this, &AGameCharacter::MoveMonster);
 	PlayerInputComponent->BindAction("MonsterAttack", IE_Pressed, this, &AGameCharacter::MonsterAttack);
 	PlayerInputComponent->BindAction("Death", IE_Pressed, this, &AGameCharacter::Death);
 	PlayerInputComponent->BindAction("MonsterDeath", IE_Pressed, this, &AGameCharacter::MonsterDeath);
@@ -334,13 +333,7 @@ void AGameCharacter::SpawnMonster()
 		SpawnedMonster = Cast<AMonster>(GetWorld()->SpawnActor<ACharacter>(MonsterClass, SpawnLocation, SpawnRotation));
 	}
 }
-void AGameCharacter::MoveMonster()
-{
-	if (SpawnedMonster != nullptr)
-	{
-		SpawnedMonster->SetDestination();
-	}
-}
+
 
 void AGameCharacter::MonsterAttack()
 {
