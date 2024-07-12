@@ -261,6 +261,7 @@ void UMMOGameInstance::HandleSpawnOhterCharacter(CPacket* packet)
 	if (GameCharacterClass)
 	{
 		FActorSpawnParameters SpawnParams;
+		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 		
 		FRotator Rotation = FRotator(0.0f, 0.0f, 0.0f); // 예시 회전
 		// 캐릭터 스폰
@@ -320,6 +321,11 @@ void UMMOGameInstance::HandleDamage(CPacket* packet)
 	}
 	else if (TargetType == TYPE_MONSTER)
 	{
+		auto monster = MonsterMap.Find(TargetID);
+		if (monster)
+		{
+			(*monster)->GetHit(Damage);
+		}
 	}
 	
 }
@@ -493,12 +499,13 @@ void UMMOGameInstance::HandleSpawnMonster(CPacket* packet)
 	MonsterInfo monsterInfo;
 	FVector SpawnLocation;
 	*packet >> monsterInfo >> SpawnLocation;
-	GEngine->AddOnScreenDebugMessage(-1, 5.5f, FColor::Red, FString::Printf(TEXT("Handle Spawn Monster, X : %f , Y : %f, Z :%f"),SpawnLocation.X, SpawnLocation.Y, SpawnLocation.Z));
+	GEngine->AddOnScreenDebugMessage(-1, 5.5f, FColor::Red, FString::Printf(TEXT("Handle Spawn Monster, %lld"), monsterInfo.MonsterID));
 
 	if (MonsterClass)
 	{
 		FActorSpawnParameters SpawnParams;
-		SpawnParams.bNoFail = true; // 위치가 겹쳐도 소환되도록 설정
+		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
 		FRotator Rotation = FRotator(0.0f, 0.0f, 0.0f); // 예시 회전
 
 		AMonster* SpawnedMonster = Cast<AMonster>(GetWorld()->SpawnActor<AMonster>(MonsterClass, SpawnLocation, Rotation, SpawnParams));
@@ -521,14 +528,18 @@ void UMMOGameInstance::HandleMonsterMove(CPacket* packet)
 	FRotator StartRotation;
 	*packet >> MonsterID >> destination >> StartRotation;
 
+	//GEngine->AddOnScreenDebugMessage(-1, 5.5f, FColor::Red, FString::Printf(TEXT("Handle Move Monster, %lld"), MonsterID));
+
 	auto Monster = MonsterMap.Find(MonsterID);
-	if (Monster)
+	if (Monster && *Monster)
 	{
 
-		(*Monster)->SetActorRotation(StartRotation);
+		(*Monster)->SetActorRotation(StartRotation, ETeleportType::TeleportPhysics);
 		(*Monster)->SetDestination(destination);
 	}
-
+	else {
+		GEngine->AddOnScreenDebugMessage(-1, 5.5f, FColor::Red, TEXT("Monster is null"));
+	}
 }
 
 

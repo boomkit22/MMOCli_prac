@@ -194,8 +194,11 @@ void AGameCharacter::OnWeaponBeginOverlap(UPrimitiveComponent* OverlappedCompone
 	//{
 	//	AttacedCharacter->GetHit(20);
 	//}
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Weapon Box Begin Overlap")));
 	if (hasHit)
 		return;
+
+
 
 	IHittableInterface* AttackedCharacter = Cast<IHittableInterface>(OtherActor);
 	if(AttackedCharacter)

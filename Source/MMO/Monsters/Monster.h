@@ -76,6 +76,11 @@ private:
 	int64 GetId() override;
 
 protected:
+	UPROPERTY(VisibleAnywhere)
+	USkeletalMeshComponent* MeshComponent;
+
+	UPROPERTY(EditAnywhere)
+	UBoxComponent* CollisionBoxComponent;
 
 	UPROPERTY(VisibleAnywhere)
 	AWeapon* EquippedWeapon;
@@ -90,8 +95,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Guardian")
 	FVector GuardianCollisionExtent;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Guardian")
-	USkeletalMeshComponent* GuardianWeaponMesh;
+
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Guardian")
 	UAnimMontage* GuardianAttackMontage;
@@ -125,8 +129,7 @@ protected:
 	UAnimMontage* AttackMontage;
 	UAnimMontage* DeathMontage;
 	
-	USkeletalMeshComponent* MeshComponent;
-	UBoxComponent* CollisionBoxComponent;
+
 
 private:
 	int64 MonsterID;

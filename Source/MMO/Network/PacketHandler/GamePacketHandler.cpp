@@ -16,7 +16,7 @@ void GamePacketHandler::HandlePacket(CPacket* packet)
 	int16 packetType;
 	*packet >> packetType;
 
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Handle Packet Type : %d"), packetType));
+	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Handle Packet Type : %d"), packetType));
 
 	switch (packetType)
 	{
