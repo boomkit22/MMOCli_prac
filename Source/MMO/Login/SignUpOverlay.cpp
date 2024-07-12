@@ -28,7 +28,7 @@ void USignUpOverlay::AddSuccessWidgetToViewport()
 {
 	if (SuccessWidgetClass)
 	{
-		SuccessWidgetInstance = CreateWidget<UUserWidget>(GetWorld(), SuccessWidgetClass);
+		SuccessWidgetInstance = CreateWidget<UUserWidget>(UMMOGameInstance::GetMMOWorld(), SuccessWidgetClass);
 		if (SuccessWidgetInstance)
 		{
 			SuccessWidgetInstance->AddToViewport();
@@ -46,7 +46,7 @@ void USignUpOverlay::AddFailWidgetToViewport()
 {
 	if (FailWidgetClass)
 	{
-		FailWidgetInstance = CreateWidget<UUserWidget>(GetWorld(), FailWidgetClass);
+		FailWidgetInstance = CreateWidget<UUserWidget>(UMMOGameInstance::GetMMOWorld(), FailWidgetClass);
 		if (FailWidgetInstance)
 		{
 			FailWidgetInstance->AddToViewport();

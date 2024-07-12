@@ -4,13 +4,14 @@
 #include "HUD/MMOHUD.h"
 #include "HUD/MMOOverlay.h"
 #include "HUD/MMOChatOverlay.h"
+#include "GameInstance/MMOGameInstance.h"
 
 void AMMOHUD::BeginPlay()
 {
 	Super::BeginPlay();
 
 
-	UWorld* World = GetWorld();
+	UWorld* World = UMMOGameInstance::GetMMOWorld();
 	if (World)
 	{
 		APlayerController* Controller = World->GetFirstPlayerController();

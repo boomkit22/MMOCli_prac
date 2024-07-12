@@ -78,7 +78,7 @@ void AGameCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 	if (AttackCooldownTimerHandle.IsValid())
 	{
-		GetWorld()->GetTimerManager().ClearTimer(AttackCooldownTimerHandle);
+		UMMOGameInstance::GetMMOWorld()->GetTimerManager().ClearTimer(AttackCooldownTimerHandle);
 	}
 
 	if (EquippedWeapon)
@@ -103,7 +103,7 @@ void AGameCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	PlayerController = UGameplayStatics::GetPlayerController(UMMOGameInstance::GetMMOWorld(), 0);
 	if (PlayerController)
 	{
 		// 마우스 커서 보이게 설정
@@ -181,7 +181,7 @@ void AGameCharacter::OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent,
 		//UE_LOG(LogTemp, Warning, TEXT("Overlap Character Attacked Attacker Id : %lld, Attacker Type : %d"), AttackingCharacter->GetId(), AttackingCharacter->GetType());
 	/*	AGameCharacter* AttackedCharacter = Cast<AGameCharacter>(OtherActor);
 		AttackedCharacter->GetHit(20);
-		DrawDebugSphere(GetWorld(), SweepResult.ImpactPoint, 10.0f, 10, FColor::Red, false, 1.0f);*/
+		DrawDebugSphere(UMMOGameInstance::GetMMOWorld(), SweepResult.ImpactPoint, 10.0f, 10, FColor::Red, false, 1.0f);*/
 	//}
 }
 
@@ -273,7 +273,7 @@ void AGameCharacter::Attack()
 	}
 
 	bIsCool = true;
-	GetWorld()->GetTimerManager().SetTimer(AttackCooldownTimerHandle, this, &AGameCharacter::ResetAttackCoolTime, AttackCoolTime, false);
+	UMMOGameInstance::GetMMOWorld()->GetTimerManager().SetTimer(AttackCooldownTimerHandle, this, &AGameCharacter::ResetAttackCoolTime, AttackCoolTime, false);
 
 	if(MovingState == EMovingState::EMS_Dead)
 	{
@@ -333,7 +333,7 @@ void AGameCharacter::SpawnMonster()
 		FRotator SpawnRotation = FRotator::ZeroRotator;
 
 		// 월드에서 몬스터를 스폰
-		SpawnedMonster = Cast<AMonster>(GetWorld()->SpawnActor<ACharacter>(MonsterClass, SpawnLocation, SpawnRotation));
+		SpawnedMonster = Cast<AMonster>(UMMOGameInstance::GetMMOWorld()->SpawnActor<ACharacter>(MonsterClass, SpawnLocation, SpawnRotation));
 	}
 }
 
@@ -496,6 +496,7 @@ void AGameCharacter::RecoverHealth()
 	}
 }
 
+
 void AGameCharacter::InitCharAttributeComponent(int32 Health, FString CharName, int32 Level)
 {
 	CharAttributeComponent->Init(Health, CharName, Level);
@@ -524,7 +525,7 @@ void AGameCharacter::EquipWeapon()
 		{
 			if (SwordClass)
 			{
-				EquippedWeapon = GetWorld()->SpawnActor<AWeapon>(SwordClass);
+				EquippedWeapon = UMMOGameInstance::GetMMOWorld()->SpawnActor<AWeapon>(SwordClass);
 				if (EquippedWeapon)
 				{
 					GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("EquippedWeapon is spawned CCT_Sword.")));
@@ -538,7 +539,7 @@ void AGameCharacter::EquipWeapon()
 		{
 			if (AxeClass)
 			{
-				EquippedWeapon = GetWorld()->SpawnActor<AWeapon>(AxeClass);
+				EquippedWeapon = UMMOGameInstance::GetMMOWorld()->SpawnActor<AWeapon>(AxeClass);
 				if (EquippedWeapon)
 				{
 					GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("EquippedWeapon is spawned. CCT_Axe")));

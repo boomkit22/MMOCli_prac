@@ -27,6 +27,8 @@ class MMO_API UMMOGameInstance : public UGameInstance
 public:
 	virtual void Init() override;
 	virtual void Shutdown() override;
+	virtual void PostInitProperties() override;
+	virtual void BeginDestroy() override;
 
 public:
 	bool ConnectGameServer();
@@ -34,7 +36,6 @@ public:
 
 	void DisconnectGameServer();
 	void DisconnectChattingServer();
-
 
 public:
 	void SendPacket_GameServer(CPacket* packet);
@@ -103,6 +104,8 @@ private:
 	void OnLevelLoaded(UWorld* World);
 
 private:
+	UPROPERTY()
 	TMap<int64, class AGameCharacter*> CharacterMap;
+	UPROPERTY()
 	TMap<int64, class AMonster*> MonsterMap;
 };

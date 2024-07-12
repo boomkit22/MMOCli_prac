@@ -28,6 +28,7 @@ void GamePacketHandler::HandlePacket(CPacket* packet)
 
 	case PACKET_SC_GAME_RES_FIELD_MOVE:
 	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, FString::Printf(TEXT("Field Move")));
 		GameInstance->HandleFieldMove(packet);
 	}
 	break;

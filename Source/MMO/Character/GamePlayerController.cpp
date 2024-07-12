@@ -5,6 +5,8 @@
 #include "Character/GameCharacter.h"
 #include "HUD/MMOHUD.h"
 #include "HUD/MMOOverlay.h"
+#include "GameInstance/MMOGameInstance.h"
+
 void AGamePlayerController::BeginPlay()
 {
 	Super::BeginPlay();
@@ -24,8 +26,7 @@ AGameCharacter* AGamePlayerController::SpawnMyCharacter(FVector spawnLocation, P
         FRotator Rotation = FRotator(0.0f, 0.0f, 0.0f); // 예시 회전
         SpawnParams.Owner = this;
         // 캐릭터 스폰
-        UE_LOG(LogTemp, Warning, TEXT("%s"), *(GetWorld()->GetName()));
-        AActor* SpawnedCharacter = GetWorld()->SpawnActor<AActor>(GameCharacterClass, spawnLocation, Rotation, SpawnParams);
+        AActor* SpawnedCharacter = UMMOGameInstance::GetMMOWorld()->SpawnActor<AActor>(GameCharacterClass, spawnLocation, Rotation, SpawnParams);
         if (SpawnedCharacter)
         {
             UE_LOG(LogTemp, Warning, TEXT("spawn1"));

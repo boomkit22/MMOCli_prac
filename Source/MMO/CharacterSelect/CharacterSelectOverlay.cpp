@@ -42,7 +42,7 @@ void UCharacterSelectOverlay::AddCharacterEntry(UCharacterEntry* NewEntry)
 
 void UCharacterSelectOverlay::AddCharacterEntry(ECharacterClassType characterClassType, uint16 Level, FString NikcName)
 {
-	UCharacterEntry* NewEntry = CreateWidget<UCharacterEntry>(GetWorld(), UChaterEntryClass);
+	UCharacterEntry* NewEntry = CreateWidget<UCharacterEntry>(UMMOGameInstance::GetMMOWorld(), UChaterEntryClass);
 	if (NewEntry)
 	{
 		NewEntry->Init(characterClassType, FString::FromInt(Level), NikcName);
@@ -54,7 +54,7 @@ void UCharacterSelectOverlay::SetCharacterList(std::vector<PlayerInfo>& playerIn
 {
 	for (auto& playerInfo : playerInfos)
 	{
-		UCharacterEntry* NewEntry = CreateWidget<UCharacterEntry>(GetWorld(), UChaterEntryClass);
+		UCharacterEntry* NewEntry = CreateWidget<UCharacterEntry>(UMMOGameInstance::GetMMOWorld(), UChaterEntryClass);
 		if (NewEntry)
 		{
 			NewEntry->Init(static_cast<ECharacterClassType>(playerInfo.Class), FString::FromInt(playerInfo.Level), playerInfo.NickName);
@@ -69,7 +69,7 @@ void UCharacterSelectOverlay::OnCreateButtonClicked()
 
 	if (UCreateCharacterOverlayClass)
 	{
-		UCreateCharacterOverlay* CreateCharacterOverlay = CreateWidget<UCreateCharacterOverlay>(GetWorld(), UCreateCharacterOverlayClass);
+		UCreateCharacterOverlay* CreateCharacterOverlay = CreateWidget<UCreateCharacterOverlay>(UMMOGameInstance::GetMMOWorld(), UCreateCharacterOverlayClass);
 		if (CreateCharacterOverlay)
 		{
 			CreateCharacterOverlay->AddToViewport();

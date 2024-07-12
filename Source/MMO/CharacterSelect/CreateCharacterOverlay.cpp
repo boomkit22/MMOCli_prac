@@ -33,12 +33,12 @@ void UCreateCharacterOverlay::OnSwordClassButtonclicked()
         FRotator Rotation = FRotator(0.0f, 0.0f, 0.0f); // 예시 회전
         FVector spawnLocation = FVector(0.0f, 0.0f, 130.0f); // 예시 위치
         // 캐릭터 스폰
-        UE_LOG(LogTemp, Warning, TEXT("%s"), *(GetWorld()->GetName()));
+        UE_LOG(LogTemp, Warning, TEXT("%s"), *(UMMOGameInstance::GetMMOWorld()->GetName()));
         if (SpawnedCharacter != nullptr)
         {
             SpawnedCharacter->Destroy();
         }
-        SpawnedCharacter = Cast<AGameCharacter>(GetWorld()->SpawnActor<AActor>(GameCharacterClass, spawnLocation, Rotation, SpawnParams));
+        SpawnedCharacter = Cast<AGameCharacter>(UMMOGameInstance::GetMMOWorld()->SpawnActor<AActor>(GameCharacterClass, spawnLocation, Rotation, SpawnParams));
         SpawnedCharacter->Initialize(ECharacterClassType::CCT_Sword);
         UE_LOG(LogTemp, Warning, TEXT("spawn2"));
         CharacterClassType = ECharacterClassType::CCT_Sword;
@@ -54,13 +54,13 @@ void UCreateCharacterOverlay::OnAxeClassButtonClicked()
         FRotator Rotation = FRotator(0.0f, 0.0f, 0.0f); // 예시 회전
         FVector spawnLocation = FVector(0.0f, 0.0f, 130.0f); // 예시 위치
         // 캐릭터 스폰
-        UE_LOG(LogTemp, Warning, TEXT("%s"), *(GetWorld()->GetName()));
+        UE_LOG(LogTemp, Warning, TEXT("%s"), *(UMMOGameInstance::GetMMOWorld()->GetName()));
         if (SpawnedCharacter != nullptr)
         {
             SpawnedCharacter->Destroy();
             SpawnedCharacter = nullptr;
         }
-        SpawnedCharacter = Cast<AGameCharacter>(GetWorld()->SpawnActor<AActor>(GameCharacterClass, spawnLocation, Rotation, SpawnParams));
+        SpawnedCharacter = Cast<AGameCharacter>(UMMOGameInstance::GetMMOWorld()->SpawnActor<AActor>(GameCharacterClass, spawnLocation, Rotation, SpawnParams));
         SpawnedCharacter->Initialize(ECharacterClassType::CCT_Axe);
         UE_LOG(LogTemp, Warning, TEXT("spawn2"));
         CharacterClassType = ECharacterClassType::CCT_Axe;

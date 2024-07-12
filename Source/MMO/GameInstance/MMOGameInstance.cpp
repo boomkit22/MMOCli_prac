@@ -35,12 +35,13 @@ void UMMOGameInstance::Init()
 	Super::Init();
 
 	UNetworkGameInstanceSubsystem* NetworkSubsystem = GetSubsystem<UNetworkGameInstanceSubsystem>();
+
 	if (NetworkSubsystem)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("NetworkSubsystem is valid"));
+		GEngine->AddOnScreenDebugMessage(-1, 5.5f, FColor::Red, TEXT("NetworkSubsystem is valid"));
 	}
 	else {
-		UE_LOG(LogTemp, Warning, TEXT("NetworkSubsystem is unvalid"));
+		GEngine->AddOnScreenDebugMessage(-1, 5.5f, FColor::Red, TEXT("NetworkSubsystem is unvalid"));
 	}
 	
 	//TODO: session 생성
@@ -56,25 +57,75 @@ void UMMOGameInstance::Init()
 	//FWorldDelegates::
 
 	ConnectGameServer();
+
+
+
 }
 
 
 void UMMOGameInstance::Shutdown()
 {
+	UE_LOG(LogTemp, Warning, TEXT("GameInstance Shutdown"));
+	//GEngine->AddOnScreenDebugMessage(-1, 5.5f, FColor::Red, TEXT("GameInstance Shutdown"));
 	Super::Shutdown();
+
+	//CustomShutdown();
 	FTSTicker::GetCoreTicker().RemoveTicker(TickDelegateHandle);
 
-	UE_LOG(LogTemp, Warning, TEXT("GameInstacne Shutdown"));
-	_GameServerSession->Disconnect();
-	_ChattingServerSession->Disconnect();
 
-	_GameServerSession.Reset();
-	_ChattingServerSession.Reset();
+	GEngine->AddOnScreenDebugMessage(-1, 5.5f, FColor::Red, TEXT("GameInstance Shutdown"));
+	if (_GameServerSession)
+	{
+		_GameServerSession->Disconnect();
+		_GameServerSession.Reset();
+	}
 
-	CharacterMap.Empty();
+	if (_ChattingServerSession)
+	{
+		_ChattingServerSession->Disconnect();
+		_ChattingServerSession.Reset();
+	}
+}
 
+void UMMOGameInstance::PostInitProperties()
+{
+		Super::PostInitProperties();
+	UE_LOG(LogTemp, Warning, TEXT("PostInitProperties"));
 
 }
+
+void UMMOGameInstance::BeginDestroy()
+{
+	UE_LOG(LogTemp, Warning, TEXT("BeginDestroy"));
+	Super::BeginDestroy();
+
+	//TODO: CharacterMAp 클리어
+	//캐릭터맵에있는거 다 distroy
+	for (auto& pair : CharacterMap)
+	{
+		if (pair.Value)
+		{
+			pair.Value->Destroy();
+		}
+	}
+
+
+	UWorld* World = GetMMOWorld();
+	if (World)
+	{
+		World->CleanupWorld();
+	}
+}
+
+
+//void UMMOGameInstance::PostInitProperties()
+//{
+//	Super::PostInitProperties();
+//	UE_LOG(LogTemp, Warning, TEXT("PostInitProperties"));
+//	CharacterMap = TMap<int64, AGameCharacter*>(); // 캐릭터 맵 초기화
+//	MonsterMap = TMap<int64, AMonster*>(); // 몬스터 맵 초기화
+//}
+
 
 bool UMMOGameInstance::ConnectGameServer()
 {
@@ -150,7 +201,7 @@ void UMMOGameInstance::HandleGameLogin(CPacket* packet)
 		//로그
 		GEngine->AddOnScreenDebugMessage(-1, 5.5f, FColor::Red, TEXT("Login Fail"));
 
-		UWorld* World = GetWorld();
+		UWorld* World = GetMMOWorld();
 		if (World)
 		{
 			APlayerController* Controller = World->GetFirstPlayerController();
@@ -187,7 +238,7 @@ void UMMOGameInstance::HandleGameLogin(CPacket* packet)
 
 	//	//로그인 성공하면?
 	//	// 1. OverLay 변경
-	//	UWorld* World = GetWorld();
+	//	UWorld* World = UMMOGameInstance::GetMMOWorld();
 	//	if (World)
 	//	{
 	//		APlayerController* Controller = World->GetFirstPlayerController();
@@ -215,7 +266,30 @@ void UMMOGameInstance::HandleGameLogin(CPacket* packet)
 
 void UMMOGameInstance::HandleFieldMove(CPacket* packet)
 {
+	GEngine->AddOnScreenDebugMessage(-1, 5.5f, FColor::Red, TEXT("HandleFieldMove"));
 	OpenLevel(TEXT("/Game/Maps/FieldMap_1"));
+
+	//캐릭터 맵에있는거 다삭제 및 Reset
+	for(auto& pair : CharacterMap)
+	{
+		if (pair.Value)
+		{
+			pair.Value->Destroy();
+		}
+	}
+	CharacterMap.Empty();
+
+	for (auto& pair : MonsterMap)
+	{
+		if (pair.Value)
+		{
+			pair.Value->Destroy();
+		}
+	}
+	MonsterMap.Empty();
+
+
+	
 }
 
 void UMMOGameInstance::HandleSpawnMyCharacter(CPacket* packet)
@@ -224,7 +298,8 @@ void UMMOGameInstance::HandleSpawnMyCharacter(CPacket* packet)
 	PlayerInfo playerInfo;
 	*packet >> playerInfo >> SpawnLocation;
 	
-	UWorld* World = GetWorld();
+	UWorld* World = GetMMOWorld();
+	UE_LOG(LogTemp, Warning, TEXT("HandleSpawnMyCharacter %d %lld"), CharacterMap.Num(), playerInfo.PlayerID);
 	if (World)
 	{
 		APlayerController* PlayerController = World->GetFirstPlayerController();
@@ -265,9 +340,9 @@ void UMMOGameInstance::HandleSpawnOhterCharacter(CPacket* packet)
 		
 		FRotator Rotation = FRotator(0.0f, 0.0f, 0.0f); // 예시 회전
 		// 캐릭터 스폰
-		UE_LOG(LogTemp, Warning, TEXT("%s"), *(GetWorld()->GetName()));
+		UE_LOG(LogTemp, Warning, TEXT("%s"), *(GetMMOWorld()->GetName()));
 
-		AGameCharacter* SpawnedCharacter = Cast<AGameCharacter>(GetWorld()->SpawnActor<ARemoteGameCharacter>(RemoteGameCharacterClass, SpawnLocation, Rotation, SpawnParams));
+		AGameCharacter* SpawnedCharacter = Cast<AGameCharacter>(GetMMOWorld()->SpawnActor<ARemoteGameCharacter>(RemoteGameCharacterClass, SpawnLocation, Rotation, SpawnParams));
 		if (SpawnedCharacter)
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 5.5f, FColor::Red, TEXT("Handle spawn Ohter Character"));
@@ -289,6 +364,8 @@ void UMMOGameInstance::HandleCharacterMove(CPacket* packet)
 	FVector destination;
 	FRotator StartRotation;
 	*packet >> characterNo >> destination >> StartRotation ;
+
+	UE_LOG(LogTemp, Warning, TEXT("HandleCharacterMove %lld"), characterNo);
 
 	auto character = CharacterMap.Find(characterNo);
 	if (character)
@@ -357,7 +434,7 @@ void UMMOGameInstance::HandleSignUp(CPacket* packet)
 
 	uint8 Status;
 	*packet >> Status;
-	UWorld* World = GetWorld();
+	UWorld* World = GetMMOWorld();
 	if (World)
 	{
 		APlayerController* Controller = World->GetFirstPlayerController();
@@ -456,7 +533,7 @@ void UMMOGameInstance::HandleCreatePlayer(CPacket* packet)
 		return;
 	}
 
-	UWorld* World = GetWorld();
+	UWorld* World = GetMMOWorld();
 	if (World)
 	{
 		APlayerController* Controller = World->GetFirstPlayerController();
@@ -487,11 +564,12 @@ void UMMOGameInstance::HandleSelectPlayer(CPacket* packet)
 		return;
 	}
 
+	GEngine->AddOnScreenDebugMessage(-1, 5.5f, FColor::Yellow, TEXT("HandleSelectPlayer"));
 	//TODO: field이동 쏘기
 	uint16 fieldId = 1;
 	CPacket* fieldMovePacket = CPacket::Alloc();
 	GamePacketMaker::MP_CS_REQ_FIELD_MOVE(fieldMovePacket, fieldId);
-	SendPacket_GameServer(fieldMovePacket);
+	GetInstance()->SendPacket_GameServer(fieldMovePacket);
 }
 
 void UMMOGameInstance::HandleSpawnMonster(CPacket* packet)
@@ -499,7 +577,6 @@ void UMMOGameInstance::HandleSpawnMonster(CPacket* packet)
 	MonsterInfo monsterInfo;
 	FVector SpawnLocation;
 	*packet >> monsterInfo >> SpawnLocation;
-	GEngine->AddOnScreenDebugMessage(-1, 5.5f, FColor::Red, FString::Printf(TEXT("Handle Spawn Monster, %lld"), monsterInfo.MonsterID));
 
 	if (MonsterClass)
 	{
@@ -508,7 +585,7 @@ void UMMOGameInstance::HandleSpawnMonster(CPacket* packet)
 
 		FRotator Rotation = FRotator(0.0f, 0.0f, 0.0f); // 예시 회전
 
-		AMonster* SpawnedMonster = Cast<AMonster>(GetWorld()->SpawnActor<AMonster>(MonsterClass, SpawnLocation, Rotation, SpawnParams));
+		AMonster* SpawnedMonster = Cast<AMonster>(GetMMOWorld()->SpawnActor<AMonster>(MonsterClass, SpawnLocation, Rotation, SpawnParams));
 		if (SpawnedMonster)
 		{
 			SpawnedMonster->SetMonsterProperties(monsterInfo);
@@ -529,7 +606,6 @@ void UMMOGameInstance::HandleMonsterMove(CPacket* packet)
 	*packet >> MonsterID >> destination >> StartRotation;
 
 	//GEngine->AddOnScreenDebugMessage(-1, 5.5f, FColor::Red, FString::Printf(TEXT("Handle Move Monster, %lld"), MonsterID));
-
 	auto Monster = MonsterMap.Find(MonsterID);
 	if (Monster && *Monster)
 	{
@@ -571,7 +647,7 @@ void UMMOGameInstance::HandleChatMessage(CPacket* packet)
 	FString TextOnOverlay = NikckNameStr + TEXT(": ") + Message;
 
 	//TODO: 채팅창에 메시지 출력
-	UWorld* World = GetWorld();
+	UWorld* World = GetMMOWorld();
 	if (World)
 	{
 		APlayerController* Controller = World->GetFirstPlayerController();
@@ -599,7 +675,7 @@ bool UMMOGameInstance::Tick(float DeltaTime)
 		_GameServerSession->HandleRecvPacket();
 	}
 
-	if (_ChattingServerSession->IsConnecetd())
+	if (_ChattingServerSession->IsConnecetd() && !bLoading)
 	{
 		_ChattingServerSession->HandleRecvPacket();
 	}

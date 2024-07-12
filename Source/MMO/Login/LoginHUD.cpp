@@ -3,7 +3,7 @@
 
 #include "Login/LoginHUD.h"
 #include "Login/LoginOverlay.h"
-
+#include "GameInstance/MMOGameInstance.h"
 void ALoginHUD::BeginPlay()
 {
 	Super::BeginPlay();
@@ -20,7 +20,7 @@ void ALoginHUD::ChangeOverlay(TSubclassOf<UUserWidget> NewOverlayClass)
     }
 
     // 새 오버레이 생성 및 뷰포트에 추가
-    UWorld* World = GetWorld();
+    UWorld* World = UMMOGameInstance::GetMMOWorld();
     if (World)
     {
         APlayerController* Controller = World->GetFirstPlayerController();

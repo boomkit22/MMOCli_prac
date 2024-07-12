@@ -9,6 +9,8 @@
 #include "Type.h"
 #include "Components/BoxComponent.h"
 #include "Items/Weapon.h"
+#include "GameInstance/MMOGameInstance.h"
+
 // Sets default values
 
  //WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WeaponMesh"));
@@ -69,6 +71,15 @@ void AMonster::BeginPlay()
 
 }
 
+void AMonster::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+    Super::EndPlay(EndPlayReason);
+	if (EquippedWeapon)
+	{
+		EquippedWeapon->Destroy();
+	}
+}
+
 // Called every frame
 void AMonster::Tick(float DeltaTime)
 {
@@ -105,7 +116,7 @@ void AMonster::SetMonsterProperties(MonsterInfo monsterInfo)
 
             if (GuardianWeaponClass)
             {
-                EquippedWeapon = GetWorld()->SpawnActor<AWeapon>(GuardianWeaponClass);
+                EquippedWeapon = UMMOGameInstance::GetMMOWorld()->SpawnActor<AWeapon>(GuardianWeaponClass);
                 if (EquippedWeapon)
                 {
                     GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("monster wepaon")));
@@ -136,7 +147,6 @@ void AMonster::SetMonsterProperties(MonsterInfo monsterInfo)
 
     if (HUDMonsterComponent)
     {
-        UE_LOG(LogTemp, Error, TEXT("Set Monster HUD Component."));
         HUDMonsterComponent->SetMonsterName(MonsAttributeComponent->GetMonsterName());
         HUDMonsterComponent->SetHealthPercent(MonsAttributeComponent->GetHelathPercent());
     }

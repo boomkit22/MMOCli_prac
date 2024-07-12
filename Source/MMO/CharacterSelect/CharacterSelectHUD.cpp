@@ -3,12 +3,13 @@
 
 #include "CharacterSelect/CharacterSelectHUD.h"
 #include "CharacterSelect/CharacterSelectOverlay.h"
+#include "GameInstance/MMOGameInstance.h"
 
 void ACharacterSelectHUD::BeginPlay()
 {
 	Super::BeginPlay();
 
-	UWorld* World = GetWorld();
+	UWorld* World = UMMOGameInstance::GetMMOWorld();
 	if (World)
 	{
 		APlayerController* Controller = World->GetFirstPlayerController();

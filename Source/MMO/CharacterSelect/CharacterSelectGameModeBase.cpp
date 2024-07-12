@@ -4,6 +4,7 @@
 #include "CharacterSelect/CharacterSelectGameModeBase.h"
 #include "CharacterSelect/CharacterSelectCamera.h"
 #include "Kismet/GameplayStatics.h"
+#include "GameInstance/MMOGameInstance.h"
 
 void ACharacterSelectGameModeBase::BeginPlay()
 {
@@ -15,7 +16,7 @@ void ACharacterSelectGameModeBase::SetFixedCamera()
 {
     // 모든 카메라 액터를 찾습니다.
     TArray<AActor*> FoundActors;
-    UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACharacterSelectCamera::StaticClass(), FoundActors);
+    UGameplayStatics::GetAllActorsOfClass(UMMOGameInstance::GetMMOWorld(), ACharacterSelectCamera::StaticClass(), FoundActors);
 
     if (FoundActors.Num() > 0)
     {
@@ -23,7 +24,7 @@ void ACharacterSelectGameModeBase::SetFixedCamera()
         ACharacterSelectCamera* FixedCameraActor = Cast<ACharacterSelectCamera>(FoundActors[0]);
         if (FixedCameraActor)
         {
-            APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+            APlayerController* PlayerController = UGameplayStatics::GetPlayerController(UMMOGameInstance::GetMMOWorld(), 0);
             if (PlayerController)
             {
                 PlayerController->SetViewTargetWithBlend(FixedCameraActor);

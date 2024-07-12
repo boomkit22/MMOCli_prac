@@ -26,7 +26,7 @@ AWeapon::AWeapon()
 //{
 //	// 로그 메시지 출력
 //	UE_LOG(LogTemp, Warning, TEXT("Weapon Box Overlap with: %s"), *OtherActor->GetName());
-//	DrawDebugSphere(GetWorld(), OtherActor->GetActorLocation(), 10.0f, 12, FColor::Red, false, 1.0f);
+//	DrawDebugSphere(UMMOGameInstance::GetMMOWorld(), OtherActor->GetActorLocation(), 10.0f, 12, FColor::Red, false, 1.0f);
 //	WeaponBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 //}
 
