@@ -40,13 +40,14 @@ void UCharacterSelectOverlay::AddCharacterEntry(UCharacterEntry* NewEntry)
 	}
 }
 
-void UCharacterSelectOverlay::AddCharacterEntry(ECharacterClassType characterClassType, uint16 Level, FString NikcName)
+void UCharacterSelectOverlay::AddCharacterEntry(PlayerInfo playerInfo)
 {
 	UCharacterEntry* NewEntry = CreateWidget<UCharacterEntry>(UMMOGameInstance::GetMMOWorld(), UChaterEntryClass);
 	if (NewEntry)
 	{
-		NewEntry->Init(characterClassType, FString::FromInt(Level), NikcName);
+		NewEntry->Init(static_cast<ECharacterClassType>(playerInfo.Class), FString::FromInt(playerInfo.Level), playerInfo.NickName);
 		AddCharacterEntry(NewEntry);
+		NewEntry->SetPlayerID(playerInfo.PlayerID);
 	}
 }
 

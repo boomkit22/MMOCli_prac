@@ -38,7 +38,7 @@ public:
 	// 새 항목을 추가하는 메서드
 	UFUNCTION(BlueprintCallable, Category = "Entry")
 	void AddCharacterEntry(class UCharacterEntry* NewEntry);
-	void AddCharacterEntry(ECharacterClassType characterClassType, uint16 Level, FString NikcName);
+	void AddCharacterEntry(PlayerInfo playerInfo);
 	void SetCharacterList(std::vector<PlayerInfo>& playerInfos);
 protected:
 	UPROPERTY(meta = (BindWidget))

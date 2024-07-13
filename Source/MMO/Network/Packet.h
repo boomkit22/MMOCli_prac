@@ -243,8 +243,7 @@ enum PACKET_TYPE
 	//	{
 	//		WORD	Type
 	// 		uint8	Status
-	//		uint16  Class;
-	//		TCHAR   yNickName[NICKNAME_LEN];
+	//		PlayerInfo playerInfo
 	//	}
 	//------------------------------------------------------------
 	PACKET_SC_GAME_RES_CREATE_PLAYER = 1023,

@@ -520,12 +520,11 @@ void UMMOGameInstance::HandlePlayerList(CPacket* packet)
 void UMMOGameInstance::HandleCreatePlayer(CPacket* packet)
 {
 	uint8 Status;
-	uint16 Class;
-	TCHAR NickName[NICKNAME_LEN];
-	*packet >> Status >> Class;
-	packet->GetData((char*)NickName, NICKNAME_LEN * sizeof(TCHAR));
+	PlayerInfo playerInfo;
+	
+	*packet >> Status >> playerInfo;
 
-		//TODO:
+	//TODO:
 	// LoginHud가져와서 VerticalBox에 추가하기
 	if (!Status)
 	{
@@ -547,7 +546,7 @@ void UMMOGameInstance::HandleCreatePlayer(CPacket* packet)
 				if (CharacaterSelectOverlay)
 				{
 
-					CharacaterSelectOverlay->AddCharacterEntry(static_cast<ECharacterClassType>(Class), 1, NickName);
+					CharacaterSelectOverlay->AddCharacterEntry(playerInfo);
 				}
 			}
 		}
