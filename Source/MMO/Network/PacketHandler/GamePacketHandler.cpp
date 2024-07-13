@@ -99,6 +99,30 @@ void GamePacketHandler::HandlePacket(CPacket* packet)
 	}	
 	break;
 
+	case PACKET_SC_GAME_RES_CHARACTER_STOP:
+	{
+		GameInstance->HandleCharacterStop(packet);
+	}
+	break;
+
+	case PACKET_SC_GAME_RES_MONSTER_STOP:
+	{
+		GameInstance->HandleMonsterStop(packet);
+	}
+	break;
+
+	case PACKET_SC_GAME_RES_CHARACTER_DEATH:
+	{
+		GameInstance->HandleCharacterDeath(packet);
+	}
+	break;
+
+	case PACKET_SC_GAME_RES_MONSTER_DEATH:
+	{
+		GameInstance->HandleMonsterDeath(packet);
+	}
+	break;
+
 	default:
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Unknown Packet Type : %d"), packetType));
 		break;

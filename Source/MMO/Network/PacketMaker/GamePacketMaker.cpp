@@ -53,7 +53,7 @@ void GamePacketMaker::MP_CS_REQ_CHARACTER_MOVE(CPacket* Packet, FVector& Destina
 	FMemory::Memcpy(Packet->GetBufferPtr() + NET_HEADER_SIZE_INDEX, (void*)&len, sizeof(uint16));
 }
 
-void GamePacketMaker::MP_CS_REQ_CHARACTER_ATTACK(CPacket* packet, int32 AttackerType, int64 AttackerID, int32 TargetType, int64 TargetID, int32 Damage)
+void GamePacketMaker::MP_CS_REQ_CHARACTER_ATTACK(CPacket* packet, int32 AttackerType, int64 AttackerID, int32 TargetType, int64 TargetID)
 {
 	NetHeader Header;
 	Header._code = GamePacketCode;
@@ -62,7 +62,7 @@ void GamePacketMaker::MP_CS_REQ_CHARACTER_ATTACK(CPacket* packet, int32 Attacker
 	packet->PutData((char*)&Header, sizeof(NetHeader));
 	uint16 type = PACKET_CS_GAME_REQ_CHARACTER_ATTACK;
 
-	*packet << type << AttackerType << AttackerID << TargetType << TargetID << Damage;
+	*packet << type << AttackerType << AttackerID << TargetType << TargetID;
 
 	uint16 len = (uint16)(packet->GetDataSize() - sizeof(NetHeader));
 	FMemory::Memcpy(packet->GetBufferPtr() + NET_HEADER_SIZE_INDEX, (void*)&len, sizeof(uint16));

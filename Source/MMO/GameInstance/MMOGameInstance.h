@@ -60,6 +60,11 @@ public:
 	void HandleSelectPlayer(CPacket* packet);
 	void HandleSpawnMonster(CPacket* packet);
 	void HandleMonsterMove(CPacket* packet);
+	void HandleCharacterStop(CPacket* packet);
+	void HandleMonsterStop(CPacket* packet);
+	void HandleCharacterDeath(CPacket* packet);
+	void HandleMonsterDeath(CPacket* packet);
+	
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character")
 	TSubclassOf<AActor> GameCharacterClass;

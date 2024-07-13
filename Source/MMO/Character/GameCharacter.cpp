@@ -211,12 +211,10 @@ void AGameCharacter::OnWeaponBeginOverlap(UPrimitiveComponent* OverlappedCompone
 		int32 AttackerType = GetType();
 		int64 TargetID = AttackedCharacter->GetId();
 		int32 TargetType = AttackedCharacter->GetType();
-		int32 Damage = 5;
-		GamePacketMaker::MP_CS_REQ_CHARACTER_ATTACK(packet, AttackerType, AttackerID, TargetType, TargetID, Damage);
+		GamePacketMaker::MP_CS_REQ_CHARACTER_ATTACK(packet, AttackerType, AttackerID, TargetType, TargetID);
 		UMMOGameInstance::GetInstance()->SendPacket_GameServer(packet);
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Send Damage Packet")));
 	}
-
 }
 
 void AGameCharacter::MoveForward(float Value)
@@ -577,8 +575,8 @@ void AGameCharacter::GetHit(int32 damage)
 
 	/*HUDCharacterComponent->SetHealthPercent(MonsAttributeComponent->GetHelathPercent());
 	*/
-	if (!CharAttributeComponent->IsAlive())
+	/*if (!CharAttributeComponent->IsAlive())
 	{
 		Death();
-	}
+	}*/
 }

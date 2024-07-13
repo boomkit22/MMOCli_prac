@@ -116,7 +116,6 @@ enum PACKET_TYPE
 	//		int64   AttackerID
 	//		int32   TargetType
 	// 		int64   TargetID
-	// 		int32   Damage
 	//	}
 	//------------------------------------------------------------
 	PACKET_CS_GAME_REQ_CHARACTER_ATTACK = 1011,
@@ -270,7 +269,57 @@ enum PACKET_TYPE
 	PACKET_SC_GAME_MONSTER_MOVE = 1025,
 
 
+	//------------------------------------------------------------
+	// {
+	//		WORD		Type
+	//		FVector		StopLocation
+	//		FRotator	StopRotation
+	//	}
+	//------------------------------------------------------------
 
+	PACKET_CS_GAME_REQ_CHARACTER_STOP = 1026,
+
+	//------------------------------------------------------------
+	// {
+	//		WORD		Type
+	//		int64		CharacterID
+	//		FVector		StopLocation
+	//		FRotator	StopRotation
+	//	}
+	//------------------------------------------------------------
+	PACKET_SC_GAME_RES_CHARACTER_STOP = 1027,
+
+
+	//------------------------------------------------------------
+	// {
+	//		WORD		Type
+	//		int64		MonsterID
+	//		FVector		StopLocation
+	//		FRotator	StopRotation
+	//	}
+	//------------------------------------------------------------
+	PACKET_SC_GAME_RES_MONSTER_STOP = 1028,
+
+
+	//------------------------------------------------------------
+	// {
+	//		WORD		Type
+	//		int64		CharacterID
+	//		FVector		DeathLocation
+	//		FRotator	DeathRotation
+	//	}
+	//------------------------------------------------------------
+	PACKET_SC_GAME_RES_CHARACTER_DEATH = 1029,
+
+	//------------------------------------------------------------
+	// {
+	//		WORD		Type
+	//		int64		MonsterID
+	//		FVector		DeathLocation
+	// 		FRotator	DeathRotation
+	//	}
+	//------------------------------------------------------------
+	PACKET_SC_GAME_RES_MONSTER_DEATH = 1030,
 
 
 	//------------------------------------------------------------

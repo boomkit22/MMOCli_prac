@@ -617,6 +617,66 @@ void UMMOGameInstance::HandleMonsterMove(CPacket* packet)
 	}
 }
 
+void UMMOGameInstance::HandleCharacterStop(CPacket* packet)
+{
+	int64 CharacterID;
+	FVector StopLocation;
+	FRotator StopRotation;
+	*packet >> CharacterID >> StopLocation >> StopRotation;
+	// 캐릭터 찾아서 멈추고 SetDestination
+	auto character = CharacterMap.Find(CharacterID);
+	if (character && *character)
+	{
+		(*character)->StopMove();
+		(*character)->SetActorLocation(StopLocation);
+		(*character)->SetActorRotation(StopRotation);
+	}
+}
+
+void UMMOGameInstance::HandleMonsterStop(CPacket* packet)
+{
+	int64 MonsterID;
+	FVector StopLocation;
+	FRotator StopRotation;
+	*packet >> MonsterID >> StopLocation >> StopRotation;
+
+	auto Monster = MonsterMap.Find(MonsterID);
+	if (Monster && *Monster)
+	{
+		(*Monster)->StopMove();
+		(*Monster)->SetActorLocation(StopLocation);
+		(*Monster)->SetActorRotation(StopRotation);
+	}
+}
+
+void UMMOGameInstance::HandleCharacterDeath(CPacket* packet)
+{
+	int64 CharacterID;
+	FVector DeathLocation;
+	FRotator DeathRotation;
+	*packet >> CharacterID >> DeathLocation >> DeathRotation;
+
+	auto character = CharacterMap.Find(CharacterID);
+	if (character && *character)
+	{
+		(*character)->Death();
+	}
+}
+
+void UMMOGameInstance::HandleMonsterDeath(CPacket* packet)
+{
+	int64 MonsterID;
+	FVector DeathLocation;
+	FRotator DeathRotation;
+	*packet >> MonsterID >> DeathLocation >> DeathRotation;
+
+	auto Monster = MonsterMap.Find(MonsterID);
+	if (Monster && *Monster)
+	{
+		(*Monster)->Death();
+	}
+}	
+
 
 
 

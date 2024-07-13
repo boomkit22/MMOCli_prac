@@ -243,6 +243,12 @@ void AMonster::GetHit(int damage)
 	}
 }
 
+void AMonster::StopMove()
+{
+    Destination = FVector::ZeroVector;
+	MonsterState = EMonsterState::EMS_Idle;
+}
+
 int AMonster::GetType()
 {
     return TYPE_MONSTER;

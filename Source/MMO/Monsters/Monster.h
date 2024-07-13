@@ -61,6 +61,7 @@ public:
 	void Attack();
 	void Death();
 	void GetHit(int damage);
+	void StopMove();
 
 private:
 	UPROPERTY(VisibleAnywhere)
