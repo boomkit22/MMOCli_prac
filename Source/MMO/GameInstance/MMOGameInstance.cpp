@@ -427,6 +427,27 @@ void UMMOGameInstance::HandleCharacterSkill(CPacket* packet)
 
 }
 
+void UMMOGameInstance::HandleMonsterSkill(CPacket* packet)
+{
+	int64 MonsterID;
+	FVector StartPosition;
+	FRotator StartRotation;
+	int32 SkillID;		
+	*packet >> MonsterID >> StartPosition >> StartRotation >> SkillID;
+
+	auto Monster = MonsterMap.Find(MonsterID);
+	if (Monster && *Monster)
+	{
+		(*Monster)->StopMove();
+		(*Monster)->SetActorRotation(StartRotation);
+		if (SkillID == 1)
+		{
+			(*Monster)->Attack();
+		}
+
+	}
+}
+
 void UMMOGameInstance::HandleSignUp(CPacket* packet)
 {
 	USignUpOverlay* SignUpOverlay = nullptr;

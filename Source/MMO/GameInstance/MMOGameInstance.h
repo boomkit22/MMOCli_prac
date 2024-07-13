@@ -54,6 +54,7 @@ public:
 	void HandleCharacterMove(CPacket* packet);
 	void HandleDamage(CPacket* packet);
 	void HandleCharacterSkill(CPacket* packet);
+    void HandleMonsterSkill(CPacket* packet);
 	void HandleSignUp(CPacket* packet);
 	void HandlePlayerList(CPacket* packet);
 	void HandleCreatePlayer(CPacket* packet);

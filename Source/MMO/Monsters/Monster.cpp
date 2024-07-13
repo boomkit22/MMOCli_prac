@@ -172,7 +172,6 @@ void AMonster::MoveToDestination(float DeltaTime)
         float Distance = FVector::Dist(Destination, CurrentLocation);
 
         // 이동 속도 설정
-        float Speed = 300.0f; // 예: 300 유닛/초
         float Step = Speed * DeltaTime; // 이번 프레임에서 이동할 거리
 
         if (Distance > Step)
@@ -201,7 +200,7 @@ void AMonster::MoveToDestination(float DeltaTime)
 
 void AMonster::Attack()
 {
-    UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+    UAnimInstance* AnimInstance = MeshComponent->GetAnimInstance();
     if (AnimInstance && AttackMontage)
     {
         UE_LOG(LogTemp, Warning, TEXT("Attack"));

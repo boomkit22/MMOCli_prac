@@ -63,6 +63,13 @@ void GamePacketHandler::HandlePacket(CPacket* packet)
 	}
 	break;
 
+	case PACKET_SC_GAME_RES_MONSTER_SKILL:
+	{
+		GameInstance->HandleMonsterSkill(packet);
+		UE_LOG(LogTemp, Warning, TEXT("Monster Skill"));
+	}
+	break;
+
 	case PACKET_SC_GAME_RES_SIGN_UP:
 	{
 		GameInstance->HandleSignUp(packet);

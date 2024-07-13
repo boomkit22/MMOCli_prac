@@ -134,5 +134,6 @@ protected:
 
 private:
 	int64 MonsterID;
+	int64 Speed = 200.f;
 };
 
