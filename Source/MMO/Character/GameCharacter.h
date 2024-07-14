@@ -109,7 +109,6 @@ public:
 	TSubclassOf<ACharacter> MonsterClass;  // 몬스터 블루프린트 클래스를 참조하는 변수
 
 	void SpawnMonster();
-	void MoveMonster();
 	void MonsterAttack();
 	class AMonster* SpawnedMonster;
 	
@@ -177,4 +176,10 @@ protected:
 protected:
 	//Act By Class
 	void EquipWeapon();
+
+protected:
+	UFUNCTION()
+	void OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	void RequestFieldMove(uint16 fieldId);
 };

@@ -19,6 +19,7 @@
 #include "Items/Weapon.h"
 #include "Components/BoxComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Portal/PortalBoxActor.h"
 
 //#include "GameInstacne/MMOGameInstacne.h""
 
@@ -70,6 +71,11 @@ AGameCharacter::AGameCharacter()
 
 	// 캐릭터 속성 컴포넌트 생성
 	CharAttributeComponent = CreateDefaultSubobject<UCharAttributeComponent>(TEXT("CharAttribute"));
+
+	// 캡슐 컴포넌트 설정
+	GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECR_Ignore);
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_GameTraceChannel5, ECR_Overlap); // Och_Portal과 오버랩 설정
+	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &AGameCharacter::OnOverlapBegin);
 }
 
 void AGameCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -563,6 +569,46 @@ void AGameCharacter::EquipWeapon()
 
 }
 
+void AGameCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+
+	if (OtherActor && (OtherActor != this) && OtherComp)
+	{
+		// OchPortal 인지 확인 ECC_GameTraceChannel5
+		if (OtherComp->GetCollisionObjectType() == ECC_GameTraceChannel5)
+		{
+
+			APortalBoxActor* PortalBoxActor = Cast<APortalBoxActor>(OtherActor);
+			if (PortalBoxActor)
+			{
+				uint16 fieldId = PortalBoxActor->FieldId;
+				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("PortalBoxActor FieldId : %d"), fieldId));
+
+				//TODO:  필드 이동 패킷 쏘기
+				RequestFieldMove(fieldId);
+			}
+		}
+	}
+}
+
+void AGameCharacter::RequestFieldMove(uint16 fieldId)
+{
+	//TODO: 캐릭터 멈추고
+	StopMove();
+	// disable input
+	PlayerController = Cast<APlayerController>(GetController());
+	if (PlayerController)
+	{
+		PlayerController->DisableInput(PlayerController);
+	}
+
+	CPacket* fieldMoveReqPacket = CPacket::Alloc();
+	GamePacketMaker::MP_CS_REQ_FIELD_MOVE(fieldMoveReqPacket, fieldId);
+	UMMOGameInstance::GetInstance()->SendPacket_GameServer(fieldMoveReqPacket);
+}
+
+
+
 void AGameCharacter::GetHit(int32 damage)
 {
 	UE_LOG(LogTemp, Warning, TEXT("Character Hit"));
@@ -572,11 +618,4 @@ void AGameCharacter::GetHit(int32 damage)
 	{
 		MMOOverlay->SetHealthBarPercent(CharAttributeComponent->GetHelathPercent());
 	}
-
-	/*HUDCharacterComponent->SetHealthPercent(MonsAttributeComponent->GetHelathPercent());
-	*/
-	/*if (!CharAttributeComponent->IsAlive())
-	{
-		Death();
-	}*/
 }

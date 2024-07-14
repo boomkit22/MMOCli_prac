@@ -94,28 +94,28 @@ void UMMOGameInstance::PostInitProperties()
 
 }
 
-void UMMOGameInstance::BeginDestroy()
-{
-	UE_LOG(LogTemp, Warning, TEXT("BeginDestroy"));
-	Super::BeginDestroy();
-
-	//TODO: CharacterMAp 클리어
-	//캐릭터맵에있는거 다 distroy
-	for (auto& pair : CharacterMap)
-	{
-		if (pair.Value)
-		{
-			pair.Value->Destroy();
-		}
-	}
-
-
-	UWorld* World = GetMMOWorld();
-	if (World)
-	{
-		World->CleanupWorld();
-	}
-}
+//void UMMOGameInstance::BeginDestroy()
+//{
+//	UE_LOG(LogTemp, Warning, TEXT("BeginDestroy"));
+//	Super::BeginDestroy();
+//
+//	//TODO: CharacterMAp 클리어
+//	//캐릭터맵에있는거 다 distroy
+//	for (auto& pair : CharacterMap)
+//	{
+//		if (pair.Value)
+//		{
+//			pair.Value->Destroy();
+//		}
+//	}
+//
+//
+//	UWorld* World = GetMMOWorld();
+//	if (World)
+//	{
+//		World->CleanupWorld();
+//	}
+//}
 
 
 //void UMMOGameInstance::PostInitProperties()
@@ -346,6 +346,7 @@ void UMMOGameInstance::HandleSpawnMyCharacter(CPacket* packet)
 			AGamePlayerController* MyController = Cast<AGamePlayerController>(PlayerController);
 			if (MyController)
 			{
+
 				AGameCharacter* GameCharacter = MyController->SpawnMyCharacter(SpawnLocation, playerInfo);
 				if (GameCharacter)
 				{
