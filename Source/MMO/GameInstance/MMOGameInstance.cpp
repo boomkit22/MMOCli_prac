@@ -326,6 +326,7 @@ void UMMOGameInstance::HandleFieldMove(CPacket* packet)
 			break;
 	}
 
+	CurrentFieldID = fieldID;
 	OpenLevel(LevelName);
 }
 
@@ -396,6 +397,19 @@ void UMMOGameInstance::HandleSpawnOhterCharacter(CPacket* packet)
 	}
 }
 
+void UMMOGameInstance::HandleDespawnOtherCharacter(CPacket* packet)
+{
+	int64 PlayerID;
+	*packet >> PlayerID;
+
+	auto character = CharacterMap.Find(PlayerID);
+	if (character)
+	{
+		(*character)->Destroy();
+		CharacterMap.Remove(PlayerID);
+	}
+}
+
 void UMMOGameInstance::HandleCharacterMove(CPacket* packet)
 {
 	int64 characterNo;
@@ -416,8 +430,6 @@ void UMMOGameInstance::HandleCharacterMove(CPacket* packet)
 
 void UMMOGameInstance::HandleDamage(CPacket* packet)
 {
-	
-
 	int32   AttackerType;
 	int64   AttackerID;
 	int32   TargetType;

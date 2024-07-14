@@ -4,11 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "PortalWidget.h"
 #include "PortalBoxActor.generated.h"
 
 class UBoxComponent;
 class UParticleSystemComponent;
 class UWidgetComponent;
+
 
 UCLASS()
 class MMO_API APortalBoxActor : public AActor
@@ -38,12 +40,11 @@ public:
 	UPROPERTY()
 	UParticleSystemComponent* ParticleSystemComponent;
 
-	UPROPERTY()
-	UWidgetComponent* MapInfoWidgetComponent;
+	UPROPERTY(VisibleAnywhere)
+	UWidgetComponent* PortalWidgetComponent;
 
-	//블루프린트에서 설정하기
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widget")
-	TSubclassOf<UUserWidget> MapInfoWidgetClass;
+	UPROPERTY(EditDefaultsOnly, Category = "Widget")
+	TSubclassOf<UPortalWidget> WidgetClass;
 
 
 private:

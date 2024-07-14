@@ -11,6 +11,7 @@
  */
 class UMMOChatOverlay;
 class UMMOOverlay;
+class UMMOToLobbyOverlay;
 
 UCLASS()
 class MMO_API AMMOHUD : public AHUD
@@ -27,11 +28,18 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "MMO")
 	TSubclassOf<UMMOChatOverlay> MMOChatOverlayClass;
 
+	UPROPERTY(EditDefaultsOnly, Category = "MMO")
+	TSubclassOf<UMMOToLobbyOverlay> MMOToLobbyOverlayClass;
+
+
 	UPROPERTY()
 	UMMOOverlay* MMOOverlay;
 
 	UPROPERTY()
 	UMMOChatOverlay* MMOChatOverlay;
+
+	UPROPERTY()
+	UMMOToLobbyOverlay* MMOToLobbyOverlay;
 
 public:
 	FORCEINLINE UMMOOverlay* GetMMOOverlay() const { return MMOOverlay; }

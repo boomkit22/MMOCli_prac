@@ -51,6 +51,7 @@ public:
 	void HandleFieldMove(CPacket* packet);
 	void HandleSpawnMyCharacter(CPacket* packet);
 	void HandleSpawnOhterCharacter(CPacket* packet);
+	void HandleDespawnOtherCharacter(CPacket* packet);
 	void HandleCharacterMove(CPacket* packet);
 	void HandleDamage(CPacket* packet);
 	void HandleCharacterSkill(CPacket* packet);
@@ -97,6 +98,9 @@ private:
 public:
 	static UWorld* GetMMOWorld();
 	static UMMOGameInstance* GetInstance();
+	FORCEINLINE uint16 GetCurrentFieldID() { return CurrentFieldID; };
+private:
+	uint16 CurrentFieldID = 0;
 
 public:
 	FORCEINLINE int64 GetAccountId() { return AccountId; };
@@ -114,4 +118,6 @@ private:
 	TMap<int64, class AGameCharacter*> CharacterMap;
 	UPROPERTY()
 	TMap<int64, class AMonster*> MonsterMap;
+
+	
 };

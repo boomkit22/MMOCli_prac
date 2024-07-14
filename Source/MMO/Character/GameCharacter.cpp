@@ -154,6 +154,7 @@ void AGameCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	PlayerInputComponent->BindAction("DamageTest", IE_Pressed, this, &AGameCharacter::DamageTest);
 	PlayerInputComponent->BindAction("SpawnOtherCharacter", IE_Pressed, this, &AGameCharacter::SpawnOtherCharacter);
 	PlayerInputComponent->BindAction("RecoverHealth", IE_Pressed, this, &AGameCharacter::RecoverHealth);
+	PlayerInputComponent->BindAction("ToLobby", IE_Pressed, this, &AGameCharacter::ToLobby);
 }
 
 void AGameCharacter::AttackEnd()
@@ -491,9 +492,17 @@ void AGameCharacter::SpawnOtherCharacter()
 	//CPacket::Free(packet);
 }
 
+void AGameCharacter::ToLobby()
+{
+	uint16 LobbyFieldID = FIELD_LOBBY;
+	RequestFieldMove(LobbyFieldID);
+}
+
 void AGameCharacter::RecoverHealth()
 {
 	CharAttributeComponent->RecoverHealth(100);
+
+
 	if (MMOOverlay && CharAttributeComponent)
 	{
 		MMOOverlay->SetHealthBarPercent(CharAttributeComponent->GetHelathPercent());

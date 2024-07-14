@@ -4,7 +4,9 @@
 #include "HUD/MMOHUD.h"
 #include "HUD/MMOOverlay.h"
 #include "HUD/MMOChatOverlay.h"
+#include "HUD/MMOToLobbyOverlay.h"
 #include "GameInstance/MMOGameInstance.h"
+#include "GameData.h"
 
 void AMMOHUD::BeginPlay()
 {
@@ -28,7 +30,16 @@ void AMMOHUD::BeginPlay()
 			{
 				MMOChatOverlay->AddToViewport();
 			}
+
+			uint16 CurentField = UMMOGameInstance::GetInstance()->GetCurrentFieldID();
+			if (CurentField == FIELD_GUARDIAN || CurentField == FIELD_SPIDER)
+			{
+				MMOToLobbyOverlay = CreateWidget<UMMOToLobbyOverlay>(Controller, MMOToLobbyOverlayClass);
+				if (MMOToLobbyOverlay)
+				{
+					MMOToLobbyOverlay->AddToViewport();
+				}
+			}
 		}
 	}
-
 }

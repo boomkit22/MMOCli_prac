@@ -127,6 +127,7 @@ public:
 	void SetDestination(FVector Dest);
 	void SpawnOtherCharacter();
 	void RecoverHealth();
+	void ToLobby();
 
 protected:
 	virtual void GetHit(int32 damage);
