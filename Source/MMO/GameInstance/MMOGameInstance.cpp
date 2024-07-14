@@ -231,6 +231,7 @@ void UMMOGameInstance::HandleGameLogin(CPacket* packet)
 	//		DisconnectGameServer();
 	//	}
 
+
 	//	//로그인 패킷 보내기
 	//	CPacket* chatLoginPacket = CPacket::Alloc();
 	//	ChattingPacketMaker::MP_CS_REQ_LOGIN(chatLoginPacket, AccountNo, NickName);
@@ -266,11 +267,22 @@ void UMMOGameInstance::HandleGameLogin(CPacket* packet)
 
 void UMMOGameInstance::HandleFieldMove(CPacket* packet)
 {
+	MonsterMap.Empty();
 	GEngine->AddOnScreenDebugMessage(-1, 5.5f, FColor::Red, TEXT("HandleFieldMove"));
-	OpenLevel(TEXT("/Game/Maps/FieldMap_1"));
+	
+	uint8 Status;
+	uint16 fieldID;
+
+	*packet >> Status >> fieldID;
+
+	if (!Status)
+	{
+		//필요없는 기능인것같은데 서버가 이동하라 했으면 이동 해야지
+		return;
+	}
 
 	//캐릭터 맵에있는거 다삭제 및 Reset
-	for(auto& pair : CharacterMap)
+	for (auto& pair : CharacterMap)
 	{
 		if (pair.Value)
 		{
@@ -289,7 +301,32 @@ void UMMOGameInstance::HandleFieldMove(CPacket* packet)
 	MonsterMap.Empty();
 
 
-	
+	FName LevelName;
+	switch (fieldID)
+	{
+		case FIELD_LOBBY:
+		{
+			LevelName = TEXT("/Game/Maps/LobbyMap");
+		}
+		break;
+			
+		case FIELD_GUARDIAN:
+		{
+			LevelName = TEXT("/Game/Maps/GuardianMap");
+		}
+		break;
+				
+		case FIELD_SPIDER:
+		{
+			LevelName = TEXT("/Game/Maps/SpiderMap");
+		}
+		break;
+
+		default:
+			break;
+	}
+
+	OpenLevel(LevelName);
 }
 
 void UMMOGameInstance::HandleSpawnMyCharacter(CPacket* packet)
@@ -586,7 +623,7 @@ void UMMOGameInstance::HandleSelectPlayer(CPacket* packet)
 
 	GEngine->AddOnScreenDebugMessage(-1, 5.5f, FColor::Yellow, TEXT("HandleSelectPlayer"));
 	//TODO: field이동 쏘기
-	uint16 fieldId = 1;
+	uint16 fieldId = FIELD_LOBBY;
 	CPacket* fieldMovePacket = CPacket::Alloc();
 	GamePacketMaker::MP_CS_REQ_FIELD_MOVE(fieldMovePacket, fieldId);
 	GetInstance()->SendPacket_GameServer(fieldMovePacket);

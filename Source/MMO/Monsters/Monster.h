@@ -7,10 +7,8 @@
 #include "Monsters/MonsterState.h"
 #include "Interface/HittableInterface.h"
 #include "Type.h"
-
+#include "GameData.h"
 #include "Monster.generated.h"
-#define MONSTER_TYPE_GUARDIAN 1
-#define MONSTER_TYPE_SPIDER 2
 
 
 class UHUDMonsterComponent;
