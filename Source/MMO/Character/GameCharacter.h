@@ -24,110 +24,75 @@ class MMO_API AGameCharacter : public ACharacter, public IHittableInterface
 
 	GENERATED_BODY()
 public:
-
-	// Sets default values for this character's properties
-	AGameCharacter();
-	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
-	void Initialize(ECharacterClassType CharacterClassType);
-
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
-
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
-	UFUNCTION(BlueprintCallable)
-	void AttackEnd();
-	bool hasHit = false;
-
-	UFUNCTION(BlueprintCallable)
-	void SetWeaponCollisionEnabled(ECollisionEnabled::Type CollisionEnabled);
-
-	UFUNCTION()
-	void OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
-		bool bFromSweep, const FHitResult& SweepResult);
-
-	UFUNCTION()
-	void OnWeaponBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
-		bool bFromSweep, const FHitResult& SweepResult);
-
-
-
-protected:
-	//input
-	void MoveForward(float Value);
-	void MoveRight(float Value);
-	void Turn(float Value);
-	void LookUp(float Value);
-	void Attack();
-	void LeftMouseClick();
-	/**
-	*Play montage function
-	*/
-	void PlaySkill(int SkillID);
+	
+		// Sets default values for this character's properties
+		AGameCharacter();
+		virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+		void Initialize(ECharacterClassType CharacterClassType);
 	
 protected:
-	EActionState ActionState = EActionState::EAS_Unoccupied;
-	UPROPERTY(VisibleAnywhere)
-	USpringArmComponent* CameraBoom;
-
-	UPROPERTY(VisibleAnywhere)
-	UCameraComponent* ViewCamera;
-
-
-	UPROPERTY(VisibleAnywhere)
-	AWeapon* EquippedWeapon;
-
-
-	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
-	TSubclassOf<AWeapon> SwordClass;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
-	TSubclassOf<AWeapon> AxeClass;
-
-
-	/**
-	* Animation montages
-	*/
-	UPROPERTY(EditDefaultsOnly, Category = "Montages")
-	UAnimMontage* AttackMontage;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Montages")
-	UAnimMontage* DeathMontage;
-
+		// Called when the game starts or when spawned
+		virtual void BeginPlay() override;
+	
+	
+public:	
+		// Called every frame
+		virtual void Tick(float DeltaTime) override;
+	
+	
+	
+	
+	
+	
+	
+	
+protected:
+		/**
+		*Play montage function
+		*/
+		void PlaySkill(int SkillID);
+		
+protected:
+		EActionState ActionState = EActionState::EAS_Unoccupied;
+	
+	
+	
+		UPROPERTY(VisibleAnywhere)
+		AWeapon* EquippedWeapon;
+	
+	
+		UPROPERTY(EditDefaultsOnly, Category = "Weapon")
+		TSubclassOf<AWeapon> SwordClass;
+	
+		UPROPERTY(EditDefaultsOnly, Category = "Weapon")
+		TSubclassOf<AWeapon> AxeClass;
+	
+	
+		/**
+		* Animation montages
+		*/
+		UPROPERTY(EditDefaultsOnly, Category = "Montages")
+		UAnimMontage* AttackMontage;
+	
+		UPROPERTY(EditDefaultsOnly, Category = "Montages")
+		UAnimMontage* DeathMontage;
+	
 public:
 	//Test
 	UPROPERTY(EditDefaultsOnly, Category = "Spawning")
 	TSubclassOf<ACharacter> MonsterClass;  // 몬스터 블루프린트 클래스를 참조하는 변수
 
-	void SpawnMonster();
-	void MonsterAttack();
 	class AMonster* SpawnedMonster;
 	
 
 public:
 	FVector Destination;
-	class APlayerController* PlayerController;
 	
 	EMovingState MovingState = EMovingState::EMS_Idle;
 	void MoveToDestination(float DeltaTime);
 	void StopMove();
 	void Death();
-	void MonsterDeath();
-	void MonsterDamage();
-	void DamageTest();
 	void SetDestination(FVector Dest);
-	void SpawnOtherCharacter();
-	void RecoverHealth();
-	void ToLobby();
 
 protected:
 	virtual void GetHit(int32 damage);
@@ -139,21 +104,8 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	class UCharAttributeComponent* CharAttributeComponent;
 	
-protected:
-	UPROPERTY(VisibleAnywhere, Category = "Collision")
 
-	class UCapsuleComponent* DamageCapsule;
 
-private:
-	UPROPERTY()
-	UMMOOverlay* MMOOverlay;
-
-	private:
-		float AttackCoolTime = 0.6f;
-		bool bIsCool = false;
-		FTimerHandle AttackCooldownTimerHandle;
-
-		void ResetAttackCoolTime();
 
 public:
 		FORCEINLINE int64 GetPlayerID() const { return PlayerID; }
@@ -176,11 +128,5 @@ protected:
 
 protected:
 	//Act By Class
-	void EquipWeapon();
-
-protected:
-	UFUNCTION()
-	void OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-
-	void RequestFieldMove(uint16 fieldId);
+	virtual void EquipWeapon();
 };
