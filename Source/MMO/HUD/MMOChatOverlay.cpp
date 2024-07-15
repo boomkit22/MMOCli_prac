@@ -46,7 +46,7 @@ void UMMOChatOverlay::OnRecvMessage(const FString& Message)
 		if (NewMessage)
 		{
 			NewMessage->SetText(FText::FromString(Message));
-			ChatVerticalBox->InsertChildAt(0, NewMessage);
+			ChatVerticalBox->AddChildToVerticalBox(NewMessage);
 
 			// Scroll to the bottom
 			ChatScrollBox->ScrollToEnd();

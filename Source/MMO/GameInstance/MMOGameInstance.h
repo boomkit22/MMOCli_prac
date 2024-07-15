@@ -118,6 +118,4 @@ private:
 	TMap<int64, class AGameCharacter*> CharacterMap;
 	UPROPERTY()
 	TMap<int64, class AMonster*> MonsterMap;
-
-	
 };

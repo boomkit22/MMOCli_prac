@@ -59,7 +59,6 @@ void UMMOGameInstance::Init()
 	ConnectGameServer();
 
 
-
 }
 
 
@@ -170,8 +169,9 @@ void UMMOGameInstance::SendPacket_ChattingServer(CPacket* packet)
 
 void UMMOGameInstance::OpenLevel(FName LevelName)
 {
+
 	bLoading = true;
-	UGameplayStatics::OpenLevel(GetInstance(), LevelName, false);
+	UGameplayStatics::OpenLevel(GetInstance(), LevelName, true);
 }
 
 void UMMOGameInstance::HandleGameLogin(CPacket* packet)

@@ -29,7 +29,6 @@ AMyGameCharacter::AMyGameCharacter()
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->RotationRate = FRotator(0.f, 540.f, 0.f);
 
-
 	// Top down camera
 	// Create the camera boom (pulls in towards the player if there is a collision)
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
@@ -38,16 +37,17 @@ AMyGameCharacter::AMyGameCharacter()
 	CameraBoom->TargetArmLength = 800.f;
 	CameraBoom->SetRelativeRotation(FRotator(-60.f, 0.f, 0.f));
 	CameraBoom->bDoCollisionTest = false; // Don't want to pull camera in when it collides with level
-	// Create the camera and attach to boom
-	ViewCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("ViewCamera"));
-	ViewCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom
-	ViewCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 
 	// Set the camera's angle for top-down view
 	FRotator CameraRotation = FRotator(-60.0f, 0.0f, 0.0f); // Adjust the angle as needed
 	CameraBoom->SetWorldRotation(CameraRotation);
-
+	ViewCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("ViewCamera"));
+	// Create the camera and attach to boom
+	ViewCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom
+	ViewCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 	DamageCapsule = CreateDefaultSubobject<UCapsuleComponent>(TEXT("WeaponBox"));
+
+
 	DamageCapsule->SetupAttachment(GetRootComponent());
 
 	// Ä¸½¶ ÄÄÆ÷³ÍÆ® ¼³Á¤ Æ÷Å»ÇÏ°í overlap
@@ -164,10 +164,9 @@ void AMyGameCharacter::RequestFieldMove(uint16 fieldId)
 {
 	//TODO: Ä³¸¯ÅÍ ¸ØÃß°í
 	StopMove();
-	// disable input
-	/*PlayerController = Cast<APlayerController>(GetController());*/
 	if (PlayerController)
 	{
+		// disable input
 		PlayerController->DisableInput(PlayerController);
 	}
 
@@ -212,8 +211,6 @@ void AMyGameCharacter::SetWeaponCollisionEnabled(ECollisionEnabled::Type Collisi
 	{
 		UE_LOG(LogTemp, Warning, TEXT("set weapon"));
 		EquippedWeapon->GetWeaponBox()->SetCollisionEnabled(CollisionEnabled);
-
-		//EquippedWeapon->SetWeaponCollisionEnabled(CollisionEnabled);
 	}
 }
 
