@@ -58,6 +58,7 @@ void UCharacterSelectOverlay::SetCharacterList(std::vector<PlayerInfo>& playerIn
 		UCharacterEntry* NewEntry = CreateWidget<UCharacterEntry>(UMMOGameInstance::GetMMOWorld(), UChaterEntryClass);
 		if (NewEntry)
 		{
+			NewEntry->SetDesiredSizeInViewport(FVector2D(300.f, 50.0f));
 			NewEntry->Init(static_cast<ECharacterClassType>(playerInfo.Class), FString::FromInt(playerInfo.Level), playerInfo.NickName);
 			AddCharacterEntry(NewEntry);
 			NewEntry->SetPlayerID(playerInfo.PlayerID);
