@@ -33,6 +33,9 @@ protected:
 	UPROPERTY(meta = (BindWidget))
 	class UButton* SelectButton;
 
+	UPROPERTY(meta= (BindWidget))
+	class UButton* CharacterButton;
+
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WeaponImage")
 	class UTexture2D* AxeImage;
@@ -43,8 +46,18 @@ protected:
 	UFUNCTION()
 	void OnSelectButtonClicked();
 
+	UFUNCTION()
+	void OnCharacterButtonClicked();
+
+	//선택한 캐릭터 소환하는 것 까지 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character")
+	TSubclassOf<AActor> GameCharacterClass;
+
+	class AGameCharacter* SpawnedCharacter = nullptr;
+
+
 private:
 	int64 PlayerID;
-
+	ECharacterClassType CharacterClassType = ECharacterClassType::CCT_None;
 
 };

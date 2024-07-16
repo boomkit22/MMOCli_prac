@@ -9,6 +9,8 @@
 #include "GameInstance/MMOGameInstance.h"
 #include "PacketMaker/GamePacketMaker.h"
 #include "PacketMaker/ChattingPacketMaker.h"
+#include "Character/GameCharacter.h"
+
 void UCharacterEntry::NativeConstruct()
 {
 	Super::NativeConstruct();
@@ -17,10 +19,17 @@ void UCharacterEntry::NativeConstruct()
 	{
 		SelectButton->OnClicked.AddDynamic(this, &UCharacterEntry::OnSelectButtonClicked);
 	}
+
+	if (CharacterButton)
+	{
+		CharacterButton->OnClicked.AddDynamic(this, &UCharacterEntry::OnCharacterButtonClicked);
+	}
 }
 
 void UCharacterEntry::Init(ECharacterClassType characterClassType, FString level, FString id)
 {
+	CharacterClassType = characterClassType;
+
 	switch (characterClassType)
 	{
 		case ECharacterClassType::CCT_Axe:
@@ -68,3 +77,24 @@ void UCharacterEntry::OnSelectButtonClicked()
 	UMMOGameInstance::GetInstance()->SendPacket_ChattingServer(chatLoginPAcket);
 }
 
+void UCharacterEntry::OnCharacterButtonClicked()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("CharacterButtonClicked"));
+
+
+	if (GameCharacterClass)
+	{
+		FActorSpawnParameters SpawnParams;
+		FRotator Rotation = FRotator(0.0f, 0.0f, 0.0f);
+		FVector spawnLocation = FVector(0.0f, 0.0f, 130.0f);
+
+		if (SpawnedCharacter != nullptr)
+		{
+			SpawnedCharacter->Destroy();
+			SpawnedCharacter = nullptr;
+		}
+
+		SpawnedCharacter = Cast<AGameCharacter>(UMMOGameInstance::GetMMOWorld()->SpawnActor<AActor>(GameCharacterClass, spawnLocation, Rotation, SpawnParams));
+		SpawnedCharacter->Initialize(CharacterClassType);
+	}
+}

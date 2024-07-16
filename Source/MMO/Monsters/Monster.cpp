@@ -11,22 +11,6 @@
 #include "Items/Weapon.h"
 #include "GameInstance/MMOGameInstance.h"
 
-// Sets default values
-
- //WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WeaponMesh"));
-    //WeaponMesh->SetupAttachment(GetMesh(), TEXT("b_MF_Weapon_R")); // "WeaponSocketName"을 생성한 소켓 이름으로 바꿉니다.
-    //// 무기 메쉬 설정
-    //static ConstructorHelpers::FObjectFinder<USkeletalMesh> WeaponAsset(TEXT("/Game/Weapons/Blunt_SpikedClub/SK_Blunt_SpikedClub"));
-    //if (WeaponAsset.Succeeded())
-    //{
-    //    WeaponMesh->SetSkeletalMesh(WeaponAsset.Object);
-    //}
-    //else
-    //{
-    //    UE_LOG(LogTemp, Error, TEXT("Failed to load monster weapon skeletal mesh."));
-    //}
-
-
 AMonster::AMonster()
 {
 
@@ -184,16 +168,14 @@ void AMonster::MoveToDestination(float DeltaTime)
             FVector NewLocation = CurrentLocation + Direction * Step;
             SetActorLocation(NewLocation);
 
-            // 이동하는 방향으로 부드러운 회전 설정
-            // 이동하는 방향으로 부드러운 회전 설정
             FRotator CurrentRotation = GetActorRotation();
             FRotator TargetRotation = Direction.Rotation();
-            FRotator NewRotation = FMath::Lerp(CurrentRotation, TargetRotation, DeltaTime * 5.0f); // 회전 속도 조정 가능
+            FRotator NewRotation = FMath::Lerp(CurrentRotation, TargetRotation, DeltaTime * 5.0f); // 회전 속도 조정
             SetActorRotation(NewRotation);
         }
         else
         {
-            // 목적지에 매우 가까워졌을 때, 목적지에 도달
+            // 목적지에 가까워졌을 때, 목적지로
             SetActorLocation(Destination);
             Destination = FVector::ZeroVector; // 도착 후 목적지 초기화
         }
