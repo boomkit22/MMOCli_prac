@@ -34,6 +34,13 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	class UButton* CreateButton;
 	
+	void SpawnChracter(ECharacterClassType CharacterClassType);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character")
+	TSubclassOf<AActor> GameCharacterClass;
+
+	class AGameCharacter* SpawnedCharacter = nullptr;
+
 public:
 	// 새 항목을 추가하는 메서드
 	UFUNCTION(BlueprintCallable, Category = "Entry")

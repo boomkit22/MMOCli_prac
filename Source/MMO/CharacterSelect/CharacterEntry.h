@@ -7,9 +7,12 @@
 #include "Character/CharacterTypes.h"
 #include "CharacterEntry.generated.h"
 
+class UCharacterSelectOverlay;
+
 /**
  * 
  */
+
 UCLASS()
 class MMO_API UCharacterEntry : public UUserWidget
 {
@@ -20,6 +23,8 @@ class MMO_API UCharacterEntry : public UUserWidget
 public:
 	void Init(ECharacterClassType characterClassType, FString level, FString IDText);
 	void SetPlayerID(int64 playerID);
+	void SetCharacterSelectOverlay(UCharacterSelectOverlay* CharacterSelectOverlay);
+
 protected:
 	UPROPERTY(meta = (BindWidget))
 	class UImage* WeaponImage;
@@ -49,12 +54,7 @@ protected:
 	UFUNCTION()
 	void OnCharacterButtonClicked();
 
-	//선택한 캐릭터 소환하는 것 까지 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character")
-	TSubclassOf<AActor> GameCharacterClass;
-
-	class AGameCharacter* SpawnedCharacter = nullptr;
-
+	UCharacterSelectOverlay* CharacterSelectOverlay = nullptr;
 
 private:
 	int64 PlayerID;

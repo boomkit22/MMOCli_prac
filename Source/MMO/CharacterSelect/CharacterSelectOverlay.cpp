@@ -11,6 +11,7 @@
 #include "Network/DataStructure/SerializeBuffer.h"
 #include "PacketMaker/GamePacketMaker.h"
 #include "CharacterSelect/CharacterEntry.h"
+#include "Character/GameCharacter.h"
 
 
 void UCharacterSelectOverlay::NativeConstruct()
@@ -32,6 +33,27 @@ void UCharacterSelectOverlay::NativeDestruct()
 	}
 }
 
+void UCharacterSelectOverlay::SpawnChracter(ECharacterClassType CharacterClassType)
+{
+	if (GameCharacterClass)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("spawn33"));
+
+		FActorSpawnParameters SpawnParams;
+		FRotator Rotation = FRotator(0.0f, 0.0f, 0.0f); // 예시 회전
+		FVector spawnLocation = FVector(0.0f, 0.0f, 130.0f); // 예시 위치
+		// 캐릭터 스폰
+		UE_LOG(LogTemp, Warning, TEXT("%s"), *(UMMOGameInstance::GetMMOWorld()->GetName()));
+		if (SpawnedCharacter != nullptr)
+		{
+			SpawnedCharacter->Destroy();
+		}
+		SpawnedCharacter = Cast<AGameCharacter>(UMMOGameInstance::GetMMOWorld()->SpawnActor<AActor>(GameCharacterClass, spawnLocation, Rotation, SpawnParams));
+		SpawnedCharacter->Initialize(CharacterClassType);
+		UE_LOG(LogTemp, Warning, TEXT("spawn2"));
+	}
+}
+
 void UCharacterSelectOverlay::AddCharacterEntry(UCharacterEntry* NewEntry)
 {
 	if (CharacterListVerticalBox && NewEntry)
@@ -45,6 +67,7 @@ void UCharacterSelectOverlay::AddCharacterEntry(PlayerInfo playerInfo)
 	UCharacterEntry* NewEntry = CreateWidget<UCharacterEntry>(UMMOGameInstance::GetMMOWorld(), UChaterEntryClass);
 	if (NewEntry)
 	{
+		NewEntry->SetCharacterSelectOverlay(this);
 		NewEntry->Init(static_cast<ECharacterClassType>(playerInfo.Class), FString::FromInt(playerInfo.Level), playerInfo.NickName);
 		AddCharacterEntry(NewEntry);
 		NewEntry->SetPlayerID(playerInfo.PlayerID);
@@ -58,9 +81,11 @@ void UCharacterSelectOverlay::SetCharacterList(std::vector<PlayerInfo>& playerIn
 		UCharacterEntry* NewEntry = CreateWidget<UCharacterEntry>(UMMOGameInstance::GetMMOWorld(), UChaterEntryClass);
 		if (NewEntry)
 		{
+			NewEntry->SetCharacterSelectOverlay(this);
 			NewEntry->Init(static_cast<ECharacterClassType>(playerInfo.Class), FString::FromInt(playerInfo.Level), playerInfo.NickName);
 			AddCharacterEntry(NewEntry);
 			NewEntry->SetPlayerID(playerInfo.PlayerID);
+			
 		}
 	}
 }

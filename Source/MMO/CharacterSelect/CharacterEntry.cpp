@@ -10,6 +10,7 @@
 #include "PacketMaker/GamePacketMaker.h"
 #include "PacketMaker/ChattingPacketMaker.h"
 #include "Character/GameCharacter.h"
+#include "CharacterSelect/CharacterSelectOverlay.h"
 
 void UCharacterEntry::NativeConstruct()
 {
@@ -80,21 +81,11 @@ void UCharacterEntry::OnSelectButtonClicked()
 void UCharacterEntry::OnCharacterButtonClicked()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("CharacterButtonClicked"));
+	CharacterSelectOverlay->SpawnChracter(CharacterClassType);
 
+}
 
-	if (GameCharacterClass)
-	{
-		FActorSpawnParameters SpawnParams;
-		FRotator Rotation = FRotator(0.0f, 0.0f, 0.0f);
-		FVector spawnLocation = FVector(0.0f, 0.0f, 130.0f);
-
-		if (SpawnedCharacter != nullptr)
-		{
-			SpawnedCharacter->Destroy();
-			SpawnedCharacter = nullptr;
-		}
-
-		SpawnedCharacter = Cast<AGameCharacter>(UMMOGameInstance::GetMMOWorld()->SpawnActor<AActor>(GameCharacterClass, spawnLocation, Rotation, SpawnParams));
-		SpawnedCharacter->Initialize(CharacterClassType);
-	}
+void UCharacterEntry::SetCharacterSelectOverlay(UCharacterSelectOverlay* characterSelectOverlay)
+{
+	CharacterSelectOverlay = characterSelectOverlay;
 }
