@@ -8,6 +8,7 @@
 #include "GameInstance/MMOGameInstance.h"
 #include "Network/DataStructure/SerializeBuffer.h"
 #include "PacketMaker/GamePacketMaker.h"
+#include "Character/GameCharacter.h"
 
 void UCreateCharacterOverlay::NativeConstruct()
 {

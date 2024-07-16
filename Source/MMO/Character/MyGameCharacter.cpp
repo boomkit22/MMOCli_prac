@@ -80,6 +80,8 @@ void AMyGameCharacter::BeginPlay()
 
 void AMyGameCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
+	Super::EndPlay(EndPlayReason);
+
 	if (AttackCooldownTimerHandle.IsValid())
 	{
 		UMMOGameInstance::GetMMOWorld()->GetTimerManager().ClearTimer(AttackCooldownTimerHandle);

@@ -57,8 +57,7 @@ void UMMOGameInstance::Init()
 	//FWorldDelegates::
 
 	ConnectGameServer();
-
-
+	ConnectChattingServer();
 }
 
 
@@ -171,7 +170,7 @@ void UMMOGameInstance::OpenLevel(FName LevelName)
 {
 
 	bLoading = true;
-	UGameplayStatics::OpenLevel(GetInstance(), LevelName, true);
+	UGameplayStatics::OpenLevel(GetInstance(), LevelName, false);
 }
 
 void UMMOGameInstance::HandleGameLogin(CPacket* packet)
@@ -223,46 +222,6 @@ void UMMOGameInstance::HandleGameLogin(CPacket* packet)
 		}
 	}
 
-	//if (Status)
-	//{
-	//	bool bConnectChattingSuccess = ConnectChattingServer();
-	//	if (!bConnectChattingSuccess)
-	//	{
-	//		DisconnectGameServer();
-	//	}
-
-
-	//	//로그인 패킷 보내기
-	//	CPacket* chatLoginPacket = CPacket::Alloc();
-	//	ChattingPacketMaker::MP_CS_REQ_LOGIN(chatLoginPacket, AccountNo, NickName);
-	//	SendPacket_ChattingServer(chatLoginPacket);
-
-	//	//로그인 성공하면?
-	//	// 1. OverLay 변경
-	//	UWorld* World = UMMOGameInstance::GetMMOWorld();
-	//	if (World)
-	//	{
-	//		APlayerController* Controller = World->GetFirstPlayerController();
-	//		if (Controller)
-	//		{
-	//			AHUD* HUD = Controller->GetHUD();
-	//			ALoginHUD* LoginHUD = Cast<ALoginHUD>(HUD);
-	//			if (LoginHUD)
-	//			{
-	//				// CharacterSelectOverlay 클래스로 오버레이 변경
-	//				//TSubclassOf<UCharacterSelectOverlay> characterSelectOvelay = LoginHUD->GetCharacterSelectOverlayClass();
-	//				LoginHUD->ChangeOverlay(LoginHUD->GetCharacterSelectOverlayClass());
-	//				UCharacterSelectOverlay* CharacterSelectOverlay = Cast<UCharacterSelectOverlay>(LoginHUD->GetCurrentOverlay());
-	//				if (CharacterSelectOverlay)
-	//				{
-	//					FString NickNameStr = NickName;
-	//					CharacterSelectOverlay->SetCharacterSelectText(NickNameStr, CharacterLevel);
-	//				}
-	//			}
-	//		}
-	//	}
-	//}
-	
 }
 
 void UMMOGameInstance::HandleFieldMove(CPacket* packet)
@@ -334,7 +293,8 @@ void UMMOGameInstance::HandleSpawnMyCharacter(CPacket* packet)
 {
 	FVector SpawnLocation;
 	PlayerInfo playerInfo;
-	*packet >> playerInfo >> SpawnLocation;
+	FRotator SpawnRotation;
+	*packet >> playerInfo >> SpawnLocation >> SpawnRotation;
 	
 	UWorld* World = GetMMOWorld();
 	UE_LOG(LogTemp, Warning, TEXT("HandleSpawnMyCharacter %d %lld"), CharacterMap.Num(), playerInfo.PlayerID);
@@ -348,7 +308,7 @@ void UMMOGameInstance::HandleSpawnMyCharacter(CPacket* packet)
 			if (MyController)
 			{
 
-				AGameCharacter* GameCharacter = MyController->SpawnMyCharacter(SpawnLocation, playerInfo);
+				AGameCharacter* GameCharacter = MyController->SpawnMyCharacter(SpawnLocation, playerInfo, SpawnRotation);
 				if (GameCharacter)
 				{
 					CharacterMap.Add(playerInfo.PlayerID, GameCharacter);
@@ -368,8 +328,8 @@ void UMMOGameInstance::HandleSpawnOhterCharacter(CPacket* packet)
 {
 	PlayerInfo playerInfo;
 	FVector SpawnLocation;
-
-	*packet >> playerInfo >> SpawnLocation;
+	FRotator SpawnRoation;
+	*packet >> playerInfo >> SpawnLocation >> SpawnRoation;
 	int64 PlayerID = playerInfo.PlayerID;
 
 	if (GameCharacterClass)
@@ -377,11 +337,10 @@ void UMMOGameInstance::HandleSpawnOhterCharacter(CPacket* packet)
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 		
-		FRotator Rotation = FRotator(0.0f, 0.0f, 0.0f); // 예시 회전
 		// 캐릭터 스폰
 		UE_LOG(LogTemp, Warning, TEXT("%s"), *(GetMMOWorld()->GetName()));
 
-		AGameCharacter* SpawnedCharacter = Cast<AGameCharacter>(GetMMOWorld()->SpawnActor<ARemoteGameCharacter>(RemoteGameCharacterClass, SpawnLocation, Rotation, SpawnParams));
+		AGameCharacter* SpawnedCharacter = Cast<AGameCharacter>(GetMMOWorld()->SpawnActor<ARemoteGameCharacter>(RemoteGameCharacterClass, SpawnLocation, SpawnRoation, SpawnParams));
 		if (SpawnedCharacter)
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 5.5f, FColor::Red, TEXT("Handle spawn Ohter Character"));
@@ -646,16 +605,16 @@ void UMMOGameInstance::HandleSpawnMonster(CPacket* packet)
 {
 	MonsterInfo monsterInfo;
 	FVector SpawnLocation;
-	*packet >> monsterInfo >> SpawnLocation;
+	FRotator SpawnRotation;
+	*packet >> monsterInfo >> SpawnLocation >> SpawnRotation;
+
 
 	if (MonsterClass)
 	{
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-		FRotator Rotation = FRotator(0.0f, 0.0f, 0.0f); // 예시 회전
-
-		AMonster* SpawnedMonster = Cast<AMonster>(GetMMOWorld()->SpawnActor<AMonster>(MonsterClass, SpawnLocation, Rotation, SpawnParams));
+		AMonster* SpawnedMonster = Cast<AMonster>(GetMMOWorld()->SpawnActor<AMonster>(MonsterClass, SpawnLocation, SpawnRotation, SpawnParams));
 		if (SpawnedMonster)
 		{
 			SpawnedMonster->SetMonsterProperties(monsterInfo);

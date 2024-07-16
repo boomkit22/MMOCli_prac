@@ -111,6 +111,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spider")
 	USkeletalMesh* SpiderMesh;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Guardian")
 	FVector SpiderCollisionExtent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spider")

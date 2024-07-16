@@ -8,7 +8,7 @@
 #include "Network/DataStructure/SerializeBuffer.h"
 #include "GameInstance/MMOGameInstance.h"
 #include "PacketMaker/GamePacketMaker.h"
-
+#include "PacketMaker/ChattingPacketMaker.h"
 void UCharacterEntry::NativeConstruct()
 {
 	Super::NativeConstruct();
@@ -54,5 +54,17 @@ void UCharacterEntry::OnSelectButtonClicked()
 	CPacket* reqSelectCharacterPacket = CPacket::Alloc();
 	GamePacketMaker::MP_CS_REQ_SELECT_PLAYER(reqSelectCharacterPacket, PlayerID);
 	UMMOGameInstance::GetInstance()->SendPacket_GameServer(reqSelectCharacterPacket);
+
+	CPacket* chatLoginPAcket = CPacket::Alloc();
+	int64 accountId = UMMOGameInstance::GetInstance()->GetAccountId();
+
+	FText idText = IDText->GetText();
+	FString idString = idText.ToString();
+	TCHAR id[ID_LEN];
+	FMemory::Memset(id, 0, sizeof(TCHAR) * ID_LEN);
+	FMemory::Memcpy(id, *idString, sizeof(TCHAR) * idString.Len());
+
+	ChattingPacketMaker::MP_CS_REQ_LOGIN(chatLoginPAcket, accountId, id);
+	UMMOGameInstance::GetInstance()->SendPacket_ChattingServer(chatLoginPAcket);
 }
 

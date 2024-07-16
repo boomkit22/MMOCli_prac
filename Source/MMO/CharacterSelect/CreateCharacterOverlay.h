@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "CharacterSelectOverlay.h"
-#include "Character/GameCharacter.h"
 #include "CreateCharacterOverlay.generated.h"
 
 /**
@@ -57,3 +56,4 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Entry")
 	TSubclassOf<UCharacterEntry> UCharacterEntryClass;
 };
+														

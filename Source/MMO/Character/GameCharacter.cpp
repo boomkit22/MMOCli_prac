@@ -32,14 +32,18 @@ void AGameCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);
 
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("EndPlay")));
+
+
 	if (EquippedWeapon)
 	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("EquippedWeapon is destroyed.")));
 		EquippedWeapon->Destroy();
 		EquippedWeapon = nullptr;
 	}
 }
 
-
+																												
 void AGameCharacter::Initialize(ECharacterClassType characterClassType)
 {
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Initialize %d"), (int)characterClassType));

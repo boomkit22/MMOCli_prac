@@ -107,7 +107,7 @@ void AMonster::SetMonsterProperties(MonsterInfo monsterInfo)
     {
         case EMonsterType::EMT_Guardian:
         {
-            MonsAttributeComponent->Init(100, FString("Guardian"));
+            MonsAttributeComponent->Init(monsterInfo.Hp, FString("Guardian"));
             MeshComponent->SetSkeletalMesh(GuardianMesh);
             CollisionBoxComponent->SetBoxExtent(GuardianCollisionExtent);
             AttackMontage = GuardianAttackMontage;
@@ -132,12 +132,16 @@ void AMonster::SetMonsterProperties(MonsterInfo monsterInfo)
 
         case EMonsterType::EMT_Spider:
         {
-            MonsAttributeComponent->Init(100, FString("Spider"));
+            MonsAttributeComponent->Init(monsterInfo.Hp, FString("Spider"));
             MeshComponent->SetSkeletalMesh(SpiderMesh);
             CollisionBoxComponent->SetBoxExtent(SpiderCollisionExtent);
             AttackMontage = SpiderAttackMontage;
             DeathMontage = SpiderDeathMontage;
             MeshComponent->SetAnimInstanceClass(SpiderAnimBlueprint);
+
+            // 위치 설정
+            MeshComponent->SetRelativeLocation(FVector(0.0f, 0.0f, -88.0f)); // MeshComponent를 아래로 88 이동
+            CollisionBoxComponent->SetRelativeLocation(FVector(0.0f, 0.0f, 88.0f)); // CollisionBoxComponent를 위로 88 이동
         }
         break;
 
@@ -181,6 +185,7 @@ void AMonster::MoveToDestination(float DeltaTime)
             SetActorLocation(NewLocation);
 
             // 이동하는 방향으로 부드러운 회전 설정
+            // 이동하는 방향으로 부드러운 회전 설정
             FRotator CurrentRotation = GetActorRotation();
             FRotator TargetRotation = Direction.Rotation();
             FRotator NewRotation = FMath::Lerp(CurrentRotation, TargetRotation, DeltaTime * 5.0f); // 회전 속도 조정 가능
@@ -222,6 +227,8 @@ void AMonster::Death()
     else {
         UE_LOG(LogTemp, Warning, TEXT("Death error"));
     }
+
+
     MonsterState = EMonsterState::EMS_Dead;
     if(MonsterState == EMonsterState::EMS_Dead)
     {

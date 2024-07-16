@@ -42,12 +42,12 @@ CPacket& operator>>(CPacket& packet, PlayerInfo& info)
 
 CPacket& operator<<(CPacket& packet, MonsterInfo& info)
 {
-	packet << info.MonsterID << info.Type;
+	packet << info.MonsterID << info.Type << info.Hp;
 	return packet;
 }
 
 CPacket& operator>>(CPacket& packet, MonsterInfo& info)
 {
-	packet >> info.MonsterID >> info.Type;
+	packet >> info.MonsterID >> info.Type >> info.Hp;
 	return packet;
 }

@@ -51,6 +51,7 @@ enum PACKET_TYPE
 	//	{
 	//		WORD	Type
 	//		uint8  Status
+	//		uin16 fieldID
 	//	}
 	//------------------------------------------------------------
 	PACKET_SC_GAME_RES_FIELD_MOVE = 1004,
@@ -59,7 +60,8 @@ enum PACKET_TYPE
 	//	{
 	//		WORD	Type
 	//		PlayerInfo playerInfo
-	//		SpawnLocation spawnLocation
+	//		FVector spawnLocation
+	//		FRotator spawnRotation
 	//	}
 	//------------------------------------------------------------
 	PACKET_SC_GAME_SPAWN_MY_CHARACTER = 1005,
@@ -69,7 +71,7 @@ enum PACKET_TYPE
 	//	{
 	//		WORD	Type
 	//		PlayerInfo playerInfo
-	//		SpawnLocation spawnLocation
+	//		FRotator SpawnRotation
 	//	}
 	//------------------------------------------------------------
 	PACKET_SC_GAME_SPAWN_OTHER_CHAACTER = 1006,
@@ -253,6 +255,7 @@ enum PACKET_TYPE
 	//		WORD	Type
 	//		MonsterInfo monsterInfo
 	//		SpawnLocation spawnLocation
+	//		FRotator SpawnRotation
 	//	}
 	//------------------------------------------------------------
 	PACKET_SC_GAME_SPAWN_MONSTER = 1024,
@@ -373,6 +376,4 @@ enum PACKET_TYPE
 	//
 	//------------------------------------------------------------
 	PACKET_SC_CHAT_RES_MESSAGE = 5004,
-
-
 };

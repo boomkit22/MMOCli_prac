@@ -13,7 +13,7 @@ void AGamePlayerController::BeginPlay()
 
 }
 
-AGameCharacter* AGamePlayerController::SpawnMyCharacter(FVector spawnLocation, PlayerInfo playerInfo)
+AGameCharacter* AGamePlayerController::SpawnMyCharacter(FVector spawnLocation, PlayerInfo playerInfo, FRotator SpawnRoation)
 {
     AGameCharacter* GameCharacter = nullptr;
     UE_LOG(LogTemp, Warning, TEXT("spawn3"));
@@ -23,10 +23,9 @@ AGameCharacter* AGamePlayerController::SpawnMyCharacter(FVector spawnLocation, P
         UE_LOG(LogTemp, Warning, TEXT("spawn33"));
 
         FActorSpawnParameters SpawnParams;
-        FRotator Rotation = FRotator(0.0f, 0.0f, 0.0f); // 예시 회전
         SpawnParams.Owner = this;
         // 캐릭터 스폰
-        AActor* SpawnedCharacter = UMMOGameInstance::GetMMOWorld()->SpawnActor<AActor>(GameCharacterClass, spawnLocation, Rotation, SpawnParams);
+        AActor* SpawnedCharacter = UMMOGameInstance::GetMMOWorld()->SpawnActor<AActor>(GameCharacterClass, spawnLocation, SpawnRoation, SpawnParams);
         if (SpawnedCharacter)
         {
             UE_LOG(LogTemp, Warning, TEXT("spawn1"));

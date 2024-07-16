@@ -20,7 +20,7 @@ public:
 
 
 public:
-	AGameCharacter* SpawnMyCharacter(FVector SpawnLocation, PlayerInfo playerInfo);
+	AGameCharacter* SpawnMyCharacter(FVector SpawnLocation, PlayerInfo playerInfo, FRotator SpawnRotation);
 
 public:
 	// YourCharacterClass 변수를 TSubclassOf를 사용하여 선언
