@@ -85,45 +85,6 @@ void UMMOGameInstance::Shutdown()
 	}
 }
 
-void UMMOGameInstance::PostInitProperties()
-{
-		Super::PostInitProperties();
-	UE_LOG(LogTemp, Warning, TEXT("PostInitProperties"));
-
-}
-
-//void UMMOGameInstance::BeginDestroy()
-//{
-//	UE_LOG(LogTemp, Warning, TEXT("BeginDestroy"));
-//	Super::BeginDestroy();
-//
-//	//TODO: CharacterMAp 클리어
-//	//캐릭터맵에있는거 다 distroy
-//	for (auto& pair : CharacterMap)
-//	{
-//		if (pair.Value)
-//		{
-//			pair.Value->Destroy();
-//		}
-//	}
-//
-//
-//	UWorld* World = GetMMOWorld();
-//	if (World)
-//	{
-//		World->CleanupWorld();
-//	}
-//}
-
-
-//void UMMOGameInstance::PostInitProperties()
-//{
-//	Super::PostInitProperties();
-//	UE_LOG(LogTemp, Warning, TEXT("PostInitProperties"));
-//	CharacterMap = TMap<int64, AGameCharacter*>(); // 캐릭터 맵 초기화
-//	MonsterMap = TMap<int64, AMonster*>(); // 몬스터 맵 초기화
-//}
-
 
 bool UMMOGameInstance::ConnectGameServer()
 {

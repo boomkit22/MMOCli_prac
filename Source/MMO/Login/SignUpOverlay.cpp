@@ -64,7 +64,6 @@ void USignUpOverlay::OnSignUpButtonClicked()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("OnSignUpButtonClicked"));
 
-	// 회원가입 버튼이 클릭되었을 때의 동작을 여기에 정의합니다.
 	FString Username = UserNameTextBox->GetText().ToString();
 	FString Password = PasswordTextBox->GetText().ToString();
 
@@ -99,7 +98,6 @@ void USignUpOverlay::OnSignUpButtonClicked()
 
 void USignUpOverlay::OnBackButtonClicked()
 {
-	// 뒤로가기 버튼이 클릭되었을 때의 동작을 여기에 정의합니다.
 	RemoveFromParent();
 }
 

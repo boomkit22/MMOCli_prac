@@ -27,8 +27,6 @@ class MMO_API UMMOGameInstance : public UGameInstance
 public:
 	virtual void Init() override;
 	virtual void Shutdown() override;
-	virtual void PostInitProperties() override;
-	//virtual void BeginDestroy() override;
 
 public:
 	bool ConnectGameServer();

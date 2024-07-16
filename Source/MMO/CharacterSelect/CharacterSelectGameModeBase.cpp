@@ -14,13 +14,13 @@ void ACharacterSelectGameModeBase::BeginPlay()
 
 void ACharacterSelectGameModeBase::SetFixedCamera()
 {
-    // 모든 카메라 액터를 찾습니다.
+    // 모든 카메라 액터를 찾기?
     TArray<AActor*> FoundActors;
     UGameplayStatics::GetAllActorsOfClass(UMMOGameInstance::GetMMOWorld(), ACharacterSelectCamera::StaticClass(), FoundActors);
 
     if (FoundActors.Num() > 0)
     {
-        // 첫 번째 카메라 액터를 고정된 카메라로 사용합니다.
+        // 흠 이거 그냥 0 하면 무조건 되는건가?
         ACharacterSelectCamera* FixedCameraActor = Cast<ACharacterSelectCamera>(FoundActors[0]);
         if (FixedCameraActor)
         {

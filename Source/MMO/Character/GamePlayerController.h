@@ -23,9 +23,6 @@ public:
 	AGameCharacter* SpawnMyCharacter(FVector SpawnLocation, PlayerInfo playerInfo, FRotator SpawnRotation);
 
 public:
-	// YourCharacterClass 변수를 TSubclassOf를 사용하여 선언
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character")
 	TSubclassOf<AActor> GameCharacterClass;
-	
-
 };

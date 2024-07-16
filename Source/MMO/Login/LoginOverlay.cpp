@@ -35,7 +35,7 @@ FReply ULoginOverlay::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEve
     if (InKeyEvent.GetKey() == EKeys::Enter)
     {
         // Enter 키가 눌렸을 때의 처리
-        OnLoginButtonClicked(); // 예시로 버튼 클릭 함수 호출
+        OnLoginButtonClicked();
         return FReply::Handled();
     }
 
