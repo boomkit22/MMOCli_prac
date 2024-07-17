@@ -29,9 +29,7 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	UCameraComponent* ViewCamera;
 
-protected:
-	UPROPERTY(VisibleAnywhere, Category = "Collision")
-	class UCapsuleComponent* DamageCapsule;
+
 
 protected:
 	class APlayerController* PlayerController;

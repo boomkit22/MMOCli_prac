@@ -26,6 +26,10 @@ public:
 	virtual void InitCharAttributeComponent(int32 Health, FString CharName, int32 Level) override;
 
 protected:
+protected:
+	UPROPERTY(VisibleAnywhere, Category = "Collision")
+	class UCapsuleComponent* DamageCapsule;
+
 	virtual void GetHit(int32 damage) override;
 
 

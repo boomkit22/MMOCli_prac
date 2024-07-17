@@ -5,6 +5,7 @@
 #include "MMOComponent/CharAttributeComponent.h"
 #include "HUD/HUDRemoteCharacterComponent.h"
 #include "Type.h"
+#include "Components/CapsuleComponent.h"
 
 
 ARemoteGameCharacter::ARemoteGameCharacter()
@@ -15,6 +16,10 @@ ARemoteGameCharacter::ARemoteGameCharacter()
 
 	HUDRemoteCharacterComponent = CreateDefaultSubobject<UHUDRemoteCharacterComponent>(TEXT("HUDRemoteCharacterComponent"));
 	HUDRemoteCharacterComponent->SetupAttachment(RootComponent);
+
+	DamageCapsule = CreateDefaultSubobject<UCapsuleComponent>(TEXT("WeaponBox"));
+	DamageCapsule->SetupAttachment(GetRootComponent());
+	DamageCapsule->SetHiddenInGame(false);
 }
 
 void ARemoteGameCharacter::BeginPlay()

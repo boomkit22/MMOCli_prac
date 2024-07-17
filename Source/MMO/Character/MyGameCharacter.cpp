@@ -45,10 +45,8 @@ AMyGameCharacter::AMyGameCharacter()
 	// Create the camera and attach to boom
 	ViewCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom
 	ViewCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
-	DamageCapsule = CreateDefaultSubobject<UCapsuleComponent>(TEXT("WeaponBox"));
 
 
-	DamageCapsule->SetupAttachment(GetRootComponent());
 
 	// Ä¸½¶ ÄÄÆ÷³ÍÆ® ¼³Á¤ Æ÷Å»ÇÏ°í overlap
 	GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECR_Ignore);
