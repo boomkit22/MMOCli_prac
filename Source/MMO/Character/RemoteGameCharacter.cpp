@@ -34,6 +34,7 @@ void ARemoteGameCharacter::InitCharAttributeComponent(int32 Health, FString Char
 	{
 		UE_LOG(LogTemp, Error, TEXT("Set Monster HUD Component."));
 		HUDRemoteCharacterComponent->SetCharacterName(CharAttributeComponent->GetCharName());
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Remote Game Characater Init: %f"), CharAttributeComponent->GetHelathPercent()));
 		HUDRemoteCharacterComponent->SetHealthPercent(CharAttributeComponent->GetHelathPercent());
 		HUDRemoteCharacterComponent->SetCharacterLevel(CharAttributeComponent->GetLevel());
 	}

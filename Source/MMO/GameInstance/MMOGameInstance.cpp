@@ -304,10 +304,10 @@ void UMMOGameInstance::HandleSpawnOhterCharacter(CPacket* packet)
 		AGameCharacter* SpawnedCharacter = Cast<AGameCharacter>(GetMMOWorld()->SpawnActor<ARemoteGameCharacter>(RemoteGameCharacterClass, SpawnLocation, SpawnRoation, SpawnParams));
 		if (SpawnedCharacter)
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.5f, FColor::Red, TEXT("Handle spawn Ohter Character"));
+			GEngine->AddOnScreenDebugMessage(-1, 5.5f, FColor::Red, FString::Printf(TEXT("Handle spawn Ohter Character %d"), playerInfo.Hp));
 			SpawnedCharacter->Initialize(static_cast<ECharacterClassType>(playerInfo.Class));
 			SpawnedCharacter->SetPlayerID(PlayerID);
-			SpawnedCharacter->InitCharAttributeComponent(100, playerInfo.NickName, playerInfo.Level);
+			SpawnedCharacter->InitCharAttributeComponent(playerInfo.Hp, playerInfo.NickName, playerInfo.Level);
 			CharacterMap.Add(PlayerID, SpawnedCharacter);
 		}
 		else

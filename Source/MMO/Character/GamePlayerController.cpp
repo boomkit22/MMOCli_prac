@@ -39,7 +39,7 @@ AGameCharacter* AGamePlayerController::SpawnMyCharacter(FVector spawnLocation, P
 
                 GameCharacter->Initialize(static_cast<ECharacterClassType>(playerInfo.Class));
                 GameCharacter->SetPlayerID(playerInfo.PlayerID);
-				GameCharacter->InitCharAttributeComponent(100, name, level);
+				GameCharacter->InitCharAttributeComponent(playerInfo.Hp, name, level);
                 
                 AMMOHUD* MMOHUD = Cast<AMMOHUD>(GetHUD());
                 if (MMOHUD)
@@ -47,7 +47,7 @@ AGameCharacter* AGamePlayerController::SpawnMyCharacter(FVector spawnLocation, P
                     UMMOOverlay* MMOOverlay = MMOHUD->GetMMOOverlay();
                     if (MMOOverlay)
                     {
-                        MMOOverlay->SetHealthBarPercent(1);
+                        MMOOverlay->SetHealthBarPercent(playerInfo.Hp / 100.f);
                         MMOOverlay->SetStaminaBarPercent(1);
                         MMOOverlay->SetExperienceBarPercent(0);
                         MMOOverlay->SetLevelTextBlock(level);
