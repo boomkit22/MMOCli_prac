@@ -35,7 +35,7 @@ void UCharAttributeComponent::TickComponent(float DeltaTime, ELevelTick TickType
 void UCharAttributeComponent::Init(int32 health, FString charName, int32 level)
 {
 	this->Health = health;
-	this->MaxHealth = health;
+	this->MaxHealth = 100;
 	this->CharName = charName;
 	this->Level = level;
 }
