@@ -34,7 +34,7 @@ AMyGameCharacter::AMyGameCharacter()
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(RootComponent);
 	CameraBoom->SetUsingAbsoluteRotation(true); // Don't want arm to rotate when character does
-	CameraBoom->TargetArmLength = 800.f;
+	CameraBoom->TargetArmLength = 3000.f;
 	CameraBoom->SetRelativeRotation(FRotator(-60.f, 0.f, 0.f));
 	CameraBoom->bDoCollisionTest = false; // Don't want to pull camera in when it collides with level
 
@@ -73,6 +73,26 @@ void AMyGameCharacter::BeginPlay()
 		{
 			MMOOverlay = MMOHUD->GetMMOOverlay();
 		}
+	}
+
+	UWorld* World = UMMOGameInstance::GetMMOWorld();
+	FVector Start;
+	FVector End;
+
+	// 가로선 그리기
+	for (float y = 0; y <= 40000; y += 800)
+	{
+		Start = FVector(0, y, 2);
+		End = FVector(40000, y, 2);
+		DrawDebugLine(World, Start, End, FColor::Green, true, -1, 0, 7.0f);
+	}
+
+	// 세로선 그리기
+	for (float x = 0; x <= 40000; x += 800)
+	{
+		Start = FVector(x, 0, 2);
+		End = FVector(x, 40000, 2);
+		DrawDebugLine(World, Start, End, FColor::Green, true, -1, 0, 7.0f);
 	}
 }
 
