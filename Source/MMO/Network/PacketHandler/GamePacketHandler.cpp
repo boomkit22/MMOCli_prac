@@ -18,6 +18,8 @@ void GamePacketHandler::HandlePacket(CPacket* packet)
 
 	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Handle Packet Type : %d"), packetType));
 
+	UE_LOG(LogTemp, Warning, TEXT("Handle Packet Type : %d"), packetType);
+
 	switch (packetType)
 	{
 	case PACKET_SC_GAME_RES_LOGIN:
@@ -133,6 +135,12 @@ void GamePacketHandler::HandlePacket(CPacket* packet)
 	case PACKET_SC_GAME_DESPAWN_OTHER_CHARACTER:
 	{
 		GameInstance->HandleDespawnOtherCharacter(packet);
+	}
+	break;
+
+	case PACKET_SC_GAME_DESPAWN_MONSTER:
+	{
+		GameInstance->HandleDespawnMonster(packet);
 	}
 	break;
 

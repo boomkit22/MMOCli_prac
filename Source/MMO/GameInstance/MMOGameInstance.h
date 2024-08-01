@@ -64,7 +64,7 @@ public:
 	void HandleMonsterStop(CPacket* packet);
 	void HandleCharacterDeath(CPacket* packet);
 	void HandleMonsterDeath(CPacket* packet);
-	
+	void HandleDespawnMonster(CPacket* packet);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character")
 	TSubclassOf<AActor> GameCharacterClass;

@@ -337,7 +337,6 @@ void UMMOGameInstance::HandleCharacterMove(CPacket* packet)
 	FRotator StartRotation;
 	*packet >> characterNo >> destination >> StartRotation ;
 
-	UE_LOG(LogTemp, Warning, TEXT("HandleCharacterMove %lld"), characterNo);
 
 	auto character = CharacterMap.Find(characterNo);
 	if (character)
@@ -666,7 +665,23 @@ void UMMOGameInstance::HandleMonsterDeath(CPacket* packet)
 	{
 		(*Monster)->Death();
 	}
-}	
+}
+void UMMOGameInstance::HandleDespawnMonster(CPacket* packet)
+{
+	// TODO: 이거 최적화 하려면 Montser invisible하게 셋팅하면되는데
+	// 그러면 몬스터는 계속 늘어나나? 언제 초기화해야하나
+	// 필드가변경될때만 초기화? 아니면 일정갯수?
+	int64 MonsterID;
+	*packet >> MonsterID;
+
+	auto Monster = MonsterMap.Find(MonsterID);
+	if (Monster && *Monster)
+	{
+		(*Monster)->Destroy();
+		MonsterMap.Remove(MonsterID);
+	}
+}
+
 
 
 
