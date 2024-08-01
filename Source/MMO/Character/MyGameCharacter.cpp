@@ -34,7 +34,7 @@ AMyGameCharacter::AMyGameCharacter()
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(RootComponent);
 	CameraBoom->SetUsingAbsoluteRotation(true); // Don't want arm to rotate when character does
-	CameraBoom->TargetArmLength = 3000.f;
+	CameraBoom->TargetArmLength = 2400.f; // original 800
 	CameraBoom->SetRelativeRotation(FRotator(-60.f, 0.f, 0.f));
 	CameraBoom->bDoCollisionTest = false; // Don't want to pull camera in when it collides with level
 
@@ -82,17 +82,17 @@ void AMyGameCharacter::BeginPlay()
 	// 가로선 그리기
 	for (float y = 0; y <= 40000; y += 800)
 	{
-		Start = FVector(0, y, 2);
-		End = FVector(40000, y, 2);
-		DrawDebugLine(World, Start, End, FColor::Green, true, -1, 0, 7.0f);
+		Start = FVector(0, y, 5);
+		End = FVector(40000, y, 5);
+		DrawDebugLine(World, Start, End, FColor::Green, true, -1, 0, 5.0f);
 	}
 
 	// 세로선 그리기
 	for (float x = 0; x <= 40000; x += 800)
 	{
-		Start = FVector(x, 0, 2);
-		End = FVector(x, 40000, 2);
-		DrawDebugLine(World, Start, End, FColor::Green, true, -1, 0, 7.0f);
+		Start = FVector(x, 0, 5);
+		End = FVector(x, 40000, 5);
+		DrawDebugLine(World, Start, End, FColor::Green, true, -1, 0, 5.0f);
 	}
 }
 
