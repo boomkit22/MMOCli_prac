@@ -27,6 +27,7 @@ class MMO_API UMMOGameInstance : public UGameInstance
 public:
 	virtual void Init() override;
 	virtual void Shutdown() override;
+	virtual void OnStart() override;
 
 public:
 	bool ConnectGameServer();
@@ -118,13 +119,5 @@ private:
 	UPROPERTY()
 	TMap<int64, class AMonster*> MonsterMap;
 
-private:
-	// 장애물 생성 및 맵 저장
-	TArray<FString> Maps = { TEXT("LobbyMap"), TEXT("GuardianMap"), TEXT("SpiderMap") };
-	void ProcessMaps();
-	TArray<TArray<uint8>> ObstacleMaps;
-	const int32 MapWidth = 12000;
-	const int32 MapHeight = 12000;
-	void GenerateObstacleMapData(UWorld* World);
-	void SaveObstacleMapsToFile(const FString& FileName);
+
 };

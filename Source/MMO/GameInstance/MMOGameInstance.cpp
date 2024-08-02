@@ -25,7 +25,6 @@
 #include "CharacterSelect/CharacterSelectHUD.h"
 #include "CharacterSelect/CharacterSelectOverlay.h"
 #include "Monsters/Monster.h"
-#include "Serialization/BufferArchive.h"
 
 using namespace std;
 
@@ -35,20 +34,7 @@ void UMMOGameInstance::Init()
 {
 	Super::Init();
 
-	GEngine->AddOnScreenDebugMessage(-1, 5.5f, FColor::Red, TEXT("ProcessMapStart"));
-	UWorld* World = GetWorld();
-	if (!World)
-	{
-		UE_LOG(LogTemp, Error, TEXT("World is null"))
-	}
-	FVector Start{ 0,0,1000 };
-	FVector End{ 0,0,0 };
-	DrawDebugLine(World, Start, End, FColor::Green, true, -1, 0, 5.f);
-	DrawDebugSphere(World, FVector(0, 0, 0), 100, 10, FColor::Red, true, -1, 0, 5.f);
-	DrawDebugSphere(World, FVector(6000, 6000, 100), 100, 10, FColor::Red, true, -1, 0, 5.f);
-
-	ProcessMaps();
-	GEngine->AddOnScreenDebugMessage(-1, 5.5f, FColor::Red, TEXT("ProcessMapEnd"));
+	
 	//UNetworkGameInstanceSubsystem* NetworkSubsystem = GetSubsystem<UNetworkGameInstanceSubsystem>();
 
 	//if (NetworkSubsystem)
@@ -98,6 +84,25 @@ void UMMOGameInstance::Shutdown()
 		_ChattingServerSession->Disconnect();
 		_ChattingServerSession.Reset();
 	}
+}
+
+void UMMOGameInstance::OnStart()
+{
+	Super::OnStart();
+	/*GEngine->AddOnScreenDebugMessage(-1, 5.5f, FColor::Red, TEXT("ProcessMapStart"));
+	UWorld* World = GetWorld();
+	if (!World)
+	{
+		UE_LOG(LogTemp, Error, TEXT("World is null"))
+	}
+	FVector Start{ 0,0,1000 };
+	FVector End{ 0,0,0 };
+	DrawDebugLine(World, Start, End, FColor::Green, true, -1, 0, 5.f);
+	DrawDebugSphere(World, FVector(0, 0, 0), 100, 10, FColor::Red, true, -1, 0, 5.f);
+	DrawDebugSphere(World, FVector(0, 0, 100), 100, 10, FColor::Red, true, -1, 0, 5.f);*/
+
+	//ProcessMaps();
+	GEngine->AddOnScreenDebugMessage(-1, 5.5f, FColor::Red, TEXT("ProcessMapEnd"));
 }
 
 
@@ -834,78 +839,5 @@ void UMMOGameInstance::OnLevelLoaded(UWorld* World)
 	UGameplayStatics::LoadStreamLevelBySoftObjectPtr(World, LoadingDrill->DrillSublevel, true, false, Info);*/
 }
 
-void UMMOGameInstance::ProcessMaps()
-{
-	//for (const FString& MapName : Maps)
-	//{
-	FString MapName = TEXT("LobbyMap");
-		GEngine->AddOnScreenDebugMessage(-1, 5.5f, FColor::Red, MapName);
-		//맵 로딩 하고
-		//UGameplayStatics::OpenLevel(GetInstance(), FName(*MapName), false);
-		UWorld* World = GetMMOWorld();
-		if (World)
-		{
-			//맵 데이터 생성
-			GenerateObstacleMapData(World);
 
-			//파일로 저장
-			FString FileName = MapName + TEXT(".dat");
-			SaveObstacleMapsToFile(FileName);
-		}
-		else {
-			GEngine->AddOnScreenDebugMessage(-1, 5.5f, FColor::Red, TEXT("World is null"));
-		}
-		
-	//}
-}
-
-
-void UMMOGameInstance::GenerateObstacleMapData(UWorld* World)
-{
-	ObstacleMaps.Empty(); // 
-
-	// 2차원 배열 초기화
-	ObstacleMaps.SetNum(MapHeight);
-	for (int32 Y = 0; Y < MapHeight; ++Y)
-	{
-		ObstacleMaps[Y].SetNum(MapWidth);
-		for (int32 X = 0; X < MapWidth; ++X)
-		{
-		
-			FVector Start = FVector(X, Y, 2000); // 위에서
-			FVector End = FVector(X, Y, 0);  // 아래로
-
-			FHitResult HitResult;
-			
-			bool bHit = World->LineTraceSingleByChannel(HitResult, Start, End, ECC_GameTraceChannel6); // 6이 Obstacle 채널
-			DrawDebugLine(World, Start, End, FColor::Green, true);
-
-			// 장애물 있는 곳 1로
-			if (bHit)
-			{
-				GEngine->AddOnScreenDebugMessage(-1, 5.5f, FColor::Red, TEXT("Obstacle"));
-				ObstacleMaps[Y][X] = 1;
-			}
-		}
-	}
-}
-
-void UMMOGameInstance::SaveObstacleMapsToFile(const FString& FileName)
-{
-	FBufferArchive ToBinary;
-
-	for (int32 Y = 0; Y < MapHeight; ++Y)
-	{
-		ToBinary << ObstacleMaps[Y];
-	}
-
-	FString FilePath = FPaths::ProjectDir() / FileName;
-
-	if (FFileHelper::SaveArrayToFile(ToBinary, *FilePath))
-	{
-		ToBinary.FlushCache();
-		ToBinary.Empty();
-	}
-
-}
 
