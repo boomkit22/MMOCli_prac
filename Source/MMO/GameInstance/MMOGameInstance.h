@@ -123,8 +123,8 @@ private:
 	TArray<FString> Maps = { TEXT("LobbyMap"), TEXT("GuardianMap"), TEXT("SpiderMap") };
 	void ProcessMaps();
 	TArray<TArray<uint8>> ObstacleMaps;
-	const int32 MapWidth = 40000;
-	const int32 MapHeight = 40000;
+	const int32 MapWidth = 12000;
+	const int32 MapHeight = 12000;
 	void GenerateObstacleMapData(UWorld* World);
 	void SaveObstacleMapsToFile(const FString& FileName);
 };
