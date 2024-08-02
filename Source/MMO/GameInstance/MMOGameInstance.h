@@ -117,4 +117,14 @@ private:
 	TMap<int64, class AGameCharacter*> CharacterMap;
 	UPROPERTY()
 	TMap<int64, class AMonster*> MonsterMap;
+
+private:
+	// 장애물 생성 및 맵 저장
+	TArray<FString> Maps = { TEXT("LobbyMap"), TEXT("GuardianMap"), TEXT("SpiderMap") };
+	void ProcessMaps();
+	TArray<TArray<uint8>> ObstacleMaps;
+	const int32 MapWidth = 40000;
+	const int32 MapHeight = 40000;
+	void GenerateObstacleMapData(UWorld* World);
+	void SaveObstacleMapsToFile(const FString& FileName);
 };

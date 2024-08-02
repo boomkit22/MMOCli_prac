@@ -25,6 +25,7 @@
 #include "CharacterSelect/CharacterSelectHUD.h"
 #include "CharacterSelect/CharacterSelectOverlay.h"
 #include "Monsters/Monster.h"
+#include "Serialization/BufferArchive.h"
 
 using namespace std;
 
@@ -34,30 +35,33 @@ void UMMOGameInstance::Init()
 {
 	Super::Init();
 
-	UNetworkGameInstanceSubsystem* NetworkSubsystem = GetSubsystem<UNetworkGameInstanceSubsystem>();
+	GEngine->AddOnScreenDebugMessage(-1, 5.5f, FColor::Red, TEXT("ProcessMapStart"));
+	ProcessMaps();
+	GEngine->AddOnScreenDebugMessage(-1, 5.5f, FColor::Red, TEXT("ProcessMapEnd"));
+	//UNetworkGameInstanceSubsystem* NetworkSubsystem = GetSubsystem<UNetworkGameInstanceSubsystem>();
 
-	if (NetworkSubsystem)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.5f, FColor::Red, TEXT("NetworkSubsystem is valid"));
-	}
-	else {
-		GEngine->AddOnScreenDebugMessage(-1, 5.5f, FColor::Red, TEXT("NetworkSubsystem is unvalid"));
-	}
-	
-	//TODO: session 생성
-	_GameServerSession = MakeShared<GameServerSession>();
-	_ChattingServerSession = MakeShared<ChattingServerSession>();
+	//if (NetworkSubsystem)
+	//{
+	//	GEngine->AddOnScreenDebugMessage(-1, 5.5f, FColor::Red, TEXT("NetworkSubsystem is valid"));
+	//}
+	//else {
+	//	GEngine->AddOnScreenDebugMessage(-1, 5.5f, FColor::Red, TEXT("NetworkSubsystem is unvalid"));
+	//}
+	//
+	////TODO: session 생성
+	//_GameServerSession = MakeShared<GameServerSession>();
+	//_ChattingServerSession = MakeShared<ChattingServerSession>();
 
-	TickDelegateHandle = FTSTicker::GetCoreTicker().AddTicker(FTickerDelegate::CreateUObject(this, &UMMOGameInstance::Tick));
+	//TickDelegateHandle = FTSTicker::GetCoreTicker().AddTicker(FTickerDelegate::CreateUObject(this, &UMMOGameInstance::Tick));
 
-	FWorldDelegates::OnPostWorldCreation;
+	//FWorldDelegates::OnPostWorldCreation;
 
-	//FWorldDelegates::OnPostWorldInitialization.AddUObject(this, &UMMOGameInstance::OnLevelLoaded);
-	FWorldDelegates::OnPostWorldCreation.AddUObject(this, &UMMOGameInstance::OnLevelLoaded);
-	//FWorldDelegates::
+	////FWorldDelegates::OnPostWorldInitialization.AddUObject(this, &UMMOGameInstance::OnLevelLoaded);
+	//FWorldDelegates::OnPostWorldCreation.AddUObject(this, &UMMOGameInstance::OnLevelLoaded);
+	////FWorldDelegates::
 
-	ConnectGameServer();
-	ConnectChattingServer();
+	//ConnectGameServer();
+	//ConnectChattingServer();
 }
 
 
@@ -817,5 +821,67 @@ void UMMOGameInstance::OnLevelLoaded(UWorld* World)
 	//GEngine->AddOnScreenDebugMessage(-1, 5.5f, FColor::Blue, TEXT("OnWorldInit!"));
 	/*FLatentActionInfo Info;
 	UGameplayStatics::LoadStreamLevelBySoftObjectPtr(World, LoadingDrill->DrillSublevel, true, false, Info);*/
+}
+
+void UMMOGameInstance::ProcessMaps()
+{
+	for (const FString& MapName : Maps)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.5f, FColor::Red, MapName);
+		//맵 로딩 하고
+		UGameplayStatics::OpenLevel(GetMMOWorld(), FName(*MapName));
+		GenerateObstacleMapData(GetMMOWorld());
+
+		//파일로 저장
+		FString FileName = MapName + TEXT(".dat");
+		SaveObstacleMapsToFile(FileName);
+	}
+}
+
+
+void UMMOGameInstance::GenerateObstacleMapData(UWorld* World)
+{
+	ObstacleMaps.Empty(); // 
+
+	// 2차원 배열 초기화
+	ObstacleMaps.SetNum(MapHeight);
+	for (int32 Y = 0; Y < MapHeight; ++Y)
+	{
+		ObstacleMaps[Y].SetNum(MapWidth);
+		for (int32 X = 0; X < MapWidth; ++X)
+		{
+		
+			FVector Start = FVector(X, Y, 1000); // 위에서
+			FVector End = FVector(X, Y, -1000);  // 아래로
+
+			FHitResult HitResult;
+			bool bHit = World->LineTraceSingleByChannel(HitResult, Start, End, ECC_GameTraceChannel6); // 6이 Obstacle 채널
+
+			// 장애물 있는 곳 1로
+			if (bHit)
+			{
+				ObstacleMaps[Y][X] = 1;
+			}
+		}
+	}
+}
+
+void UMMOGameInstance::SaveObstacleMapsToFile(const FString& FileName)
+{
+	FBufferArchive ToBinary;
+
+	for (int32 Y = 0; Y < MapHeight; ++Y)
+	{
+		ToBinary << ObstacleMaps[Y];
+	}
+
+	FString FilePath = FPaths::ProjectDir() / FileName;
+
+	if (FFileHelper::SaveArrayToFile(ToBinary, *FilePath))
+	{
+		ToBinary.FlushCache();
+		ToBinary.Empty();
+	}
+
 }
 
