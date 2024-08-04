@@ -236,11 +236,11 @@ void AMyGameCharacter::LeftMouseClick()
 	//FRotator StartRotation = GetActorRotation();
 
 	CPacket* findPathPacket = CPacket::Alloc();
-	FVector Destination = Hit.Location;
-	GamePacketMaker::MP_CS_REQ_FIND_PATH(findPathPacket, Destination);
+	FVector Dest = Hit.Location;
+	GamePacketMaker::MP_CS_REQ_FIND_PATH(findPathPacket, Dest);
 	UMMOGameInstance::GetInstance()->SendPacket_GameServer(findPathPacket);
-
 	/*UMMOGameInstance::GetInstance()->SendPacket_GameServer(MoveReqPacket);*/
+
 }
 
 void AMyGameCharacter::ToLobby()

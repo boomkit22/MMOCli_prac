@@ -21,7 +21,7 @@ void AMMOGameModeBase::BeginPlay()
 	
 
 	GEngine->AddOnScreenDebugMessage(-1, 5.5f, FColor::Red, TEXT("ProcessMapStart"));
-	ProcessMap();
+	//ProcessMap();
 	GEngine->AddOnScreenDebugMessage(-1, 5.5f, FColor::Red, TEXT("ProcessMapEnd"));
 }
 

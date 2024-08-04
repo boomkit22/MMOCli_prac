@@ -36,30 +36,30 @@ void UMMOGameInstance::Init()
 	Super::Init();
 
 	
-	//UNetworkGameInstanceSubsystem* NetworkSubsystem = GetSubsystem<UNetworkGameInstanceSubsystem>();
+	UNetworkGameInstanceSubsystem* NetworkSubsystem = GetSubsystem<UNetworkGameInstanceSubsystem>();
 
-	//if (NetworkSubsystem)
-	//{
-	//	GEngine->AddOnScreenDebugMessage(-1, 5.5f, FColor::Red, TEXT("NetworkSubsystem is valid"));
-	//}
-	//else {
-	//	GEngine->AddOnScreenDebugMessage(-1, 5.5f, FColor::Red, TEXT("NetworkSubsystem is unvalid"));
-	//}
-	//
-	////TODO: session 持失
-	//_GameServerSession = MakeShared<GameServerSession>();
-	//_ChattingServerSession = MakeShared<ChattingServerSession>();
+	if (NetworkSubsystem)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.5f, FColor::Red, TEXT("NetworkSubsystem is valid"));
+	}
+	else {
+		GEngine->AddOnScreenDebugMessage(-1, 5.5f, FColor::Red, TEXT("NetworkSubsystem is unvalid"));
+	}
+	
+	//TODO: session 持失
+	_GameServerSession = MakeShared<GameServerSession>();
+	_ChattingServerSession = MakeShared<ChattingServerSession>();
 
-	//TickDelegateHandle = FTSTicker::GetCoreTicker().AddTicker(FTickerDelegate::CreateUObject(this, &UMMOGameInstance::Tick));
+	TickDelegateHandle = FTSTicker::GetCoreTicker().AddTicker(FTickerDelegate::CreateUObject(this, &UMMOGameInstance::Tick));
 
-	//FWorldDelegates::OnPostWorldCreation;
+	FWorldDelegates::OnPostWorldCreation;
 
-	////FWorldDelegates::OnPostWorldInitialization.AddUObject(this, &UMMOGameInstance::OnLevelLoaded);
-	//FWorldDelegates::OnPostWorldCreation.AddUObject(this, &UMMOGameInstance::OnLevelLoaded);
-	////FWorldDelegates::
+	//FWorldDelegates::OnPostWorldInitialization.AddUObject(this, &UMMOGameInstance::OnLevelLoaded);
+	FWorldDelegates::OnPostWorldCreation.AddUObject(this, &UMMOGameInstance::OnLevelLoaded);
+	//FWorldDelegates::
 
-	//ConnectGameServer();
-	//ConnectChattingServer();
+	ConnectGameServer();
+	ConnectChattingServer();
 }
 
 
