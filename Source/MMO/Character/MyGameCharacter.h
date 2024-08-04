@@ -13,6 +13,7 @@ UCLASS()
 class MMO_API AMyGameCharacter : public AGameCharacter
 {
 	GENERATED_BODY()
+	friend class UMMOGameInstance;
 
 public:
 	AMyGameCharacter();
@@ -46,11 +47,11 @@ private:
 	void ResetAttackCoolTime();
 
 private:
+	virtual void MoveToDestination(float DeltaTime) override;
 	void LeftMouseClick();
 	void Attack();
 	void ToLobby();
 	void RequestFieldMove(uint16 fieldIds);
-
 
 private:
 	UFUNCTION()
@@ -72,4 +73,7 @@ public:
 	void OnPortalOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 	virtual void GetHit(int32 damage) override;
+
+	uint16 PathSize = 0;
+	uint16 CurrentPathIndex = 0;
 };

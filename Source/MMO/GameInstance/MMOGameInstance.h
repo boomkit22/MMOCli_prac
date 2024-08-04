@@ -16,6 +16,7 @@ class GameServerSession;
 class LoginServerSession;
 class ChattingServerSession;
 class CPacket;
+class AMyGameCharacter;
 
 extern bool bLoading;
 
@@ -66,6 +67,7 @@ public:
 	void HandleCharacterDeath(CPacket* packet);
 	void HandleMonsterDeath(CPacket* packet);
 	void HandleDespawnMonster(CPacket* packet);
+	void HandleFindPath(CPacket* packet);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character")
 	TSubclassOf<AActor> GameCharacterClass;
@@ -119,5 +121,5 @@ private:
 	UPROPERTY()
 	TMap<int64, class AMonster*> MonsterMap;
 
-
+	AMyGameCharacter* MyCharacter = nullptr;
 };

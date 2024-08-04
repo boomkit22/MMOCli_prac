@@ -89,7 +89,7 @@ public:
 	FVector Destination;
 	
 	EMovingState MovingState = EMovingState::EMS_Idle;
-	void MoveToDestination(float DeltaTime);
+	virtual void MoveToDestination(float DeltaTime);
 	void StopMove();
 	void Death();
 	void SetDestination(FVector Dest);

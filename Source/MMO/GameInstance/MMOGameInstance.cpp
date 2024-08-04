@@ -25,6 +25,7 @@
 #include "CharacterSelect/CharacterSelectHUD.h"
 #include "CharacterSelect/CharacterSelectOverlay.h"
 #include "Monsters/Monster.h"
+#include "Character/MyGameCharacter.h"
 
 using namespace std;
 
@@ -292,6 +293,7 @@ void UMMOGameInstance::HandleSpawnMyCharacter(CPacket* packet)
 				AGameCharacter* GameCharacter = MyController->SpawnMyCharacter(SpawnLocation, playerInfo, SpawnRotation);
 				if (GameCharacter)
 				{
+					MyCharacter = Cast<AMyGameCharacter>(GameCharacter);
 					CharacterMap.Add(playerInfo.PlayerID, GameCharacter);
 				}else
 				{
@@ -701,6 +703,17 @@ void UMMOGameInstance::HandleDespawnMonster(CPacket* packet)
 		MonsterMap.Remove(MonsterID);
 	}
 }
+
+void UMMOGameInstance::HandleFindPath(CPacket* packet)
+{
+	uint16 PathCount;
+	*packet >> PathCount;
+
+	MyCharacter->PathSize = PathCount;
+	MyCharacter->CurrentPathIndex = 0;
+}
+
+//패킷이 두번왔다갔다하는건 좀 별로지않나?
 
 
 

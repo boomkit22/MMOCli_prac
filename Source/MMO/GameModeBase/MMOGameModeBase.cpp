@@ -63,17 +63,25 @@ void AMMOGameModeBase::GenerateObstacleMapData(UWorld* World)
 		{
 
 			FVector Start = FVector(X, Y, 2000); // 위에서
-			FVector End = FVector(X, Y, 0);  // 아래로
+			FVector End = FVector(X, Y, 5);  // 아래로
 
 			FHitResult HitResult;
 
 			bool bHit = World->LineTraceSingleByChannel(HitResult, Start, End, ECC_GameTraceChannel6); // 6이 Obstacle 채널
+			//DrawDebugLine(World, Start, End, bHit ? FColor::Green : FColor::Red, true);
 			// 장애물 있는 곳 1로
 			if (bHit)
 			{
-				//DrawDebugLine(World, Start, End, FColor::Green, true);
+				/*FString ActorName = HitResult.GetActor()->GetName();
+				UE_LOG(LogTemp, Warning, TEXT("Hit : %d %d %s"), X, Y, *ActorName);*/
 				//GEngine->AddOnScreenDebugMessage(-1, 5.5f, FColor::Red, TEXT("Obstacle"));
 				ObstacleMaps[Y][X] = 1;
+			}
+			else
+			{
+				//DrawDebugLine(World, Start, End, FColor::Red, true);
+				//GEngine->AddOnScreenDebugMessage(-1, 5.5f, FColor::Red, TEXT("No Obstacle"));
+				ObstacleMaps[Y][X] = 0;
 			}
 		}
 	}

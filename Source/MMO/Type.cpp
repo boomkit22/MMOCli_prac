@@ -25,6 +25,18 @@ CPacket& operator>>(CPacket& packet, FVector& vec)
 	return packet;
 }
 
+CPacket& operator>>(CPacket& packet, Pos& pos)
+{
+	packet >> pos.y >> pos.x;
+	return packet;
+}
+
+CPacket& operator<<(CPacket& packet, Pos& pos)
+{
+	packet << pos.y << pos.x;
+	return packet;
+}
+
 CPacket& operator<<(CPacket& packet, PlayerInfo& info)
 {
 	packet.PutData((char*)info.NickName, sizeof(TCHAR) * NICKNAME_LEN);
