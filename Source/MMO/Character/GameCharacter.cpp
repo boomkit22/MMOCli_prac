@@ -243,7 +243,7 @@ void AGameCharacter::SetPath(FVector StartPos, uint16 startIndex, std::vector<Po
 	float Distance = FVector::Dist(CurrentLocation, StartPos);
 
 	// 일정 수치 이상 차이가 나면 , sync
-	float Threshold = 100.0f;
+	float Threshold = 500.0f;
 	if (Distance > Threshold)
 	{
 		SetActorLocation(StartPos);
