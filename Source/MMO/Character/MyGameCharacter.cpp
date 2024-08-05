@@ -155,67 +155,67 @@ void AMyGameCharacter::ResetAttackCoolTime()
 	bIsCool = false;
 }
 
-void AMyGameCharacter::MoveToDestination(float DeltaTime)
-{
-	if (MovingState == EMovingState::EMS_Dead)
-	{
-		return;
-	}
-
-	if (!Destination.IsZero())
-	{
-		MovingState = EMovingState::EMS_Move;
-		FVector CurrentLocation = GetActorLocation();
-		// Destination 및 CurrentLocation에서 Z값을 현재 액터의 Z 위치로 설정
-		FVector ModifiedDestination = FVector(Destination.X, Destination.Y, CurrentLocation.Z);
-		FVector Direction = (ModifiedDestination - CurrentLocation).GetSafeNormal();
-		float Distance = FVector::Dist(ModifiedDestination, CurrentLocation);
-
-		// 이동 속도 설정
-		float Speed = 300.0f; // 예: 300 유닛/초
-		float Step = Speed * DeltaTime; // 이번 프레임에서 이동할 거리
-
-		if (Distance > Step)
-		{
-			// 새 위치 계산
-			FVector NewLocation = CurrentLocation + Direction * Step;
-			SetActorLocation(NewLocation);
-
-			// 이동하는 방향으로 부드러운 회전 설정
-			FRotator CurrentRotation = GetActorRotation();
-
-			FRotator TargetRotation = Direction.Rotation();
-			//SetActorRotation(TargetRotation);
-			FRotator NewRotation = FMath::Lerp(CurrentRotation, TargetRotation, DeltaTime * 20.0f); // 회전 속도 조정 가능
-			SetActorRotation(NewRotation);
-		}
-		else
-		{
-			// 목적지에 매우 가까워졌을 때, 목적지에 도달
-			SetActorLocation(ModifiedDestination);
-			Destination = FVector::ZeroVector; // 도착 후 목적지 초기화
-			UE_LOG(LogTemp, Warning, TEXT("EMS_Idle"));
-
-			//목적지에 도달했으면 다음 목적지로 이동
-			if (CurrentPathIndex < PathSize - 1)
-			{
-				//0번 index는 서버에서 처음 처리했으니까 1부터시작하면됨
-				CurrentPathIndex++;
-				CPacket* MoveReqPacket = CPacket::Alloc();
-				GamePacketMaker::MP_CS_REQ_CHARACTER_MOVE(MoveReqPacket, CurrentPathIndex);
-				UMMOGameInstance::GetInstance()->SendPacket_GameServer(MoveReqPacket);
-
-			}
-			else
-			{
-				MovingState = EMovingState::EMS_Idle;
-			}
-		}
-	}
-	else {
-		MovingState = EMovingState::EMS_Idle;
-	}
-}
+//void AMyGameCharacter::MoveToDestination(float DeltaTime)
+//{
+//	if (MovingState == EMovingState::EMS_Dead)
+//	{
+//		return;
+//	}
+//
+//	if (!Destination.IsZero())
+//	{
+//		MovingState = EMovingState::EMS_Move;
+//		FVector CurrentLocation = GetActorLocation();
+//		// Destination 및 CurrentLocation에서 Z값을 현재 액터의 Z 위치로 설정
+//		FVector ModifiedDestination = FVector(Destination.X, Destination.Y, CurrentLocation.Z);
+//		FVector Direction = (ModifiedDestination - CurrentLocation).GetSafeNormal();
+//		float Distance = FVector::Dist(ModifiedDestination, CurrentLocation);
+//
+//		// 이동 속도 설정
+//		float Speed = 300.0f; // 예: 300 유닛/초
+//		float Step = Speed * DeltaTime; // 이번 프레임에서 이동할 거리
+//
+//		if (Distance > Step)
+//		{
+//			// 새 위치 계산
+//			FVector NewLocation = CurrentLocation + Direction * Step;
+//			SetActorLocation(NewLocation);
+//
+//			// 이동하는 방향으로 부드러운 회전 설정
+//			FRotator CurrentRotation = GetActorRotation();
+//
+//			FRotator TargetRotation = Direction.Rotation();
+//			//SetActorRotation(TargetRotation);
+//			FRotator NewRotation = FMath::Lerp(CurrentRotation, TargetRotation, DeltaTime * 20.0f); // 회전 속도 조정 가능
+//			SetActorRotation(NewRotation);
+//		}
+//		else
+//		{
+//			// 목적지에 매우 가까워졌을 때, 목적지에 도달
+//			SetActorLocation(ModifiedDestination);
+//			Destination = FVector::ZeroVector; // 도착 후 목적지 초기화
+//			UE_LOG(LogTemp, Warning, TEXT("EMS_Idle"));
+//
+//			//목적지에 도달했으면 다음 목적지로 이동
+//			if (CurrentPathIndex < PathSize - 1)
+//			{
+//				//0번 index는 서버에서 처음 처리했으니까 1부터시작하면됨
+//				CurrentPathIndex++;
+//				CPacket* MoveReqPacket = CPacket::Alloc();
+//				GamePacketMaker::MP_CS_REQ_CHARACTER_MOVE(MoveReqPacket, CurrentPathIndex);
+//				UMMOGameInstance::GetInstance()->SendPacket_GameServer(MoveReqPacket);
+//
+//			}
+//			else
+//			{
+//				MovingState = EMovingState::EMS_Idle;
+//			}
+//		}
+//	}
+//	else {
+//		MovingState = EMovingState::EMS_Idle;
+//	}
+//}
 
 void AMyGameCharacter::LeftMouseClick()
 {

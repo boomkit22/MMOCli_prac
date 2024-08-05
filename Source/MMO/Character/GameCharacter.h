@@ -6,8 +6,9 @@
 #include "GameFramework/Character.h"
 #include "Character/CharacterTypes.h"
 #include "Interface/HittableInterface.h"
-#include "GameCharacter.generated.h"
+#include <vector>
 
+#include "GameCharacter.generated.h"
 
 class USpringArmComponent;
 class UCameraComponent;
@@ -93,6 +94,7 @@ public:
 	void StopMove();
 	void Death();
 	void SetDestination(FVector Dest);
+	
 
 protected:
 	virtual void GetHit(int32 damage);
@@ -129,4 +131,11 @@ protected:
 protected:
 	//Act By Class
 	virtual void EquipWeapon();
+
+protected:
+	void SetPath(FVector StartPos, uint16 startIndex, std::vector<Pos>& path);
+	//uint16 StartIndex;
+	std::vector<Pos> Path;
+	uint16 PathIndex = 0;
+
 };

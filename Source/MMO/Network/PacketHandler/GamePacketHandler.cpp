@@ -47,11 +47,11 @@ void GamePacketHandler::HandlePacket(CPacket* packet)
 	}
 	break;
 
-	case PACKET_SC_GAME_RES_CHARACTER_MOVE:
-	{
-		GameInstance->HandleCharacterMove(packet);
-	}
-	break;
+	//case PACKET_SC_GAME_RES_CHARACTER_MOVE:
+	//{
+	//	GameInstance->HandleCharacterMove(packet);
+	//}
+	//break;
 
 	case PACKET_SC_GAME_RES_DAMAGE:
 	{

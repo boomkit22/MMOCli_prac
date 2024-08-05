@@ -343,8 +343,10 @@ enum PACKET_TYPE
 	//------------------------------------------------------------
 	// {
 	//		WORD		Type
-	//		uint16		PathCount
-	//		vector<Pos>	Paths
+	//	    FVector     CurrentPos
+	//		uint16		PathSize
+	//		uint16      startIndex
+	// 		vector<Pos> path
 	//	}
 	//------------------------------------------------------------
 	PACKET_SC_GAME_RES_FIND_PATH = 1033,

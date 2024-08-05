@@ -352,22 +352,22 @@ void UMMOGameInstance::HandleDespawnOtherCharacter(CPacket* packet)
 	}
 }
 
-void UMMOGameInstance::HandleCharacterMove(CPacket* packet)
-{
-	int64 characterNo;
-	FVector destination;
-	FRotator StartRotation;
-	*packet >> characterNo >> destination >> StartRotation ;
-
-
-	auto character = CharacterMap.Find(characterNo);
-	if (character)
-	{
-
-		(*character)->SetActorRotation(StartRotation);
-		(*character)->SetDestination(destination);
-	}
-}
+//void UMMOGameInstance::HandleCharacterMove(CPacket* packet)
+//{
+//	int64 characterNo;
+//	FVector destination;
+//	FRotator StartRotation;
+//	*packet >> characterNo >> destination >> StartRotation ;
+//
+//
+//	auto character = CharacterMap.Find(characterNo);
+//	if (character)
+//	{
+//
+//		(*character)->SetActorRotation(StartRotation);
+//		(*character)->SetDestination(destination);
+//	}
+//}
 
 void UMMOGameInstance::HandleDamage(CPacket* packet)
 {
@@ -706,11 +706,39 @@ void UMMOGameInstance::HandleDespawnMonster(CPacket* packet)
 
 void UMMOGameInstance::HandleFindPath(CPacket* packet)
 {
-	uint16 PathCount;
-	*packet >> PathCount;
+	int64 characterNo;
+	FVector CurrentLocation;
+	uint16 pathSize;
+	uint16 startIndex;
+	vector<Pos> path;
+	*packet >> characterNo >> CurrentLocation >> pathSize >> startIndex;
+	for (int i = 0; i < pathSize; i++)
+	{
+		Pos pos;
+		*packet >> pos;
+		path.push_back(pos);
+	}
+	/*uint16 PathCount;
+	*packet >> PathCount;*/
+	/*MyCharacter->PathSize = PathCount;
+	MyCharacter->CurrentPathIndex = 0;*/
 
-	MyCharacter->PathSize = PathCount;
-	MyCharacter->CurrentPathIndex = 0;
+	//int64 characterNo;
+	//FVector destination;
+	//FRotator StartRotation;
+	//*packet >> characterNo >> destination >> StartRotation;
+	auto character = CharacterMap.Find(characterNo);
+	if (character)
+	{
+		(*character)->SetPath(CurrentLocation, startIndex, path);
+		if (path.size() > 0)
+		{
+			FVector Destination{(double)path[0].x, (double)path[0].y, PlayerZValue};
+			(*character)->SetDestination(Destination);
+		}
+		/*(*character)->SetActorRotation(StartRotation);
+		(*character)->SetDestination(destination);*/
+	}
 }
 
 //패킷이 두번왔다갔다하는건 좀 별로지않나?

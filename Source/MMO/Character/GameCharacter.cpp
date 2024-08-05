@@ -135,8 +135,19 @@ void AGameCharacter::MoveToDestination(float DeltaTime)
 		{
 			// 목적지에 매우 가까워졌을 때, 목적지에 도달
 			SetActorLocation(ModifiedDestination);
-			Destination = FVector::ZeroVector; // 도착 후 목적지 초기화
+			//Destination = FVector::ZeroVector; // 도착 후 목적지 초기화
 			UE_LOG(LogTemp, Warning, TEXT("EMS_Idle"));
+
+			PathIndex++;
+			if (PathIndex < Path.size())
+			{
+				SetDestination(FVector(Path[PathIndex].x, Path[PathIndex].y, CurrentLocation.Z));
+			}
+			else
+			{
+				Destination = FVector::ZeroVector;
+				//MovingState = EMovingState::EMS_Idle;
+			}
 		}
 	}
 	else {
@@ -218,6 +229,25 @@ void AGameCharacter::EquipWeapon()
 			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("spawn weapon defualt")));
 
 			break;
+	}
+}
+
+void AGameCharacter::SetPath(FVector StartPos, uint16 startIndex, std::vector<Pos>& path)
+{
+	PathIndex = startIndex;
+	//StartIndex = startIndex;
+	Path = path;
+	//UE_LOG(LogTemp, Warning, TEXT("SetPath %d"), Path.size());
+
+	FVector CurrentLocation = GetActorLocation();
+	float Distance = FVector::Dist(CurrentLocation, StartPos);
+
+	// 일정 수치 이상 차이가 나면 , sync
+	float Threshold = 100.0f;
+	if (Distance > Threshold)
+	{
+		SetActorLocation(StartPos);
+		//UE_LOG(LogTemp, Warning, TEXT("Character moved to StartPos due to large distance: %f"), Distance);
 	}
 }
 

@@ -47,7 +47,7 @@ private:
 	void ResetAttackCoolTime();
 
 private:
-	virtual void MoveToDestination(float DeltaTime) override;
+	//virtual void MoveToDestination(float DeltaTime) override;
 	void LeftMouseClick();
 	void Attack();
 	void ToLobby();

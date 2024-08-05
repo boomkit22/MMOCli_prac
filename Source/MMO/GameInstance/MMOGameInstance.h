@@ -52,7 +52,7 @@ public:
 	void HandleSpawnMyCharacter(CPacket* packet);
 	void HandleSpawnOhterCharacter(CPacket* packet);
 	void HandleDespawnOtherCharacter(CPacket* packet);
-	void HandleCharacterMove(CPacket* packet);
+	//void HandleCharacterMove(CPacket* packet);
 	void HandleDamage(CPacket* packet);
 	void HandleCharacterSkill(CPacket* packet);
     void HandleMonsterSkill(CPacket* packet);
@@ -122,4 +122,6 @@ private:
 	TMap<int64, class AMonster*> MonsterMap;
 
 	AMyGameCharacter* MyCharacter = nullptr;
+
+	const double PlayerZValue = 95.2;
 };
