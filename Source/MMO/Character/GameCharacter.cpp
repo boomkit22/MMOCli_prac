@@ -257,3 +257,8 @@ void AGameCharacter::GetHit(int32 damage)
 
 	CharAttributeComponent->GetDamage(damage);
 }
+
+void AGameCharacter::SetLevel(uint16 level)
+{
+	CharAttributeComponent->SetLevel(level);
+}

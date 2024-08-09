@@ -7,6 +7,7 @@
 #include "Character/CharacterTypes.h"
 #include "Interface/HittableInterface.h"
 #include <vector>
+#include "Type.h"
 
 #include "GameCharacter.generated.h"
 
@@ -98,6 +99,7 @@ public:
 
 protected:
 	virtual void GetHit(int32 damage);
+	virtual void SetLevel(uint16 level);
 
 public:
 	virtual void InitCharAttributeComponent(int32 Health, FString CharName, int32 Level);

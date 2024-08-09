@@ -31,6 +31,7 @@ protected:
 	class UCapsuleComponent* DamageCapsule;
 
 	virtual void GetHit(int32 damage) override;
+	virtual void SetLevel(uint16 exp) override;
 
 
 

@@ -343,6 +343,7 @@ enum PACKET_TYPE
 	//------------------------------------------------------------
 	// {
 	//		WORD		Type
+	//		int64       CharacterId
 	//	    FVector     CurrentPos
 	//		uint16		PathSize
 	//		uint16      startIndex
@@ -350,6 +351,24 @@ enum PACKET_TYPE
 	//	}
 	//------------------------------------------------------------
 	PACKET_SC_GAME_RES_FIND_PATH = 1033,
+
+
+	//------------------------------------------------------------
+	// {
+	//		WORD		Type
+	//		uint16       Level
+	//		uint32       Exp
+	//	}
+	PACKET_SC_GAME_RES_EXP_CHANGE = 1034,
+
+	//------------------------------------------------------------
+	// {
+	//		WORD		Type
+	//		int64		CharacterNO
+	//		uint16		Level
+	//	}
+	//------------------------------------------------------------
+	PACKET_SC_GAME_RES_LEVEL_UP_OTHER_CHARACTER = 1035,
 
 
 	//------------------------------------------------------------

@@ -54,15 +54,23 @@ void ARemoteGameCharacter::GetHit(int32 damage)
 
 	/*HUDCharacterComponent->SetHealthPercent(MonsAttributeComponent->GetHelathPercent());
 	*/
+	Super::GetHit(damage);
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Remote Game Characater Hit: %d"), damage));
 
-	CharAttributeComponent->GetDamage(damage);
+	//CharAttributeComponent->GetDamage(damage);
 	HUDRemoteCharacterComponent->SetHealthPercent(CharAttributeComponent->GetHelathPercent());
 
 	if (!CharAttributeComponent->IsAlive())
 	{
 		Death();
 	}
+}
+
+void ARemoteGameCharacter::SetLevel(uint16 level)
+{
+	Super::SetLevel(level);
+	HUDRemoteCharacterComponent->SetCharacterLevel(level);
+	
 }
 
 int ARemoteGameCharacter::GetType()

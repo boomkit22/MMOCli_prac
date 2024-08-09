@@ -150,6 +150,18 @@ void GamePacketHandler::HandlePacket(CPacket* packet)
 	}
 	break;
 
+	case PACKET_SC_GAME_RES_EXP_CHANGE:
+	{
+		GameInstance->HandleExpChange(packet);
+	}
+	break;
+
+	case PACKET_SC_GAME_RES_LEVEL_UP_OTHER_CHARACTER:
+	{
+		GameInstance->HandleLevelUpOtherCharacter(packet);
+	}
+	break;
+
 	default:
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Unknown Packet Type : %d"), packetType));
 		break;

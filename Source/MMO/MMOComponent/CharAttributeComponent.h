@@ -53,5 +53,9 @@ public:
 	float GetHelathPercent();
 	void GetDamage(int damage);
 	void RecoverHealth(int recover);
+	void SetExp(uint32 exp);
+	void SetLevel(uint16 level);
+	float GetExpPercent();
+
 
 };

@@ -346,3 +346,15 @@ void AMyGameCharacter::GetHit(int32 damage)
 		MMOOverlay->SetHealthBarPercent(CharAttributeComponent->GetHelathPercent());
 	}
 }
+
+void AMyGameCharacter::SetExp(uint32 exp, uint16 level)
+{
+	//Super::ExpChange(exp, level);
+	if (MMOOverlay && CharAttributeComponent)
+	{
+		CharAttributeComponent->SetExp(exp);
+		CharAttributeComponent->SetLevel(level);
+		MMOOverlay->SetExperienceBarPercent(CharAttributeComponent->GetExpPercent());
+		MMOOverlay->SetLevelTextBlock(level);
+	}
+}

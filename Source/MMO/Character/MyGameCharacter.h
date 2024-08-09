@@ -76,4 +76,7 @@ public:
 
 	uint16 PathSize = 0;
 	uint16 CurrentPathIndex = 0;
+
+public:
+	void SetExp(uint32 exp, uint16 level);
 };

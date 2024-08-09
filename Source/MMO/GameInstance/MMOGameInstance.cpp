@@ -26,6 +26,7 @@
 #include "CharacterSelect/CharacterSelectOverlay.h"
 #include "Monsters/Monster.h"
 #include "Character/MyGameCharacter.h"
+#include "MMOGameInstance.h"
 
 using namespace std;
 
@@ -739,6 +740,32 @@ void UMMOGameInstance::HandleFindPath(CPacket* packet)
 		/*(*character)->SetActorRotation(StartRotation);
 		(*character)->SetDestination(destination);*/
 	}
+}
+
+void UMMOGameInstance::HandleExpChange(CPacket* packet)
+{
+	if (MyCharacter)
+	{
+		uint16 Level;
+		uint32 Exp;
+		*packet >> Level >> Exp;
+		//*packet >> Exp >> Level;
+		MyCharacter->SetExp(Exp, Level);
+	}
+}
+
+void UMMOGameInstance::HandleLevelUpOtherCharacter(CPacket* packet)
+{
+	int64 CharacterNo;
+	uint16 Level;
+	*packet >> CharacterNo >> Level;
+
+	auto character = CharacterMap.Find(CharacterNo);
+	if (character)
+	{
+		(*character)->SetLevel(Level);
+	}
+
 }
 
 //패킷이 두번왔다갔다하는건 좀 별로지않나?

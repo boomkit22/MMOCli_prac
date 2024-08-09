@@ -2,6 +2,7 @@
 
 
 #include "MMOComponent/CharAttributeComponent.h"
+#include "CharAttributeComponent.h"
 
 // Sets default values for this component's properties
 UCharAttributeComponent::UCharAttributeComponent()
@@ -75,5 +76,25 @@ void UCharAttributeComponent::RecoverHealth(int recover)
 	{
 		Health = MaxHealth;
 	}
+}
+
+void UCharAttributeComponent::SetExp(uint32 exp)
+{
+	Exp = exp;
+}
+
+void UCharAttributeComponent::SetLevel(uint16 level)
+{
+	Level = level;
+}
+
+float UCharAttributeComponent::GetExpPercent()
+{
+	//이거 exp는 계속 누적되서 들어오는데
+	// 1레벨이 100이고
+	//2레벨이 200임
+	//%100 해서 / 100 하면됨
+
+	return (Exp % 100) / 100.f;
 }
 
