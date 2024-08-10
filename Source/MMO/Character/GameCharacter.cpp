@@ -178,10 +178,6 @@ void AGameCharacter::SetDestination(FVector Dest)
 	Destination = Dest;
 }
 
-void AGameCharacter::InitCharAttributeComponent(int32 Health, FString CharName, int32 Level)
-{
-	CharAttributeComponent->Init(Health, CharName, Level);
-}
 
 int AGameCharacter::GetType()
 {
@@ -261,4 +257,14 @@ void AGameCharacter::GetHit(int32 damage)
 void AGameCharacter::SetLevel(uint16 level)
 {
 	CharAttributeComponent->SetLevel(level);
+}
+
+void AGameCharacter::InitCharAttributeComponent(int32 Health, FString CharName, uint16 Level, uint32 Exp)
+{
+	CharAttributeComponent->Init(Health, CharName, Level, Exp);
+}
+
+void AGameCharacter::InitCharAttributeComponent(int32 Health, FString CharName, uint16 Level)
+{
+	CharAttributeComponent->Init(Health, CharName, Level);
 }

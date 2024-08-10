@@ -24,7 +24,8 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	void Init(int32 Health, FString CharName, int32 Level);
+	void Init(int32 Health, FString CharName, uint16 Level, uint32 Exp);
+	void Init(int32 Health, FString CharName, uint16 Level);
 	FORCEINLINE FString GetCharName() { return CharName; };
 	FORCEINLINE int32 GetLevel() { return Level; };
 

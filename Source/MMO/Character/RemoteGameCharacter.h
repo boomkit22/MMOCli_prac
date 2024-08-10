@@ -23,7 +23,7 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
-	virtual void InitCharAttributeComponent(int32 Health, FString CharName, int32 Level) override;
+	virtual void InitCharAttributeComponent(int32 Health, FString CharName, uint16 Level) override;
 
 protected:
 protected:

@@ -102,12 +102,16 @@ protected:
 	virtual void SetLevel(uint16 level);
 
 public:
-	virtual void InitCharAttributeComponent(int32 Health, FString CharName, int32 Level);
+	virtual void InitCharAttributeComponent(int32 Health, FString CharName, uint16 Level, uint32 Exp);
+	virtual void InitCharAttributeComponent(int32 Health, FString CharName, uint16 Level);
+
 	
 protected:
 	UPROPERTY(VisibleAnywhere)
 	class UCharAttributeComponent* CharAttributeComponent;
 	
+public:
+	FORCEINLINE UCharAttributeComponent* GetCharAttributeComponent() { return CharAttributeComponent; }
 
 
 

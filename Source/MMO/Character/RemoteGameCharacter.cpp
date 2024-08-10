@@ -27,9 +27,10 @@ void ARemoteGameCharacter::BeginPlay()
 	Super::BeginPlay();
 }
 
-void ARemoteGameCharacter::InitCharAttributeComponent(int32 Health, FString CharName, int32 Level)
+void ARemoteGameCharacter::InitCharAttributeComponent(int32 Health, FString CharName, uint16 Level)
 {
-	CharAttributeComponent->Init(Health, CharName, Level);
+	Super::InitCharAttributeComponent(Health, CharName, Level);
+	//CharAttributeComponent->Init(Health, CharName, Level);
 	if (HUDRemoteCharacterComponent)
 	{
 		UE_LOG(LogTemp, Error, TEXT("Set Monster HUD Component."));
