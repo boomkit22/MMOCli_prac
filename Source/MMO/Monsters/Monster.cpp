@@ -156,8 +156,10 @@ void AMonster::MoveToDestination(float DeltaTime)
     {
         MonsterState = EMonsterState::EMS_Move;
         FVector CurrentLocation = GetActorLocation();
-        FVector Direction = (Destination - CurrentLocation).GetSafeNormal();
-        float Distance = FVector::Dist(Destination, CurrentLocation);
+        // Destination 및 CurrentLocation에서 Z값을 현재 액터의 Z 위치로 설정
+        FVector ModifiedDestination = FVector(Destination.X, Destination.Y, CurrentLocation.Z);
+        FVector Direction = (ModifiedDestination - CurrentLocation).GetSafeNormal();
+        float Distance = FVector::Dist(ModifiedDestination, CurrentLocation);
 
         // 이동 속도 설정
         float Step = Speed * DeltaTime; // 이번 프레임에서 이동할 거리
@@ -168,16 +170,31 @@ void AMonster::MoveToDestination(float DeltaTime)
             FVector NewLocation = CurrentLocation + Direction * Step;
             SetActorLocation(NewLocation);
 
+            // 이동하는 방향으로 부드러운 회전 설정
             FRotator CurrentRotation = GetActorRotation();
+
             FRotator TargetRotation = Direction.Rotation();
-            FRotator NewRotation = FMath::Lerp(CurrentRotation, TargetRotation, DeltaTime * 5.0f); // 회전 속도 조정
+            //SetActorRotation(TargetRotation);
+            FRotator NewRotation = FMath::Lerp(CurrentRotation, TargetRotation, DeltaTime * 20.0f); // 회전 속도 조정 가능
             SetActorRotation(NewRotation);
         }
         else
         {
-            // 목적지에 가까워졌을 때, 목적지로
-            SetActorLocation(Destination);
-            Destination = FVector::ZeroVector; // 도착 후 목적지 초기화
+            // 목적지에 매우 가까워졌을 때, 목적지에 도달
+            SetActorLocation(ModifiedDestination);
+            //Destination = FVector::ZeroVector; // 도착 후 목적지 초기화
+            UE_LOG(LogTemp, Warning, TEXT("EMS_Idle"));
+
+            PathIndex++;
+            if (PathIndex < Path.size())
+            {
+                SetDestination(FVector(Path[PathIndex].x, Path[PathIndex].y, CurrentLocation.Z));
+            }
+            else
+            {
+                Destination = FVector::ZeroVector;
+                //MovingState = EMovingState::EMS_Idle;
+            }
         }
     }
     else {
@@ -245,5 +262,24 @@ int AMonster::GetType()
 int64 AMonster::GetId()
 {
     return MonsterID;
+}
+
+void AMonster::SetPath(FVector StartPos, uint16 startIndex, std::vector<Pos>& path)
+{
+    PathIndex = startIndex;
+    //StartIndex = startIndex;
+    Path = path;
+    //UE_LOG(LogTemp, Warning, TEXT("SetPath %d"), Path.size());
+
+    FVector CurrentLocation = GetActorLocation();
+    float Distance = FVector::Dist(CurrentLocation, StartPos);
+
+    // 일정 수치 이상 차이가 나면 , sync
+    float Threshold = 500.0f;
+    if (Distance > Threshold)
+    {
+        SetActorLocation(StartPos);
+        //UE_LOG(LogTemp, Warning, TEXT("Character moved to StartPos due to large distance: %f"), Distance);
+    }
 }
 

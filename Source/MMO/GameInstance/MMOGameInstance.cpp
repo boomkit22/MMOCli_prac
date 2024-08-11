@@ -612,21 +612,39 @@ void UMMOGameInstance::HandleSpawnMonster(CPacket* packet)
 
 void UMMOGameInstance::HandleMonsterMove(CPacket* packet)
 {
-	int64 MonsterID;
-	FVector destination;
-	FRotator StartRotation;
-	*packet >> MonsterID >> destination >> StartRotation;
 
-	//GEngine->AddOnScreenDebugMessage(-1, 5.5f, FColor::Red, FString::Printf(TEXT("Handle Move Monster, %lld"), MonsterID));
-	auto Monster = MonsterMap.Find(MonsterID);
-	if (Monster && *Monster)
+	int64 monsterId;
+	FVector CurrentLocation;
+	uint16 pathSize;
+	uint16 startIndex;
+	vector<Pos> path;
+	*packet >> monsterId >> CurrentLocation >> pathSize >> startIndex;
+	for (int i = 0; i < pathSize; i++)
 	{
-
-		(*Monster)->SetActorRotation(StartRotation, ETeleportType::TeleportPhysics);
-		(*Monster)->SetDestination(destination);
+		Pos pos;
+		*packet >> pos;
+		path.push_back(pos);
 	}
-	else {
-		GEngine->AddOnScreenDebugMessage(-1, 5.5f, FColor::Red, TEXT("Monster is null"));
+	/*uint16 PathCount;
+	*packet >> PathCount;*/
+	/*MyCharacter->PathSize = PathCount;
+	MyCharacter->CurrentPathIndex = 0;*/
+
+	//int64 characterNo;
+	//FVector destination;
+	//FRotator StartRotation;
+	//*packet >> characterNo >> destination >> StartRotation;
+	auto monster = MonsterMap.Find(monsterId);
+	if (monster)
+	{
+		(*monster)->SetPath(CurrentLocation, startIndex, path);
+		if (path.size() > 0)
+		{
+			FVector Destination{ (double)path[0].x, (double)path[0].y, PlayerZValue };
+			(*monster)->SetDestination(Destination);
+		}
+		/*(*character)->SetActorRotation(StartRotation);
+		(*character)->SetDestination(destination);*/
 	}
 }
 

@@ -8,6 +8,7 @@
 #include "Interface/HittableInterface.h"
 #include "Type.h"
 #include "GameData.h"
+#include <vector>
 #include "Monster.generated.h"
 
 
@@ -20,6 +21,7 @@ class MMO_API AMonster : public ACharacter, public IHittableInterface
 {
 	GENERATED_BODY()
 
+	friend class UMMOGameInstance;
 public:
 	// Sets default values for this character's properties
 	AMonster();
@@ -134,5 +136,11 @@ protected:
 private:
 	int64 MonsterID;
 	int64 Speed = 200.f;
+
+private:
+	void SetPath(FVector StartPos, uint16 startIndex, std::vector<Pos>& path);
+	//uint16 StartIndex;
+	std::vector<Pos> Path;
+	uint16 PathIndex = 0;
 };
 
